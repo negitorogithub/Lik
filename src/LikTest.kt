@@ -1,3 +1,4 @@
+import TokenType.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -12,6 +13,16 @@ internal class LikTest {
     @Test
     fun tokenizeTest() {
 
+        assertEquals(
+            tokenize(" 123 +22  * 09 "),
+            listOf(
+                Token(NUMBER, 123),
+                Token(PLUS),
+                Token(NUMBER, 22),
+                Token(MULTIPLY),
+                Token(NUMBER, 9)
+            )
+        )
     }
 
     @Test

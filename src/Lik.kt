@@ -11,7 +11,7 @@ fun parse(likScript: String): String {
 }
 
 fun tokenize(str: String): List<Token> {
-    val spaceRemoved = str.split(space)
+    val spaceRemoved = str.toCharArray().map { it.toString() }.filterNot { it == space }
     var temporaryNumberList = mutableListOf<String>()
     val resultList = mutableListOf<Token>()
 
@@ -36,6 +36,9 @@ fun tokenize(str: String): List<Token> {
             temporaryNumberList.add(char)
             return@forEach
         }
+    }
+    if (temporaryNumberList.isNotEmpty()) {
+        resultList.add(Token(TokenType.NUMBER, numberList2number(temporaryNumberList)))
     }
     return resultList
 }

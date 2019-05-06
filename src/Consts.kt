@@ -4,4 +4,4 @@ const val minus = "-"
 const val multiply = "*"
 const val divide = "/"
 val operators = setOf(plus, minus, multiply, divide)
-val numbers = setOf(1..9).map { intRange: IntRange -> intRange.toString() }.toSet()
+val numbers = (0..9).toSet().map { it.toString() }
