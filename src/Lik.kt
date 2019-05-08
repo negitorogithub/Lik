@@ -5,9 +5,9 @@ fun main() {
 }
 
 fun parse(likScript: String): String {
-    val tokens = tokenize(likScript)
+    val tokens = Tokens(tokenize(likScript))
+    tokens.parse()
     return "default"
-
 }
 
 fun tokenize(str: String): List<Token> {
@@ -50,6 +50,36 @@ fun numberList2number(list: List<String>): Int {
     }
     return Integer.parseInt(buffer.toString())
 }
+
+fun parseAdd(innerList: List<Token>): Int? {
+    var cursor = 0
+    innerList[cursor].value ?: run {
+        throw IllegalArgumentException("first element must be number")
+    }
+
+    var result = innerList[cursor].value!!
+
+    cursor++
+    while (innerList.size - 1 > cursor)
+        if (innerList[cursor].type == TokenType.PLUS) {
+            cursor++
+            innerList[cursor].value?.let {
+                result += it
+                cursor++
+            }
+        } else if (innerList[cursor].type == TokenType.MINUS) {
+            cursor++
+            innerList[cursor].value?.let {
+                result -= it
+                cursor++
+            }
+        }
+    return result
+}
+
+
+
+
 
 
 
