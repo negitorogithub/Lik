@@ -5,5 +5,6 @@ internal class TokenTest {
     @Test
     fun constructorTest() {
         assertThrows<IllegalArgumentException> { Token(TokenType.NUMBER) }
+        assertThrows<IllegalArgumentException> { Token(TokenType.PLUS, 2) }
     }
 }

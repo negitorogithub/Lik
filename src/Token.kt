@@ -5,6 +5,11 @@ class Token(val type: TokenType, val value: Int? = null) {
         if (type == NUMBER) {
             value ?: throw IllegalArgumentException("number expected")
         }
+        if (type != NUMBER) {
+            if (value != null) {
+                throw IllegalArgumentException("number is not expected")
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {
