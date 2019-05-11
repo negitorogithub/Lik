@@ -65,6 +65,29 @@ internal class TokensTest {
             ).parse()
         )
 
+        assertEquals(
+            Node(
+                MULTIPLY,
+                Node(5),
+                Node(
+                    PLUS,
+                    Node(2),
+                    Node(3)
+                )
+            ),
+            Tokens(
+                listOf(
+                    Token(5),
+                    Token(MULTIPLY),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(2),
+                    Token(PLUS),
+                    Token(3),
+                    Token(ROUND_BRACKET_CLOSE)
+                )
+            ).parse()
+        )
+
 
     }
 }

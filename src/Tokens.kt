@@ -46,20 +46,34 @@ class Tokens(private val innerList: List<Token>) {
     }
 
     private fun multiply(): Node {
-        var result = Node(innerList[cursor].value!!)
-        cursor++
+        var result = term()
         loop@ while (innerList.size - 1 > cursor) {
             when {
                 consume(MULTIPLY) -> innerList[cursor].value.let {
-                    result = Node(MULTIPLY, result, Node(innerList[cursor++].value!!))
+                    result = Node(MULTIPLY, result, term())
                 }
                 consume(DIVIDE) -> innerList[cursor].value.let {
-                    result = Node(DIVIDE, result, Node(innerList[cursor++].value!!))
+                    result = Node(DIVIDE, result, term())
                 }
                 else -> break@loop
 
             }
         }
         return result
+    }
+
+
+    private fun term(): Node {
+        if (consume(ROUND_BRACKET_OPEN)) {
+            val result = add()
+            if (!consume(ROUND_BRACKET_CLOSE))
+                throw java.lang.Exception("開きカッコに対応する閉じカッコがありません: $cursor")
+            return result
+        }
+
+        if (innerList[cursor].value != null) {
+            return Node(innerList[cursor++])
+        }
+        throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
     }
 }

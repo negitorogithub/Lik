@@ -1,3 +1,5 @@
+import TokenType.*
+
 fun main() {
     val input = readLine()
     println(input?.let { parse(it) })
@@ -17,17 +19,21 @@ fun tokenize(str: String): List<Token> {
 
     spaceRemoved.forEach { char: String ->
         if (!(numbers.contains(char))) {
-            resultList.add(Token(TokenType.NUMBER, numberList2number(temporaryNumberList)))
-            temporaryNumberList = mutableListOf()
+            if (temporaryNumberList.isNotEmpty()) {
+                resultList.add(Token(NUMBER, numberList2number(temporaryNumberList)))
+                temporaryNumberList = mutableListOf()
+            }
         }
         if (operators.contains(char)) {
             resultList.add(
                 when (char) {
-                    plus -> Token(TokenType.PLUS)
-                    minus -> Token(TokenType.MINUS)
-                    multiply -> Token(TokenType.MULTIPLY)
-                    divide -> Token(TokenType.DIVIDE)
-                    else -> Token(TokenType.NULL)//絶対来ない
+                    plus -> Token(PLUS)
+                    minus -> Token(MINUS)
+                    multiply -> Token(MULTIPLY)
+                    divide -> Token(DIVIDE)
+                    roundBracketOpen -> Token(ROUND_BRACKET_OPEN)
+                    roundBracketClose -> Token(ROUND_BRACKET_CLOSE)
+                    else -> Token(NULL)//絶対来ない
                 }
             )
             return@forEach
@@ -38,7 +44,7 @@ fun tokenize(str: String): List<Token> {
         }
     }
     if (temporaryNumberList.isNotEmpty()) {
-        resultList.add(Token(TokenType.NUMBER, numberList2number(temporaryNumberList)))
+        resultList.add(Token(NUMBER, numberList2number(temporaryNumberList)))
     }
     return resultList
 }
@@ -61,13 +67,13 @@ fun parseAdd(innerList: List<Token>): Int? {
 
     cursor++
     while (innerList.size - 1 > cursor)
-        if (innerList[cursor].type == TokenType.PLUS) {
+        if (innerList[cursor].type == PLUS) {
             cursor++
             innerList[cursor].value?.let {
                 result += it
                 cursor++
             }
-        } else if (innerList[cursor].type == TokenType.MINUS) {
+        } else if (innerList[cursor].type == MINUS) {
             cursor++
             innerList[cursor].value?.let {
                 result -= it
