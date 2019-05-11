@@ -1,6 +1,9 @@
 import TokenType.NUMBER
 
 class Token(val type: TokenType, val value: Int? = null) {
+
+    constructor(value: Int) : this(NUMBER, value)
+
     init {
         if (type == NUMBER) {
             value ?: throw IllegalArgumentException("number expected")
