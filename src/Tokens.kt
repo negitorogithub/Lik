@@ -8,7 +8,7 @@ class Tokens(private val innerList: List<Token>) {
         }
     }
 
-    var cursor = 0
+    private var cursor = 0
 
 
     private fun consume(tokenType: TokenType): Boolean {
@@ -26,10 +26,6 @@ class Tokens(private val innerList: List<Token>) {
     }
 
     private fun add(): Node {
-        innerList[cursor].value ?: run {
-            throw IllegalArgumentException("The first element must be number")
-        }
-
         var result = multiply()
 
         loop@ while (innerList.size - 1 > cursor)
@@ -46,14 +42,14 @@ class Tokens(private val innerList: List<Token>) {
     }
 
     private fun multiply(): Node {
-        var result = term()
+        var result = unary()
         loop@ while (innerList.size - 1 > cursor) {
             when {
                 consume(MULTIPLY) -> innerList[cursor].value.let {
-                    result = Node(MULTIPLY, result, term())
+                    result = Node(MULTIPLY, result, unary())
                 }
                 consume(DIVIDE) -> innerList[cursor].value.let {
-                    result = Node(DIVIDE, result, term())
+                    result = Node(DIVIDE, result, unary())
                 }
                 else -> break@loop
 
@@ -75,5 +71,15 @@ class Tokens(private val innerList: List<Token>) {
             return Node(innerList[cursor++])
         }
         throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
+    }
+
+    private fun unary(): Node {
+        if (consume(PLUS)) {
+            return term()
+        }
+        if (consume(MINUS)) {
+            return Node(MINUS, Node(0), term())
+        }
+        return term()
     }
 }

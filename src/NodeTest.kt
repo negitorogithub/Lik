@@ -1,12 +1,12 @@
-import TokenType.MULTIPLY
-import TokenType.PLUS
+import TokenType.*
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 internal class NodeTest {
 
     @Test
     fun evalTest() {
-        kotlin.test.assertEquals(
+        assertEquals(
             7,
             Node(
                 PLUS,
@@ -19,17 +19,23 @@ internal class NodeTest {
             ).eval()
         )
 
-        kotlin.test.assertEquals(
-            5,
+        assertEquals(
+            -25,
             Node(
-                PLUS,
+                MULTIPLY,
                 Node(
-                    MULTIPLY,
-                    Node(1),
-                    Node(2)
+                    MINUS,
+                    Node(0),
+                    Node(5)
                 ),
-                Node(3)
+                Node(
+                    PLUS,
+                    Node(2),
+                    Node(3)
+                )
             ).eval()
         )
+
+
     }
 }
