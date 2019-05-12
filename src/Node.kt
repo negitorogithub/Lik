@@ -1,3 +1,5 @@
+import TokenType.*
+
 class Node(val token: Token, val leftNode: Node? = null, val rightNode: Node? = null) {
     constructor(
         type: TokenType,
@@ -16,10 +18,33 @@ class Node(val token: Token, val leftNode: Node? = null, val rightNode: Node? = 
         rightNode: Node? = null
     ) :
             this(
-                Token(TokenType.NUMBER, value),
+                Token(NUMBER, value),
                 leftNode,
                 rightNode
             )
+
+    fun eval(): Int {
+        val leftValue: Int = when {
+            leftNode?.token?.value != null -> leftNode.token.value
+            leftNode != null -> leftNode.eval()
+            else -> throw Exception("二項演算子は数字に挟まれなければなりません")
+        }
+        val rightValue: Int = when {
+            rightNode?.token?.value != null -> rightNode.token.value
+            rightNode != null -> rightNode.eval()
+            else -> throw Exception("二項演算子は数字に挟まれなければなりません")
+        }
+        return when (token.type) {
+            PLUS -> leftValue + rightValue
+            MINUS -> leftValue - rightValue
+            MULTIPLY -> leftValue * rightValue
+            DIVIDE -> leftValue / rightValue
+            else -> throw Exception("予期せぬトークンです")
+        }
+
+
+    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
