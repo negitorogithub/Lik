@@ -5,5 +5,11 @@ const val multiply = "*"
 const val divide = "/"
 const val roundBracketOpen = "("
 const val roundBracketClose = ")"
+const val equal = "=="
+const val notEqual = "!="
+const val lessThan = "<"
+const val greaterThan = ">"
+const val lessThanOrEqual = "<="
+const val greaterThanOrEqual = ">="
 val operators = setOf(plus, minus, multiply, divide)
 val numbers = (0..9).toSet().map { it.toString() }

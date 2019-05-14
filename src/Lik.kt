@@ -13,39 +13,28 @@ fun parse(likScript: String): String {
 }
 
 fun tokenize(str: String): List<Token> {
-    val spaceRemoved = str.toCharArray().map { it.toString() }.filterNot { it == space }
-    var temporaryNumberList = mutableListOf<String>()
+    val spaceRemoved = str.filterNot { it.toString() == space }
     val resultList = mutableListOf<Token>()
+    val rest = spaceRemoved.toConsumableString()
 
-    spaceRemoved.forEach { char: String ->
-        if (!(numbers.contains(char))) {
-            if (temporaryNumberList.isNotEmpty()) {
-                resultList.add(Token(NUMBER, numberList2number(temporaryNumberList)))
-                temporaryNumberList = mutableListOf()
-            }
-        }
-        if (operators.contains(char)) {
-            resultList.add(
-                when (char) {
-                    plus -> Token(PLUS)
-                    minus -> Token(MINUS)
-                    multiply -> Token(MULTIPLY)
-                    divide -> Token(DIVIDE)
-                    roundBracketOpen -> Token(ROUND_BRACKET_OPEN)
-                    roundBracketClose -> Token(ROUND_BRACKET_CLOSE)
-                    else -> Token(NULL)//絶対来ない
-                }
-            )
-            return@forEach
-        }
-        if (numbers.contains(char)) {
-            temporaryNumberList.add(char)
-            return@forEach
+    while (rest.isNotEmpty()) {
+        when {
+            rest.consume(roundBracketOpen) -> resultList.add(Token(ROUND_BRACKET_OPEN))
+            rest.consume(roundBracketClose) -> resultList.add(Token(ROUND_BRACKET_CLOSE))
+            rest.consume(plus) -> resultList.add(Token(PLUS))
+            rest.consume(minus) -> resultList.add(Token(MINUS))
+            rest.consume(multiply) -> resultList.add(Token(MULTIPLY))
+            rest.consume(divide) -> resultList.add(Token(DIVIDE))
+            rest.consume(equal) -> resultList.add(Token(EQUAL))
+            rest.consume(notEqual) -> resultList.add(Token(NOT_EQUAL))
+            rest.consume(lessThanOrEqual) -> resultList.add(Token(LESS_THAN_OR_EQUAL))
+            rest.consume(greaterThanOrEqual) -> resultList.add(Token(GREATER_THAN_OR_EQUAL))
+            rest.consume(lessThan) -> resultList.add(Token(LESS_THAN))
+            rest.consume(greaterThan) -> resultList.add(Token(GREATER_THAN))
+            rest.startWithNumber() -> resultList.add(Token(Integer.parseInt(rest.popNumber())))//consumeだと数字が特定できないため
         }
     }
-    if (temporaryNumberList.isNotEmpty()) {
-        resultList.add(Token(NUMBER, numberList2number(temporaryNumberList)))
-    }
+
     return resultList
 }
 
@@ -83,11 +72,9 @@ fun parseAdd(innerList: List<Token>): Int? {
     return result
 }
 
-
-
-
-
-
+fun String.toConsumableString(): ConsumableString {
+    return ConsumableString(this)
+}
 
 
 

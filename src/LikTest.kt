@@ -15,13 +15,27 @@ internal class LikTest {
 
         assertEquals(
             listOf(
-                Token(NUMBER, 123),
+                Token(123),
                 Token(PLUS),
-                Token(NUMBER, 22),
+                Token(22),
                 Token(MULTIPLY),
-                Token(NUMBER, 9)
+                Token(9)
             ),
             tokenize(" 123 +22  * 09 ")
+        )
+
+        assertEquals(
+            listOf(
+                Token(123),
+                Token(GREATER_THAN_OR_EQUAL),
+                Token(22),
+                Token(MULTIPLY),
+                Token(9),
+                Token(EQUAL),
+                Token(3),
+                Token(LESS_THAN)
+            ),
+            tokenize("  123>= 22  * 09 == 3 < ")
         )
     }
 
