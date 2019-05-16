@@ -23,6 +23,7 @@ internal class TokensTest {
 
     @Test
     fun parseTest() {
+
         assertEquals(
             Node(
                 PLUS,
@@ -117,6 +118,52 @@ internal class TokensTest {
             ).parse()
         )
 
+        assertEquals(
+            Node(
+                EQUAL,
+                Node(10),
+                Node(
+                    PLUS,
+                    Node(
+                        DIVIDE,
+                        Node(
+                            MINUS,
+                            Node(0),
+                            Node(5)
+                        ),
+                        Node(
+                            PLUS,
+                            Node(3),
+                            Node(
+                                MULTIPLY,
+                                Node(1),
+                                Node(2)
+                            )
+                        )
+                    ),
+                    Node(11)
+                )
+            )
+            ,
+            Tokens(
+                listOf(
+                    Token(10),
+                    Token(EQUAL),
+                    Token(MINUS),
+                    Token(5),
+                    Token(DIVIDE),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(3),
+                    Token(PLUS),
+                    Token(1),
+                    Token(MULTIPLY),
+                    Token(2),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(PLUS),
+                    Token(11)
+                )
+            ).parse()
+        )
 
     }
 

@@ -22,18 +22,62 @@ class Tokens(private val innerList: List<Token>) {
     }
 
     fun parse(): Node {
-        return add()
+        val result = expression()
+        return result
     }
+
+    private fun expression(): Node {
+        return equality()
+    }
+
+    private fun equality(): Node {
+        var result = relational()
+
+        loop@ while (innerList.size - 1 > cursor)
+            when {
+                consume(EQUAL) -> {
+                    result = Node(EQUAL, result, relational())
+                }
+                consume(NOT_EQUAL) -> innerList[cursor].value?.let {
+                    result = Node(NOT_EQUAL, result, relational())
+                }
+                else -> break@loop
+            }
+        return result
+    }
+
+    private fun relational(): Node {
+        var result = add()
+
+        loop@ while (innerList.size - 1 > cursor)
+            when {
+                consume(LESS_THAN) -> {
+                    result = Node(LESS_THAN, result, add())
+                }
+                consume(LESS_THAN_OR_EQUAL) -> {
+                    result = Node(LESS_THAN_OR_EQUAL, result, add())
+                }
+                consume(GREATER_THAN) -> {
+                    result = Node(GREATER_THAN, result, add())
+                }
+                consume(GREATER_THAN_OR_EQUAL) -> {
+                    result = Node(GREATER_THAN_OR_EQUAL, result, add())
+                }
+                else -> break@loop
+            }
+        return result
+    }
+
 
     private fun add(): Node {
         var result = multiply()
 
         loop@ while (innerList.size - 1 > cursor)
             when {
-                consume(PLUS) -> innerList[cursor].value?.let {
+                consume(PLUS) -> {
                     result = Node(PLUS, result, multiply())
                 }
-                consume(MINUS) -> innerList[cursor].value?.let {
+                consume(MINUS) -> {
                     result = Node(MINUS, result, multiply())
                 }
                 else -> break@loop
@@ -45,10 +89,10 @@ class Tokens(private val innerList: List<Token>) {
         var result = unary()
         loop@ while (innerList.size - 1 > cursor) {
             when {
-                consume(MULTIPLY) -> innerList[cursor].value.let {
+                consume(MULTIPLY) -> {
                     result = Node(MULTIPLY, result, unary())
                 }
-                consume(DIVIDE) -> innerList[cursor].value.let {
+                consume(DIVIDE) -> {
                     result = Node(DIVIDE, result, unary())
                 }
                 else -> break@loop
@@ -56,21 +100,6 @@ class Tokens(private val innerList: List<Token>) {
             }
         }
         return result
-    }
-
-
-    private fun term(): Node {
-        if (consume(ROUND_BRACKET_OPEN)) {
-            val result = add()
-            if (!consume(ROUND_BRACKET_CLOSE))
-                throw java.lang.Exception("開きカッコに対応する閉じカッコがありません: $cursor")
-            return result
-        }
-
-        if (innerList[cursor].value != null) {
-            return Node(innerList[cursor++])
-        }
-        throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
     }
 
     private fun unary(): Node {
@@ -82,4 +111,20 @@ class Tokens(private val innerList: List<Token>) {
         }
         return term()
     }
+
+    private fun term(): Node {
+        if (consume(ROUND_BRACKET_OPEN)) {
+            val result = expression()
+            if (!consume(ROUND_BRACKET_CLOSE))
+                throw java.lang.Exception("開きカッコに対応する閉じカッコがありません: $cursor")
+            return result
+        }
+
+        if (innerList[cursor].value != null) {
+            return Node(innerList[cursor++])
+        }
+        throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
+    }
+
+
 }
