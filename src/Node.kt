@@ -23,25 +23,36 @@ class Node(val token: Token, val leftNode: Node? = null, val rightNode: Node? = 
                 rightNode
             )
 
-    fun eval(): Int {
-        val leftValue: Int = when {
-            leftNode?.token?.value != null -> leftNode.token.value
+    fun eval(): Evaled {
+
+        val leftValue: Evaled = when {
+            leftNode?.token?.value != null -> leftNode.token.value.toEvaled()
             leftNode != null -> leftNode.eval()
             else -> throw Exception("二項演算子は数字に挟まれなければなりません")
         }
-        val rightValue: Int = when {
-            rightNode?.token?.value != null -> rightNode.token.value
+        val rightValue: Evaled = when {
+            rightNode?.token?.value != null -> rightNode.token.value.toEvaled()
             rightNode != null -> rightNode.eval()
             else -> throw Exception("二項演算子は数字に挟まれなければなりません")
         }
-        return when (token.type) {
-            PLUS -> leftValue + rightValue
-            MINUS -> leftValue - rightValue
-            MULTIPLY -> leftValue * rightValue
-            DIVIDE -> leftValue / rightValue
-            else -> throw Exception("予期せぬトークンです")
-        }
 
+        if ((leftValue.type == EvaledType.INT) && (rightValue.type == EvaledType.INT)) {
+            return when (token.type) {
+                PLUS -> leftValue + rightValue
+                MINUS -> leftValue - rightValue
+                MULTIPLY -> leftValue * rightValue
+                DIVIDE -> leftValue / rightValue
+                EQUAL -> (leftValue.evaledBool == rightValue.evaledBool).toEvaled()
+                NOT_EQUAL -> (leftValue.evaledBool != rightValue.evaledBool).toEvaled()
+                LESS_THAN -> (leftValue.evaledBool!! < rightValue.evaledBool!!).toEvaled()
+                GREATER_THAN -> (leftValue.evaledBool!! > rightValue.evaledBool!!).toEvaled()
+                LESS_THAN_OR_EQUAL -> (leftValue.evaledBool!! <= rightValue.evaledBool!!).toEvaled()
+                GREATER_THAN_OR_EQUAL -> (leftValue.evaledBool!! >= rightValue.evaledBool!!).toEvaled()
+                else -> throw Exception("予期せぬトークンです")
+            }
+        } else {
+            throw Exception("予期せぬトークンです")
+        }
 
     }
 

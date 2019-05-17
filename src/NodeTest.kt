@@ -16,7 +16,7 @@ internal class NodeTest {
                     Node(2),
                     Node(3)
                 )
-            ).eval()
+            ).eval().evaledInt
         )
 
         assertEquals(
@@ -33,7 +33,36 @@ internal class NodeTest {
                     Node(2),
                     Node(3)
                 )
-            ).eval()
+            ).eval().evaledInt
+        )
+
+        assertEquals(
+            true,
+            Node(
+                EQUAL,
+                Node(10),
+                Node(
+                    PLUS,
+                    Node(
+                        DIVIDE,
+                        Node(
+                            MINUS,
+                            Node(0),
+                            Node(5)
+                        ),
+                        Node(
+                            PLUS,
+                            Node(3),
+                            Node(
+                                MULTIPLY,
+                                Node(1),
+                                Node(2)
+                            )
+                        )
+                    ),
+                    Node(11)
+                )
+            ).eval().evaledBool
         )
 
 
