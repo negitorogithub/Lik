@@ -13,6 +13,5 @@ const val greaterThan = ">"
 const val lessThanOrEqual = "<="
 const val greaterThanOrEqual = ">="
 const val semiColon = ";"
-val operators = setOf(plus, minus, multiply, divide)
 val numbers = (0..9).map { it.toString() }
 val alphabets = listOf('a'..'z', 'A'..'Z').flatten()
