@@ -1,7 +1,13 @@
-class Evaled(val type: EvaledType, val evaledInt: Int? = null, val evaledBool: Boolean? = null) {
+class Evaled(
+    val type: EvaledType,
+    val evaledInt: Int? = null,
+    val evaledBool: Boolean? = null,
+    val val2assign: Val? = null
+//TODO:値が有るときの禁則処理
+) {
     constructor(evaledInt: Int) : this(EvaledType.INT, evaledInt)
     constructor(evaledBool: Boolean) : this(EvaledType.BOOL, evaledBool = evaledBool)
-
+    constructor(val2assign: Val) : this(EvaledType.NOT_ASSIGNED_VAL, val2assign = val2assign)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -12,6 +18,7 @@ class Evaled(val type: EvaledType, val evaledInt: Int? = null, val evaledBool: B
         if (type != other.type) return false
         if (evaledInt != other.evaledInt) return false
         if (evaledBool != other.evaledBool) return false
+        if (val2assign != other.val2assign) return false
 
         return true
     }
@@ -20,10 +27,9 @@ class Evaled(val type: EvaledType, val evaledInt: Int? = null, val evaledBool: B
         var result = type.hashCode()
         result = 31 * result + (evaledInt ?: 0)
         result = 31 * result + (evaledBool?.hashCode() ?: 0)
+        result = 31 * result + (val2assign?.hashCode() ?: 0)
         return result
     }
-
-
 }
 
 fun Int.toEvaled(): Evaled {
@@ -33,6 +39,7 @@ fun Int.toEvaled(): Evaled {
 fun Boolean.toEvaled(): Evaled {
     return Evaled(this)
 }
+
 
 operator fun Evaled.plus(other: Evaled): Evaled {
     return (evaledInt!! + other.evaledInt!!).toEvaled()

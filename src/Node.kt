@@ -1,6 +1,11 @@
 import TokenType.*
 
-class Node(val token: Token, val leftNode: Node? = null, val rightNode: Node? = null) {
+class Node(
+    val token: Token,
+    val leftNode: Node? = null,
+    val rightNode: Node? = null,
+    val valMap: MutableMap<String, Int> = mutableMapOf()
+) {
     constructor(
         type: TokenType,
         leftNode: Node? = null,
@@ -18,21 +23,41 @@ class Node(val token: Token, val leftNode: Node? = null, val rightNode: Node? = 
         rightNode: Node? = null
     ) :
             this(
-                Token(NUMBER, value),
+                Token(value),
                 leftNode,
                 rightNode
             )
 
+
     fun eval(): Evaled {
 
+        token.value?.let { return it.toEvaled() }//数字単体
+        token.val_?.name?.let { valName ->
+            //変数単体
+            valMap[valName]?.let {
+                return it.toEvaled()
+            }
+        }
+
+
         val leftValue: Evaled = when {
-            leftNode?.token?.value != null -> leftNode.token.value.toEvaled()
-            leftNode != null -> leftNode.eval()
+            leftNode?.token?.value != null -> leftNode.token.value.toEvaled()//数字
+            valMap[leftNode?.token?.val_?.name] != null -> valMap[leftNode?.token?.val_?.name]!!.toEvaled()//代入済み変数　!!は自明だよね
+            leftNode?.token?.val_?.name != null -> Evaled(Val(leftNode.token.val_.name))//非代入済み変数
+            leftNode != null -> {
+                leftNode.valMap.putAll(valMap)
+                leftNode.eval()//leftNodeではvalMapの更新は行われないためvalMapを反映させていない
+            }
             else -> throw Exception("二項演算子は数字に挟まれなければなりません")
         }
+
         val rightValue: Evaled = when {
             rightNode?.token?.value != null -> rightNode.token.value.toEvaled()
-            rightNode != null -> rightNode.eval()
+            valMap[rightNode?.token?.val_?.name] != null -> valMap[rightNode?.token?.val_?.name]!!.toEvaled()//!!は自明だよね
+            rightNode != null -> {
+                rightNode.valMap.putAll(valMap)
+                rightNode.eval()//rightNodeではvalMapの更新は行われないためvalMapを反映させていない
+            }
             else -> throw Exception("二項演算子は数字に挟まれなければなりません")
         }
 
@@ -42,18 +67,21 @@ class Node(val token: Token, val leftNode: Node? = null, val rightNode: Node? = 
                 MINUS -> leftValue - rightValue
                 MULTIPLY -> leftValue * rightValue
                 DIVIDE -> leftValue / rightValue
-                EQUAL -> (leftValue.evaledBool == rightValue.evaledBool).toEvaled()
-                NOT_EQUAL -> (leftValue.evaledBool != rightValue.evaledBool).toEvaled()
-                LESS_THAN -> (leftValue.evaledBool!! < rightValue.evaledBool!!).toEvaled()
-                GREATER_THAN -> (leftValue.evaledBool!! > rightValue.evaledBool!!).toEvaled()
-                LESS_THAN_OR_EQUAL -> (leftValue.evaledBool!! <= rightValue.evaledBool!!).toEvaled()
-                GREATER_THAN_OR_EQUAL -> (leftValue.evaledBool!! >= rightValue.evaledBool!!).toEvaled()
+                EQUAL -> (leftValue.evaledInt == rightValue.evaledInt).toEvaled()
+                NOT_EQUAL -> (leftValue.evaledInt != rightValue.evaledInt).toEvaled()
+                LESS_THAN -> (leftValue.evaledInt!! < rightValue.evaledInt!!).toEvaled()
+                GREATER_THAN -> (leftValue.evaledInt!! > rightValue.evaledInt!!).toEvaled()
+                LESS_THAN_OR_EQUAL -> (leftValue.evaledInt!! <= rightValue.evaledInt!!).toEvaled()
+                GREATER_THAN_OR_EQUAL -> (leftValue.evaledInt!! >= rightValue.evaledInt!!).toEvaled()
                 else -> throw Exception("予期せぬトークンです")
             }
+        } else if (token.type == ASSIGN) {
+            //leftValue.val2assignは非null確定
+            valMap[leftValue.val2assign!!.name] = rightValue.evaledInt ?: throw Exception("変数に数字以外が代入されました")
+            return Evaled(EvaledType.ASSIGN)
         } else {
             throw Exception("予期せぬトークンです")
         }
-
     }
 
 

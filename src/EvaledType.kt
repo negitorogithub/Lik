@@ -1,4 +1,6 @@
 enum class EvaledType {
     BOOL,
-    INT
+    INT,
+    ASSIGN,
+    NOT_ASSIGNED_VAL
 }

@@ -5,23 +5,6 @@ import kotlin.test.assertEquals
 internal class TokensTest {
 
     @Test
-    fun parseAddTest() {
-        assertEquals(
-            6,
-            parseAdd(
-                listOf(
-                    Token(NUMBER, 2),
-                    Token(PLUS),
-                    Token(NUMBER, 5),
-                    Token(MINUS),
-                    Token(NUMBER, 1)
-
-                )
-            )
-        )
-    }
-
-    @Test
     fun parseTest() {
 
         assertEquals(
@@ -40,9 +23,10 @@ internal class TokensTest {
                     Token(PLUS),
                     Token(2),
                     Token(MULTIPLY),
-                    Token(3)
+                    Token(3),
+                    Token(SEMI_COLON)
                 )
-            ).parse()
+            ).parse()[0]
         )
 
         assertEquals(
@@ -61,9 +45,10 @@ internal class TokensTest {
                     Token(MULTIPLY),
                     Token(2),
                     Token(PLUS),
-                    Token(3)
+                    Token(3),
+                    Token(SEMI_COLON)
                 )
-            ).parse()
+            ).parse()[0]
         )
 
         assertEquals(
@@ -84,9 +69,10 @@ internal class TokensTest {
                     Token(2),
                     Token(PLUS),
                     Token(3),
-                    Token(ROUND_BRACKET_CLOSE)
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON)
                 )
-            ).parse()
+            ).parse()[0]
         )
 
         assertEquals(
@@ -113,9 +99,10 @@ internal class TokensTest {
                     Token(2),
                     Token(PLUS),
                     Token(3),
-                    Token(ROUND_BRACKET_CLOSE)
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON)
                 )
-            ).parse()
+            ).parse()[0]
         )
 
         assertEquals(
@@ -160,10 +147,86 @@ internal class TokensTest {
                     Token(2),
                     Token(ROUND_BRACKET_CLOSE),
                     Token(PLUS),
-                    Token(11)
+                    Token(11),
+                    Token(SEMI_COLON)
+                )
+            ).parse()[0]
+        )
+
+
+        //"a=4;b=3;a+b;"
+        assertEquals(
+            listOf(
+                Node(
+                    ASSIGN,
+                    Node(Token(NOT_ASSIGNED_VAL, val_ = Val("a"))),
+                    Node(5)
+                ),
+                Node(
+                    ASSIGN,
+                    Node(Token(NOT_ASSIGNED_VAL, val_ = Val("b"))),
+                    Node(2)
+                ),
+                Node(
+                    PLUS,
+                    Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                    Node(Token(ASSIGNED_VAL, val_ = Val("b")))
+                )
+            )
+
+            ,
+            Tokens(
+                listOf(
+                    Token(NOT_ASSIGNED_VAL, val_ = Val("a")),
+                    Token(ASSIGN),
+                    Token(5),
+                    Token(SEMI_COLON),
+
+                    Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
+                    Token(ASSIGN),
+                    Token(2),
+                    Token(SEMI_COLON),
+
+                    Token(ASSIGNED_VAL, val_ = Val("a")),
+                    Token(PLUS),
+                    Token(ASSIGNED_VAL, val_ = Val("b")),
+                    Token(SEMI_COLON)
                 )
             ).parse()
         )
+
+
+        //"a*b+(a-b);"
+        assertEquals(
+            Node(
+                PLUS,
+                Node(
+                    MULTIPLY,
+                    Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                    Node(Token(ASSIGNED_VAL, val_ = Val("b")))
+                ),
+                Node(
+                    MINUS,
+                    Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                    Node(Token(ASSIGNED_VAL, val_ = Val("b")))
+                )
+            ),
+            Tokens(
+                listOf(
+                    Token(ASSIGNED_VAL, val_ = Val("a")),
+                    Token(MULTIPLY),
+                    Token(ASSIGNED_VAL, val_ = Val("b")),
+                    Token(PLUS),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ASSIGNED_VAL, val_ = Val("a")),
+                    Token(MINUS),
+                    Token(ASSIGNED_VAL, val_ = Val("b")),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON)
+                )
+            ).parse()[0]
+        )
+
 
     }
 

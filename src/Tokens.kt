@@ -21,13 +21,43 @@ class Tokens(private val innerList: List<Token>) {
         }
     }
 
-    fun parse(): Node {
+
+    fun parse(): List<Node> {
+        val result = program()
+        return result
+    }
+
+    private fun program(): List<Node> {
+        val result = mutableListOf<Node>()
+        while (!hasFinishedReading()) {
+            result.add(statement())
+        }
+        return result
+    }
+
+    private fun hasFinishedReading(): Boolean {
+        return (cursor >= innerList.lastIndex)
+    }
+
+
+    private fun statement(): Node {
         val result = expression()
+        if (!consume(SEMI_COLON)) {
+            throw Exception("文末にセミコロンがありません")
+        }
         return result
     }
 
     private fun expression(): Node {
-        return equality()
+        return assign()
+    }
+
+    private fun assign(): Node {
+        var result = equality()
+        if (consume(ASSIGN)) {
+            result = Node(ASSIGN, result, assign())
+        }
+        return result
     }
 
     private fun equality(): Node {
@@ -120,9 +150,14 @@ class Tokens(private val innerList: List<Token>) {
             return result
         }
 
-        if (innerList[cursor].value != null) {
+        if (innerList[cursor].value != null) {//数字
             return Node(innerList[cursor++])
         }
+
+        if (innerList[cursor].val_ != null) {//変数
+            return Node(innerList[cursor++])
+        }
+
         throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
     }
 

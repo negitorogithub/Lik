@@ -21,4 +21,17 @@ internal class ConsumableStringTest {
     fun startWithNumber() {
         assertEquals(true, "123abc".toConsumableString().startWithNumber())
     }
+
+    @Test
+    fun isAssignExpression() {
+        assertEquals(
+            true,
+            "a=".toConsumableString().isAssignExpression()
+        )
+
+        assertEquals(
+            true,
+            "abc = ".toConsumableString().isAssignExpression()
+        )
+    }
 }

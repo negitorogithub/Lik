@@ -1,4 +1,4 @@
-class ConsumableString(var innerString: String) {
+data class ConsumableString(var innerString: String) {
     fun consume(str: String): Boolean {
         if (innerString.startsWith(str)) {
             innerString = innerString.removePrefix(str)
@@ -17,6 +17,17 @@ class ConsumableString(var innerString: String) {
         throw Exception("Number not found in head")
     }
 
+    fun popAlphabets(): String {
+        if (innerString.isEmpty()) throw Exception("Alphabet not found in head")
+        if (alphabets.contains(innerString.toCharArray()[0])) {
+            val temp = innerString
+            innerString = innerString.dropWhile { char: Char -> alphabets.contains(char) }
+            return temp.takeWhile { char: Char -> alphabets.contains(char) }
+        }
+        throw Exception("Alphabet not found in head")
+    }
+
+
     private fun isEmpty(): Boolean {
         return innerString.isEmpty()
     }
@@ -29,5 +40,19 @@ class ConsumableString(var innerString: String) {
     fun startWithNumber(): Boolean {
         if (isEmpty()) return false
         return numbers.contains(innerString.toCharArray()[0].toString())
+    }
+
+    fun startWithAlphabet(): Boolean {
+        if (isEmpty()) return false
+        return alphabets.contains(innerString.toCharArray()[0])
+    }
+
+    fun isAssignExpression(): Boolean {
+        if (isEmpty()) return false
+        if (!startWithAlphabet()) return false
+        val clone = this.copy(innerString = innerString)
+        clone.innerString = clone.innerString.filterNot { it.toString() == space }
+        clone.popAlphabets()
+        return clone.innerString.startsWith(assign)
     }
 }

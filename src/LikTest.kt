@@ -7,7 +7,14 @@ internal class LikTest {
 
     @Test
     fun parseTest() {
-
+        assertEquals(
+            "13",
+            parse(
+                "a = 4;" +
+                        "b = 3;" +
+                        "a*b+(a-b);"
+            )
+        )
     }
 
     @Test

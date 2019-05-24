@@ -8,8 +8,7 @@ fun main() {
 
 fun parse(likScript: String): String {
     val tokens = Tokens(tokenize(likScript))
-    tokens.parse()
-    return "default"
+    return Nodes(tokens.parse()).exec().evaledInt.toString()
 }
 
 fun tokenize(str: String): List<Token> {
@@ -31,7 +30,27 @@ fun tokenize(str: String): List<Token> {
             rest.consume(greaterThanOrEqual) -> resultList.add(Token(GREATER_THAN_OR_EQUAL))
             rest.consume(lessThan) -> resultList.add(Token(LESS_THAN))
             rest.consume(greaterThan) -> resultList.add(Token(GREATER_THAN))
+            rest.consume(assign) -> resultList.add(Token(ASSIGN))
+            rest.consume(semiColon) -> resultList.add(Token(SEMI_COLON))
+            rest.isAssignExpression() -> {
+                resultList.apply {
+                    add(
+                        Token(
+                            NOT_ASSIGNED_VAL,
+                            val_ = Val(rest.popAlphabets())
+                        )
+                    )
+                    add(Token(ASSIGN))
+                }
+                rest.consume(assign)
+            }
             rest.startWithNumber() -> resultList.add(Token(Integer.parseInt(rest.popNumber())))//consumeだと数字が特定できないため
+            rest.startWithAlphabet() -> resultList.add(
+                Token(
+                    ASSIGNED_VAL,
+                    val_ = Val(rest.popAlphabets())
+                )
+            )//代入の文脈ではない変数
         }
     }
 
@@ -46,31 +65,6 @@ fun numberList2number(list: List<String>): Int {
     return Integer.parseInt(buffer.toString())
 }
 
-fun parseAdd(innerList: List<Token>): Int? {
-    var cursor = 0
-    innerList[cursor].value ?: run {
-        throw IllegalArgumentException("first element must be number")
-    }
-
-    var result = innerList[cursor].value!!
-
-    cursor++
-    while (innerList.size - 1 > cursor)
-        if (innerList[cursor].type == PLUS) {
-            cursor++
-            innerList[cursor].value?.let {
-                result += it
-                cursor++
-            }
-        } else if (innerList[cursor].type == MINUS) {
-            cursor++
-            innerList[cursor].value?.let {
-                result -= it
-                cursor++
-            }
-        }
-    return result
-}
 
 fun String.toConsumableString(): ConsumableString {
     return ConsumableString(this)

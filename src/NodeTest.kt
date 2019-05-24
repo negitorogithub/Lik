@@ -37,6 +37,16 @@ internal class NodeTest {
         )
 
         assertEquals(
+            3,
+            Node(
+                DIVIDE,
+                Node(10),
+                Node(3)
+            ).eval().evaledInt
+        )
+
+
+        assertEquals(
             true,
             Node(
                 EQUAL,
@@ -63,6 +73,43 @@ internal class NodeTest {
                     Node(11)
                 )
             ).eval().evaledBool
+        )
+
+
+        assertEquals(
+            false,
+            Node(
+                GREATER_THAN,
+                Node(10),
+                Node(10)
+            ).eval().evaledBool
+        )
+
+        assertEquals(
+            false,
+            Node(
+                LESS_THAN_OR_EQUAL,
+                Node(5),
+                Node(4)
+            ).eval().evaledBool
+        )
+
+        assertEquals(
+            false,
+            Node(
+                LESS_THAN,
+                Node(4),
+                Node(4)
+            ).eval().evaledBool
+        )
+
+        assertEquals(
+            true,
+            Node(
+                EQUAL,
+                Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                Node(3)
+            ).apply { valMap["a"] = 3 }.eval().evaledBool
         )
 
 

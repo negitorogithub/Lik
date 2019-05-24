@@ -1,18 +1,19 @@
 import TokenType.NUMBER
 
-class Token(val type: TokenType, val value: Int? = null) {
+class Token(val type: TokenType, val value: Int? = null, val val_: Val? = null) {
 
     constructor(value: Int) : this(NUMBER, value)
 
     init {
         if (type == NUMBER) {
-            value ?: throw IllegalArgumentException("number expected")
+            value ?: throw Exception("number expected")
         }
         if (type != NUMBER) {
             if (value != null) {
                 throw IllegalArgumentException("number is not expected")
             }
         }
+
     }
 
     override fun equals(other: Any?): Boolean {
@@ -33,4 +34,5 @@ class Token(val type: TokenType, val value: Int? = null) {
         result = 31 * result + (value ?: 0)
         return result
     }
+
 }
