@@ -1,9 +1,10 @@
 import TokenType.*
 
 fun main() {
-    val input = readLine()
-    println(input?.let { parse(it) })
-    println(numberList2number(listOf("1", "2")))
+    while (true) {
+        val input = readLine()
+        println(input?.let { parse(it) })
+    }
 }
 
 fun parse(likScript: String): String {
