@@ -55,4 +55,21 @@ data class ConsumableString(var innerString: String) {
         clone.popAlphabets()
         return clone.innerString.startsWith(assign)
     }
+
+
+    fun consumeReturn(): Boolean {
+        if (isEmpty()) return false
+        if (!startWithAlphabet()) return false
+        val clone = this.copy(innerString = innerString)
+
+        if (clone.consume(return_)) {
+            if (clone.consume(space)) {
+                consume(return_)
+                consume(space)
+                return true
+            }
+        }
+        return false
+    }
+
 }

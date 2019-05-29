@@ -15,6 +15,17 @@ internal class LikTest {
                         "a*b+(a-b);"
             )
         )
+        assertEquals(
+            "1",
+            parse(
+                "a = 5;" +
+                        "b = 3;" +
+                        "a*b+(a-b);" +
+                        "return a/b;" +
+                        "return a;"
+            )
+        )
+
     }
 
     @Test
@@ -44,6 +55,29 @@ internal class LikTest {
             ),
             tokenize("  123>= 22  * 09 == 3 < ")
         )
+
+        assertEquals(
+            listOf(
+                Token(ASSIGNED_VAL, val_ = Val("returna"))
+            ),
+            tokenize("returna")
+        )
+
+        assertEquals(
+            listOf(
+                Token(RETURN),
+                Token(ASSIGNED_VAL, val_ = Val("a"))
+            ),
+            tokenize("return a")
+        )
+
+        assertEquals(
+            listOf(
+                Token(RETURN)
+            ),
+            tokenize("return  ")
+        )
+
     }
 
     @Test
@@ -53,7 +87,7 @@ internal class LikTest {
         assertEquals(2, numberList2number(listOf("02")))
         assertEquals(0, numberList2number(listOf("0")))
         assertEquals(90080, numberList2number(listOf("090", "080")))
-        assertThrows<java.lang.NumberFormatException> { numberList2number(listOf("a", "b")) }
-        assertThrows<java.lang.NumberFormatException> { numberList2number(listOf()) }
+        assertThrows<NumberFormatException> { numberList2number(listOf("a", "b")) }
+        assertThrows<NumberFormatException> { numberList2number(listOf()) }
     }
 }

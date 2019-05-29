@@ -41,7 +41,12 @@ class Tokens(private val innerList: List<Token>) {
 
 
     private fun statement(): Node {
-        val result = expression()
+
+        val result = if (consume(RETURN)) {
+            Node(RETURN, null, expression())
+        } else {
+            expression()
+        }
         if (!consume(SEMI_COLON)) {
             throw Exception("文末にセミコロンがありません")
         }

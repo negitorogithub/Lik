@@ -227,8 +227,27 @@ internal class TokensTest {
             ).parse()[0]
         )
 
-
+        assertEquals(
+            listOf(
+                Node(
+                    2
+                ),
+                Node(
+                    RETURN,
+                    null,
+                    Node(3)
+                )
+            ),
+            Tokens(
+                listOf(
+                    Token(2),
+                    Token(SEMI_COLON),
+                    Token(RETURN),
+                    Token(3),
+                    Token(SEMI_COLON)
+                )
+            ).parse()
+        )
     }
-
 
 }

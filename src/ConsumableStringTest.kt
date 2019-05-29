@@ -34,4 +34,17 @@ internal class ConsumableStringTest {
             "abc = ".toConsumableString().isAssignExpression()
         )
     }
+
+    @Test
+    fun consumeReturn() {
+        assertEquals(
+            true,
+            "return  z".toConsumableString().consumeReturn()
+        )
+
+        assertEquals(
+            false,
+            "returna".toConsumableString().consumeReturn()
+        )
+    }
 }
