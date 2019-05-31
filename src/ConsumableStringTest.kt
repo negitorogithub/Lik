@@ -47,4 +47,18 @@ internal class ConsumableStringTest {
             "returna".toConsumableString().consumeReturn()
         )
     }
+
+    @Test
+    fun consumeIf() {
+        assertEquals(
+            true,
+            "if( ".toConsumableString().consumeIf()
+        )
+
+        assertEquals(
+            false,
+            "if (".toConsumableString().consumeIf()
+        )
+    }
+
 }

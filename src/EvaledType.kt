@@ -3,5 +3,6 @@ enum class EvaledType {
     INT,
     ASSIGN,
     NOT_ASSIGNED_VAL,
-    RETURN
+    RETURN,
+    IF_FALSE
 }

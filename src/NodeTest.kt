@@ -112,6 +112,21 @@ internal class NodeTest {
             ).apply { valMap["a"] = 3 }.eval().evaledBool
         )
 
-
+        assertEquals(
+            3,
+            Node(
+                IF,
+                Node(
+                    EQUAL,
+                    Node(2),
+                    Node(2)
+                ),
+                Node(
+                    RETURN,
+                    null,
+                    Node(3)
+                )
+            ).eval().evaledInt
+        )
     }
 }

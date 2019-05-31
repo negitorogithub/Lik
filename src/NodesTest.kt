@@ -122,6 +122,30 @@ internal class NodesTest {
             ).exec().evaledInt
         )
 
-
+        assertEquals(
+            3,
+            Nodes(
+                listOf(
+                    Node(
+                        IF,
+                        Node(
+                            EQUAL,
+                            Node(2),
+                            Node(2)
+                        ),
+                        Node(
+                            RETURN,
+                            null,
+                            Node(3)
+                        )
+                    ),
+                    Node(
+                        RETURN,
+                        null,
+                        Node(4)
+                    )
+                )
+            ).exec().evaledInt
+        )
     }
 }

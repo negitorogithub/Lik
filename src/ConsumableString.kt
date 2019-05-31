@@ -72,4 +72,20 @@ data class ConsumableString(var innerString: String) {
         return false
     }
 
+    fun consumeIf(): Boolean {
+        if (isEmpty()) return false
+        if (!startWithAlphabet()) return false
+        val clone = this.copy(innerString = innerString)
+
+        if (clone.consume(if_)) {
+            if (clone.consume(roundBracketOpen)) {
+                consume(if_)
+                consume(space)
+                return true
+            }
+        }
+
+        return false
+    }
+
 }

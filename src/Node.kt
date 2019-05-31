@@ -84,6 +84,12 @@ data class Node(
             //leftValue.val2assignは非null確定
             valMap[leftValue.val2assign!!.name] = rightValue.evaledInt ?: throw Exception("変数に数字以外が代入されました")
             return Evaled(EvaledType.ASSIGN)
+        } else if (token.type == IF) {
+            return if (leftValue.evaledBool!!) {
+                rightValue
+            } else {
+                Evaled(EvaledType.IF_FALSE)
+            }
         } else {
             throw Exception("予期せぬトークンです")
         }

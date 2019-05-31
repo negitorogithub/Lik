@@ -26,6 +26,14 @@ internal class LikTest {
             )
         )
 
+        assertEquals(
+            "3",
+            parse(
+                "if(2==2)" +
+                        "return 3;" +
+                        "return 4;"
+            )
+        )
     }
 
     @Test
@@ -76,6 +84,24 @@ internal class LikTest {
                 Token(RETURN)
             ),
             tokenize("return  ")
+        )
+
+        assertEquals(
+            listOf(
+                Token(IF),
+                Token(ROUND_BRACKET_OPEN),
+                Token(2),
+                Token(EQUAL),
+                Token(2),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(RETURN),
+                Token(3),
+                Token(SEMI_COLON),
+                Token(RETURN),
+                Token(4),
+                Token(SEMI_COLON)
+            ),
+            tokenize("if(2==2)return 3;return 4;")
         )
 
     }

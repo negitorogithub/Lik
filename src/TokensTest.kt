@@ -248,6 +248,47 @@ internal class TokensTest {
                 )
             ).parse()
         )
+        assertEquals(
+            listOf(
+                Node(
+                    IF,
+                    Node(
+                        EQUAL,
+                        Node(2),
+                        Node(2)
+                    ),
+                    Node(
+                        RETURN,
+                        null,
+                        Node(3)
+                    )
+                ),
+                Node(
+                    RETURN,
+                    null,
+                    Node(4)
+                )
+            ),
+            //if(2==2)return 3;return 4;
+            Tokens(
+                listOf(
+                    Token(IF),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(2),
+                    Token(EQUAL),
+                    Token(2),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(RETURN),
+                    Token(3),
+                    Token(SEMI_COLON),
+                    Token(RETURN),
+                    Token(4),
+                    Token(SEMI_COLON)
+                )
+            ).parse()
+        )
+
+
     }
 
 }
