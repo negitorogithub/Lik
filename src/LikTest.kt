@@ -7,6 +7,7 @@ internal class LikTest {
 
     @Test
     fun parseTest() {
+
         assertEquals(
             "13",
             parse(
@@ -34,6 +35,20 @@ internal class LikTest {
                         "return 4;"
             )
         )
+
+
+        assertEquals(
+            "4",
+            parse(
+                "a=2;" +
+                        "b=34;" +
+                        "if(a==b)" +
+                        "return 3;" +
+                        "return 4;"
+            )
+        )
+
+
     }
 
     @Test

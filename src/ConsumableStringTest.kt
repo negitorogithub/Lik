@@ -33,6 +33,11 @@ internal class ConsumableStringTest {
             true,
             "abc = ".toConsumableString().isAssignExpression()
         )
+
+        assertEquals(
+            false,
+            "abc ==".toConsumableString().isAssignExpression()
+        )
     }
 
     @Test

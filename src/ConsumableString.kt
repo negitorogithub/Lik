@@ -53,6 +53,9 @@ data class ConsumableString(var innerString: String) {
         val clone = this.copy(innerString = innerString)
         clone.innerString = clone.innerString.filterNot { it.toString() == space }
         clone.popAlphabets()
+        if (clone.innerString.startsWith(equal)) {
+            return false
+        }
         return clone.innerString.startsWith(assign)
     }
 
