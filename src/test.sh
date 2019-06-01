@@ -1,10 +1,11 @@
+#!/bin/bash
 try() {
+  cd ../asm
   expected="$1"
   input="$2"
-
-  ./asm"$input" > tmp.s
-  gcc -o tmp tmp.s
-  ./tmp
+  java -jar Assembly.jar "$input" > test.s
+  gcc -o test test.s
+  ./test
   actual="$?"
 
   if [[ "$actual" = "$expected" ]]; then
@@ -15,6 +16,7 @@ try() {
   fi
 }
 
+kotlinc Assembly.kt -include-runtime -d ../asm/Assembly.jar
 try 0 0
 try 42 42
 
