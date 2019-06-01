@@ -2,8 +2,18 @@ import TokenType.*
 
 fun main() {
     while (true) {
-        val input = readLine()
-        println(input?.let { parse(it) })
+
+        val inputs = mutableListOf<String>()
+        while (true) {
+            val input = readLine()
+            if (input == "***") break
+            input?.let { inputs.add(it) }
+        }
+        val buffer = StringBuilder()
+        inputs.forEach {
+            buffer.append(it)
+        }
+        println(parse(buffer.toString()))
     }
 }
 
@@ -58,6 +68,12 @@ fun tokenize(str: String): List<Token> {
             )//代入の文脈ではない変数
             rest.consume(space) -> {
                 //飛ばす
+            }
+            rest.consume(newLine) -> {
+                //飛ばす
+            }
+            else -> {
+                throw Exception("予期せぬ文字です")
             }
         }
     }
