@@ -41,10 +41,33 @@ class Tokens(private val innerList: List<Token>) {
 
 
     private fun statement(): Node {
-        val result = expression()
-        if (!consume(SEMI_COLON)) {
-            throw Exception("文末にセミコロンがありません")
+
+        val result = when {
+            consume(RETURN) -> {
+                val result = Node(RETURN, null, expression())
+                consume(SEMI_COLON)
+                return result
+            }
+
+            consume(IF) -> {
+                consume(ROUND_BRACKET_OPEN)
+                val condition = expression()
+                if (!consume(ROUND_BRACKET_CLOSE)) {
+                    throw java.lang.Exception("開きカッコに対応する閉じカッコがありません: $cursor")
+                } else {
+                    Node(IF, condition, statement())
+                }
+            }
+            else -> {
+                val result = expression()
+                if (!consume(SEMI_COLON)) {
+                    throw Exception("文末にセミコロンがありません")
+                } else {
+                    result
+                }
+            }
         }
+
         return result
     }
 

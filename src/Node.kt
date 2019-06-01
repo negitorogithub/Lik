@@ -30,13 +30,28 @@ data class Node(
 
 
     fun eval(): Evaled {
-
         token.value?.let { return it.toEvaled() }//数字単体
         token.val_?.name?.let { valName ->
             //変数単体
             valMap[valName]?.let {
                 return it.toEvaled()
             }
+        }
+
+
+        val rightValue: Evaled = when {
+            rightNode?.token?.value != null -> rightNode.token.value.toEvaled()
+            valMap[rightNode?.token?.val_?.name] != null -> valMap[rightNode?.token?.val_?.name]!!.toEvaled()//!!は自明だよね
+            rightNode != null -> {
+                rightNode.valMap.putAll(valMap)
+                rightNode.eval()//rightNodeではvalMapの更新は行われないためvalMapを反映させていない
+            }
+            else -> throw Exception("二項演算子は数字に挟まれなければなりません")
+        }
+
+        //leftを評価するとnullになる
+        if (token.type == RETURN) {
+            return Evaled(EvaledType.RETURN, evaledInt = rightValue.evaledInt)
         }
 
 
@@ -47,16 +62,6 @@ data class Node(
             leftNode != null -> {
                 leftNode.valMap.putAll(valMap)
                 leftNode.eval()//leftNodeではvalMapの更新は行われないためvalMapを反映させていない
-            }
-            else -> throw Exception("二項演算子は数字に挟まれなければなりません")
-        }
-
-        val rightValue: Evaled = when {
-            rightNode?.token?.value != null -> rightNode.token.value.toEvaled()
-            valMap[rightNode?.token?.val_?.name] != null -> valMap[rightNode?.token?.val_?.name]!!.toEvaled()//!!は自明だよね
-            rightNode != null -> {
-                rightNode.valMap.putAll(valMap)
-                rightNode.eval()//rightNodeではvalMapの更新は行われないためvalMapを反映させていない
             }
             else -> throw Exception("二項演算子は数字に挟まれなければなりません")
         }
@@ -79,6 +84,12 @@ data class Node(
             //leftValue.val2assignは非null確定
             valMap[leftValue.val2assign!!.name] = rightValue.evaledInt ?: throw Exception("変数に数字以外が代入されました")
             return Evaled(EvaledType.ASSIGN)
+        } else if (token.type == IF) {
+            return if (leftValue.evaledBool!!) {
+                rightValue
+            } else {
+                Evaled(EvaledType.IF_FALSE)
+            }
         } else {
             throw Exception("予期せぬトークンです")
         }

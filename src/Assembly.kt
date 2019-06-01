@@ -5,3 +5,4 @@ fun main(args: Array<String>) {
     println("  mov rax, ${args[0]}")
     println("  ret")
 }
+

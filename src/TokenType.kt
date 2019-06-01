@@ -16,5 +16,7 @@ enum class TokenType {
     LESS_THAN_OR_EQUAL,
     GREATER_THAN_OR_EQUAL,
     SEMI_COLON,
+    RETURN,
+    IF,
     NULL//使わないはず
 }

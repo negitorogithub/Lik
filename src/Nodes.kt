@@ -8,6 +8,9 @@ class Nodes(private val innerList: List<Node>) {
         for (node in innerList) {
             node.valMap.putAll(valMap)
             lastEvaled = node.eval()
+            if (lastEvaled.type == EvaledType.RETURN) {
+                break
+            }
             valMap.putAll(node.valMap)
         }
         return lastEvaled

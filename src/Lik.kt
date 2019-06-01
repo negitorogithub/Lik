@@ -2,8 +2,18 @@ import TokenType.*
 
 fun main() {
     while (true) {
-        val input = readLine()
-        println(input?.let { parse(it) })
+
+        val inputs = mutableListOf<String>()
+        while (true) {
+            val input = readLine()
+            if (input == "***") break
+            input?.let { inputs.add(it) }
+        }
+        val buffer = StringBuilder()
+        inputs.forEach {
+            buffer.append(it)
+        }
+        println(parse(buffer.toString()))
     }
 }
 
@@ -13,9 +23,8 @@ fun parse(likScript: String): String {
 }
 
 fun tokenize(str: String): List<Token> {
-    val spaceRemoved = str.filterNot { it.toString() == space }
     val resultList = mutableListOf<Token>()
-    val rest = spaceRemoved.toConsumableString()
+    val rest = str.toConsumableString()
 
     while (rest.isNotEmpty()) {
         when {
@@ -31,7 +40,6 @@ fun tokenize(str: String): List<Token> {
             rest.consume(greaterThanOrEqual) -> resultList.add(Token(GREATER_THAN_OR_EQUAL))
             rest.consume(lessThan) -> resultList.add(Token(LESS_THAN))
             rest.consume(greaterThan) -> resultList.add(Token(GREATER_THAN))
-            rest.consume(assign) -> resultList.add(Token(ASSIGN))
             rest.consume(semiColon) -> resultList.add(Token(SEMI_COLON))
             rest.isAssignExpression() -> {
                 resultList.apply {
@@ -43,8 +51,14 @@ fun tokenize(str: String): List<Token> {
                     )
                     add(Token(ASSIGN))
                 }
+
+                while (rest.consume(space)) {
+
+                }
                 rest.consume(assign)
             }
+            rest.consumeReturn() -> resultList.add(Token(RETURN))
+            rest.consumeIf() -> resultList.add(Token(IF))
             rest.startWithNumber() -> resultList.add(Token(Integer.parseInt(rest.popNumber())))//consumeだと数字が特定できないため
             rest.startWithAlphabet() -> resultList.add(
                 Token(
@@ -52,11 +66,21 @@ fun tokenize(str: String): List<Token> {
                     val_ = Val(rest.popAlphabets())
                 )
             )//代入の文脈ではない変数
+            rest.consume(space) -> {
+                //飛ばす
+            }
+            rest.consume(newLine) -> {
+                //飛ばす
+            }
+            else -> {
+                throw Exception("予期せぬ文字です")
+            }
         }
     }
 
     return resultList
 }
+
 
 fun numberList2number(list: List<String>): Int {
     val buffer = StringBuilder()
