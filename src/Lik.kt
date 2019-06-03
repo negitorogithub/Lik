@@ -59,8 +59,8 @@ fun tokenize(str: String): List<Token> {
                 }
                 rest.consume(assign)
             }
-            rest.consumeReturn() -> resultList.add(Token(RETURN))
-            rest.consumeIf() -> resultList.add(Token(IF))
+            rest.consume(return_ + space) -> resultList.add(Token(RETURN))
+            rest.consume(if_ + roundBracketOpen) -> resultList.add(Token(IF))
             rest.startWithNumber() -> resultList.add(Token(Integer.parseInt(rest.popNumber())))//consumeだと数字が特定できないため
             rest.startWithAlphabet() -> resultList.add(
                 Token(

@@ -59,36 +59,4 @@ data class ConsumableString(var innerString: String) {
         return clone.innerString.startsWith(assign)
     }
 
-
-    fun consumeReturn(): Boolean {
-        if (isEmpty()) return false
-        if (!startWithAlphabet()) return false
-        val clone = this.copy(innerString = innerString)
-
-        if (clone.consume(return_)) {
-            if (clone.consume(space)) {
-                consume(return_)
-                consume(space)
-                return true
-            }
-        }
-        return false
-    }
-
-    fun consumeIf(): Boolean {
-        if (isEmpty()) return false
-        if (!startWithAlphabet()) return false
-        val clone = this.copy(innerString = innerString)
-
-        if (clone.consume(if_)) {
-            if (clone.consume(roundBracketOpen)) {
-                consume(if_)
-                consume(space)
-                return true
-            }
-        }
-
-        return false
-    }
-
 }
