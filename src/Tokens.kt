@@ -113,18 +113,18 @@ class Tokens(private val innerList: List<Token>) {
         var result = add()
 
         loop@ while (innerList.size - 1 > cursor)
-            when {
+            result = when {
                 consume(LESS_THAN) -> {
-                    result = Node(LESS_THAN, result, add())
+                    Node(LESS_THAN, result, add())
                 }
                 consume(LESS_THAN_OR_EQUAL) -> {
-                    result = Node(LESS_THAN_OR_EQUAL, result, add())
+                    Node(LESS_THAN_OR_EQUAL, result, add())
                 }
                 consume(GREATER_THAN) -> {
-                    result = Node(GREATER_THAN, result, add())
+                    Node(GREATER_THAN, result, add())
                 }
                 consume(GREATER_THAN_OR_EQUAL) -> {
-                    result = Node(GREATER_THAN_OR_EQUAL, result, add())
+                    Node(GREATER_THAN_OR_EQUAL, result, add())
                 }
                 else -> break@loop
             }
@@ -136,12 +136,12 @@ class Tokens(private val innerList: List<Token>) {
         var result = multiply()
 
         loop@ while (innerList.size - 1 > cursor)
-            when {
+            result = when {
                 consume(PLUS) -> {
-                    result = Node(PLUS, result, multiply())
+                    Node(PLUS, result, multiply())
                 }
                 consume(MINUS) -> {
-                    result = Node(MINUS, result, multiply())
+                    Node(MINUS, result, multiply())
                 }
                 else -> break@loop
             }
@@ -151,12 +151,12 @@ class Tokens(private val innerList: List<Token>) {
     private fun multiply(): Node {
         var result = unary()
         loop@ while (innerList.size - 1 > cursor) {
-            when {
+            result = when {
                 consume(MULTIPLY) -> {
-                    result = Node(MULTIPLY, result, unary())
+                    Node(MULTIPLY, result, unary())
                 }
                 consume(DIVIDE) -> {
-                    result = Node(DIVIDE, result, unary())
+                    Node(DIVIDE, result, unary())
                 }
                 else -> break@loop
 

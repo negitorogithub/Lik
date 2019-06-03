@@ -61,7 +61,6 @@ data class Node(
             return Evaled(EvaledType.RETURN, evaledInt = rightValue.evaledInt)
         }
 
-
         val leftValue: Evaled = when {
             leftNode?.token?.value != null -> leftNode.token.value.toEvaled()//数字
             valMap[leftNode?.token?.val_?.name] != null -> valMap[leftNode?.token?.val_?.name]!!.toEvaled()//代入済み変数　!!は自明だよね
@@ -73,6 +72,10 @@ data class Node(
             else -> throw Exception("二項演算子は数字に挟まれなければなりません")
         }
 
+        return evalBothSides(leftValue, rightValue)
+    }
+
+    private fun evalBothSides(leftValue: Evaled, rightValue: Evaled): Evaled {
         if ((leftValue.type == EvaledType.INT) && (rightValue.type == EvaledType.INT)) {
             return when (token.type) {
                 PLUS -> leftValue + rightValue
