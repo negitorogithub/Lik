@@ -6,6 +6,8 @@ enum class TokenType {
     NUMBER,
     ROUND_BRACKET_OPEN,
     ROUND_BRACKET_CLOSE,
+    CURLY_BRACKET_OPEN,
+    CURLY_BRACKET_CLOSE,
     ASSIGN,
     ASSIGNED_VAL,
     NOT_ASSIGNED_VAL,
@@ -18,5 +20,6 @@ enum class TokenType {
     SEMI_COLON,
     RETURN,
     IF,
+    NODES,
     NULL//使わないはず
 }

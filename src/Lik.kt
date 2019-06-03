@@ -30,6 +30,8 @@ fun tokenize(str: String): List<Token> {
         when {
             rest.consume(roundBracketOpen) -> resultList.add(Token(ROUND_BRACKET_OPEN))
             rest.consume(roundBracketClose) -> resultList.add(Token(ROUND_BRACKET_CLOSE))
+            rest.consume(curlyBracketOpen) -> resultList.add(Token(CURLY_BRACKET_OPEN))
+            rest.consume(curlyBracketClose) -> resultList.add(Token(CURLY_BRACKET_CLOSE))
             rest.consume(plus) -> resultList.add(Token(PLUS))
             rest.consume(minus) -> resultList.add(Token(MINUS))
             rest.consume(multiply) -> resultList.add(Token(MULTIPLY))

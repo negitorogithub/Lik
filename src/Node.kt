@@ -4,17 +4,20 @@ data class Node(
     val token: Token,
     val leftNode: Node? = null,
     val rightNode: Node? = null,
-    val valMap: MutableMap<String, Int> = mutableMapOf()
+    val valMap: MutableMap<String, Int> = mutableMapOf(),
+    val nodes: Nodes? = null
 ) {
     constructor(
         type: TokenType,
         leftNode: Node? = null,
-        rightNode: Node? = null
+        rightNode: Node? = null,
+        nodes: Nodes? = null
     ) :
             this(
                 Token(type),
                 leftNode,
-                rightNode
+                rightNode,
+                nodes = nodes
             )
 
     constructor(
@@ -36,6 +39,10 @@ data class Node(
             valMap[valName]?.let {
                 return it.toEvaled()
             }
+        }
+
+        if (token.type == NODES) {
+            return nodes!!.exec() //これは確定できる
         }
 
 

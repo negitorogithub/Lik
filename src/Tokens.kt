@@ -58,6 +58,16 @@ class Tokens(private val innerList: List<Token>) {
                     Node(IF, condition, statement())
                 }
             }
+
+            consume(CURLY_BRACKET_OPEN) -> {
+                val resultList = mutableListOf<Node>()
+                while (!consume(CURLY_BRACKET_CLOSE)) {
+                    resultList.add(statement())
+                }
+                return Node(NODES, nodes = Nodes(resultList))
+            }
+
+
             else -> {
                 val result = expression()
                 if (!consume(SEMI_COLON)) {
