@@ -32,6 +32,7 @@ fun tokenize(str: String): List<Token> {
             rest.consume(roundBracketClose) -> resultList.add(Token(ROUND_BRACKET_CLOSE))
             rest.consume(curlyBracketOpen) -> resultList.add(Token(CURLY_BRACKET_OPEN))
             rest.consume(curlyBracketClose) -> resultList.add(Token(CURLY_BRACKET_CLOSE))
+            rest.consume(increase) -> resultList.add(Token(INCREASE))
             rest.consume(plus) -> resultList.add(Token(PLUS))
             rest.consume(minus) -> resultList.add(Token(MINUS))
             rest.consume(multiply) -> resultList.add(Token(MULTIPLY))
@@ -60,7 +61,8 @@ fun tokenize(str: String): List<Token> {
                 rest.consume(assign)
             }
             rest.consume(return_ + space) -> resultList.add(Token(RETURN))
-            rest.consume(if_ + roundBracketOpen) -> resultList.add(Token(IF))
+            rest.consume(if_) -> resultList.add(Token(IF))
+            rest.consume(while_) -> resultList.add(Token(WHILE))
             rest.startWithNumber() -> resultList.add(Token(Integer.parseInt(rest.popNumber())))//consumeだと数字が特定できないため
             rest.startWithAlphabet() -> resultList.add(
                 Token(

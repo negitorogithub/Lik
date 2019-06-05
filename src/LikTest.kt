@@ -48,6 +48,16 @@ internal class LikTest {
             )
         )
 
+        assertEquals(
+            "4",
+            parse(
+                "a=2;" +
+                        "a++;" +
+                        "a++;" +
+                        "return a;"
+            )
+        )
+
 
     }
 

@@ -45,7 +45,6 @@ data class Node(
             return nodes!!.exec() //これは確定できる
         }
 
-
         val rightValue: Evaled = when {
             rightNode?.token?.value != null -> rightNode.token.value.toEvaled()
             valMap[rightNode?.token?.val_?.name] != null -> valMap[rightNode?.token?.val_?.name]!!.toEvaled()//!!は自明だよね
@@ -53,7 +52,10 @@ data class Node(
                 rightNode.valMap.putAll(valMap)
                 rightNode.eval()//rightNodeではvalMapの更新は行われないためvalMapを反映させていない
             }
-            else -> throw Exception("二項演算子は数字に挟まれなければなりません")
+            else -> {
+                print("EvaledType.NULLが検出されました")
+                Evaled(EvaledType.NULL)
+            }
         }
 
         //leftを評価するとnullになる
@@ -69,13 +71,26 @@ data class Node(
                 leftNode.valMap.putAll(valMap)
                 leftNode.eval()//leftNodeではvalMapの更新は行われないためvalMapを反映させていない
             }
-            else -> throw Exception("二項演算子は数字に挟まれなければなりません")
+            else -> {
+                print("EvaledType.NULLが検出されました")
+                Evaled(EvaledType.NULL)
+            }
+        }
+
+        if (token.type == WHILE) {
+            while (leftNode!!.eval().evaledBool!!)//これは例外で落としてよい
+            {
+                rightNode!!.eval()//これは例外で落としてよい
+                leftNode.valMap.putAll(rightNode.valMap)
+            }
+            return Evaled(EvaledType.WHILE)
         }
 
         return evalBothSides(leftValue, rightValue)
     }
 
     private fun evalBothSides(leftValue: Evaled, rightValue: Evaled): Evaled {
+        //TODO:if(2)3の式が落ちそう
         if ((leftValue.type == EvaledType.INT) && (rightValue.type == EvaledType.INT)) {
             return when (token.type) {
                 PLUS -> leftValue + rightValue
@@ -100,6 +115,11 @@ data class Node(
             } else {
                 Evaled(EvaledType.IF_FALSE)
             }
+        } else if (token.type == INCREASE) {
+            valMap[leftNode?.token?.val_?.name!!] = valMap[leftNode.token.val_.name]!! + 1 //代入済み変数　!!は自明だよね
+            return valMap[leftNode.token.val_.name]!!.toEvaled()
+        } else if (token.type == NULL) {
+            return Evaled(EvaledType.NULL)
         } else {
             throw Exception("予期せぬトークンです")
         }

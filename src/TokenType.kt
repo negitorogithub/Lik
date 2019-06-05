@@ -4,6 +4,7 @@ enum class TokenType {
     MULTIPLY,
     DIVIDE,
     NUMBER,
+    INCREASE,
     ROUND_BRACKET_OPEN,
     ROUND_BRACKET_CLOSE,
     CURLY_BRACKET_OPEN,
@@ -20,6 +21,7 @@ enum class TokenType {
     SEMI_COLON,
     RETURN,
     IF,
+    WHILE,
     NODES,
     NULL//使わないはず
 }

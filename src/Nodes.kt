@@ -1,4 +1,4 @@
-class Nodes(private val innerList: List<Node>) {
+data class Nodes(private val innerList: List<Node>) {
 
     private val valMap = mutableMapOf<String, Int>()
 

@@ -4,5 +4,7 @@ enum class EvaledType {
     ASSIGN,
     NOT_ASSIGNED_VAL,
     RETURN,
-    IF_FALSE
+    WHILE,
+    IF_FALSE,
+    NULL
 }

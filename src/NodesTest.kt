@@ -147,5 +147,24 @@ internal class NodesTest {
                 )
             ).exec().evaledInt
         )
+
+        assertEquals(
+            3,
+            Nodes(
+                listOf(
+                    Node(
+                        ASSIGN,
+                        Node(Token(NOT_ASSIGNED_VAL, val_ = Val("a"))),
+                        Node(2)
+                    ),
+                    Node(
+                        INCREASE,
+                        Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                        Node(Token(NULL))
+                    ),
+                    Node(Token(ASSIGNED_VAL, val_ = Val("a")))
+                )
+            ).exec().evaledInt
+        )
     }
 }

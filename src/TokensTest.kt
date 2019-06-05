@@ -288,7 +288,69 @@ internal class TokensTest {
             ).parse()
         )
 
+        assertEquals(
+            listOf(
+                Node(
+                    WHILE,
+                    Node(
+                        EQUAL,
+                        Node(1),
+                        Node(2)
+                    ),
+                    Node(
+                        NODES,
+                        nodes = Nodes(
+                            listOf(
+                                Node(
+                                    ASSIGN,
+                                    Node(Token(NOT_ASSIGNED_VAL, val_ = Val("a"))),
+                                    Node(3)
 
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
+            // while(1==2){
+            //     a = 3;
+            // }
+            Tokens(
+                listOf(
+                    Token(WHILE),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(1),
+                    Token(EQUAL),
+                    Token(2),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(NOT_ASSIGNED_VAL, val_ = Val("a")),
+                    Token(ASSIGN),
+                    Token(3),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()
+        )
+
+        assertEquals(
+            listOf(
+                Node(
+                    INCREASE,
+                    Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                    Node(Token(NULL))
+                )
+            )
+            ,
+            // a++;
+            Tokens(
+                listOf(
+                    Token(ASSIGNED_VAL, val_ = Val("a")),
+                    Token(INCREASE),
+                    Token(SEMI_COLON)
+                )
+            ).parse()
+        )
     }
 
 }

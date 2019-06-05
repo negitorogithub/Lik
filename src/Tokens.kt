@@ -59,6 +59,16 @@ class Tokens(private val innerList: List<Token>) {
                 }
             }
 
+            consume(WHILE) -> {
+                consume(ROUND_BRACKET_OPEN)
+                val condition = expression()
+                if (!consume(ROUND_BRACKET_CLOSE)) {
+                    throw java.lang.Exception("開きカッコに対応する閉じカッコがありません: $cursor")
+                } else {
+                    Node(WHILE, condition, statement())
+                }
+            }
+
             consume(CURLY_BRACKET_OPEN) -> {
                 val resultList = mutableListOf<Node>()
                 while (!consume(CURLY_BRACKET_CLOSE)) {
@@ -188,8 +198,16 @@ class Tokens(private val innerList: List<Token>) {
         }
 
         if (innerList[cursor].val_ != null) {//変数
-            return Node(innerList[cursor++])
+            val result = Node(innerList[cursor++])
+            return if (consume(INCREASE)) {
+                Node(INCREASE, result, Node(NULL))
+            } else {
+                result
+            }
+
         }
+
+
 
         throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
     }
