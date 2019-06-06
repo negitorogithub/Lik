@@ -1,6 +1,6 @@
 data class Nodes(private val innerList: List<Node>) {
 
-    private val valMap = mutableMapOf<String, Int>()
+    val valMap = mutableMapOf<String, Int>()
 
     fun exec(): Evaled {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")

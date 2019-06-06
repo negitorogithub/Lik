@@ -166,5 +166,52 @@ internal class NodesTest {
                 )
             ).exec().evaledInt
         )
+
+        assertEquals(
+            3,
+            Nodes(
+                listOf(
+                    Node(
+                        ASSIGN,
+                        Node(Token(NOT_ASSIGNED_VAL, val_ = Val("a"))),
+                        Node(3)
+                    )
+                )
+            ).apply {
+                exec()
+            }.valMap["a"]
+        )
+
+        assertEquals(
+            6,
+            Nodes(
+                listOf(
+                    Node(
+                        ASSIGN,
+                        Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                        Node(2)
+                    ),
+                    Node(
+                        WHILE,
+                        Node(
+                            NOT_EQUAL,
+                            Node(
+                                (Token(ASSIGNED_VAL, val_ = Val("a")))
+                            ),
+                            Node(6)
+                        ),
+                        Node(
+                            INCREASE,
+                            Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                            Node(NULL)
+                        )
+                    )
+                )
+            ).apply {
+                exec()
+            }.valMap["a"]
+        )
+
+
     }
 }

@@ -42,7 +42,10 @@ data class Node(
         }
 
         if (token.type == NODES) {
-            return nodes!!.exec() //これは確定できる
+            nodes!!.valMap.putAll(valMap)
+            val result = nodes.exec() //これは確定できる
+            valMap.putAll(nodes.valMap)
+            return result
         }
 
         val rightValue: Evaled = when {
@@ -50,7 +53,9 @@ data class Node(
             valMap[rightNode?.token?.val_?.name] != null -> valMap[rightNode?.token?.val_?.name]!!.toEvaled()//!!は自明だよね
             rightNode != null -> {
                 rightNode.valMap.putAll(valMap)
-                rightNode.eval()//rightNodeではvalMapの更新は行われないためvalMapを反映させていない
+                val result = rightNode.eval()
+                valMap.putAll(rightNode.valMap)
+                result
             }
             else -> {
                 print("EvaledType.NULLが検出されました")
@@ -82,9 +87,23 @@ data class Node(
             {
                 rightNode!!.eval()//これは例外で落としてよい
                 leftNode.valMap.putAll(rightNode.valMap)
+                valMap.putAll(rightNode.valMap)
             }
             return Evaled(EvaledType.WHILE)
         }
+
+        if (token.type == ASSIGN) {
+            if (leftValue.val2assign?.name != null) {
+                // 未代入時
+                // leftValue.val2assignは非null確定
+                valMap[leftValue.val2assign.name] = rightValue.evaledInt ?: throw Exception("変数に数字以外が代入されました")
+            } else {
+                //代入済み時
+                valMap[leftNode!!.token.val_!!.name] = rightValue.evaledInt ?: throw Exception("変数に数字以外が代入されました")
+            }
+            return Evaled(EvaledType.ASSIGN)
+        }
+
 
         return evalBothSides(leftValue, rightValue)
     }
@@ -105,10 +124,6 @@ data class Node(
                 GREATER_THAN_OR_EQUAL -> (leftValue.evaledInt!! >= rightValue.evaledInt!!).toEvaled()
                 else -> throw Exception("予期せぬトークンです")
             }
-        } else if (token.type == ASSIGN) {
-            //leftValue.val2assignは非null確定
-            valMap[leftValue.val2assign!!.name] = rightValue.evaledInt ?: throw Exception("変数に数字以外が代入されました")
-            return Evaled(EvaledType.ASSIGN)
         } else if (token.type == IF) {
             return if (leftValue.evaledBool!!) {
                 rightValue
