@@ -41,12 +41,26 @@ data class Node(
             }
         }
 
+        if (token.type == WHILE) {
+            leftNode!!.valMap.putAll(valMap)
+            while (leftNode.eval().evaledBool!!)//これは例外で落としてよい
+            {
+                rightNode!!.valMap.putAll(valMap)
+                rightNode.eval()//これは例外で落としてよい
+                leftNode.valMap.putAll(rightNode.valMap)
+                valMap.putAll(rightNode.valMap)
+            }
+            return Evaled(EvaledType.WHILE)
+        }
+
         if (token.type == NODES) {
             nodes!!.valMap.putAll(valMap)
             val result = nodes.exec() //これは確定できる
             valMap.putAll(nodes.valMap)
             return result
         }
+
+
 
         val rightValue: Evaled = when {
             rightNode?.token?.value != null -> rightNode.token.value.toEvaled()
@@ -77,20 +91,11 @@ data class Node(
                 leftNode.eval()//leftNodeではvalMapの更新は行われないためvalMapを反映させていない
             }
             else -> {
-                print("EvaledType.NULLが検出されました")
                 Evaled(EvaledType.NULL)
             }
         }
 
-        if (token.type == WHILE) {
-            while (leftNode!!.eval().evaledBool!!)//これは例外で落としてよい
-            {
-                rightNode!!.eval()//これは例外で落としてよい
-                leftNode.valMap.putAll(rightNode.valMap)
-                valMap.putAll(rightNode.valMap)
-            }
-            return Evaled(EvaledType.WHILE)
-        }
+
 
         if (token.type == ASSIGN) {
             if (leftValue.val2assign?.name != null) {
