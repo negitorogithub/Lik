@@ -61,7 +61,6 @@ data class Node(
         }
 
 
-
         val rightValue: Evaled = when {
             rightNode?.token?.value != null -> rightNode.token.value.toEvaled()
             valMap[rightNode?.token?.val_?.name] != null -> valMap[rightNode?.token?.val_?.name]!!.toEvaled()//!!は自明だよね
@@ -114,7 +113,6 @@ data class Node(
     }
 
     private fun evalBothSides(leftValue: Evaled, rightValue: Evaled): Evaled {
-        //TODO:if(2)3の式が落ちそう
         if ((leftValue.type == EvaledType.INT) && (rightValue.type == EvaledType.INT)) {
             return when (token.type) {
                 PLUS -> leftValue + rightValue
@@ -142,6 +140,21 @@ data class Node(
             return Evaled(EvaledType.NULL)
         } else {
             throw Exception("予期せぬトークンです")
+        }
+    }
+
+    fun printAssembly() {
+        when (token.type) {
+            PLUS -> {
+                println("push ${leftNode!!.token.value}")
+                println("push ${rightNode!!.token.value}")
+
+                println("pop rdi")
+                println("pop rax")
+                println("rax, rdi")
+
+                println("push rax")
+            }
         }
     }
 

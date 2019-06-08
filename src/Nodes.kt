@@ -16,4 +16,12 @@ data class Nodes(private val innerList: List<Node>) {
         return lastEvaled
     }
 
+    fun printAssemblies(){
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            node.valMap.putAll(valMap)
+            node.printAssembly()
+            valMap.putAll(node.valMap)
+        }
+    }
 }

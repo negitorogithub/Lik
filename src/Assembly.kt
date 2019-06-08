@@ -1,8 +1,18 @@
 fun main(args: Array<String>) {
+    val buffer = StringBuilder()
+    args.forEach {
+        buffer.append(it)
+    }
     println(".intel_syntax noprefix")
     println(".global main")
     println("main:")
-    println("  mov rax, ${args[0]}")
+    Nodes(
+        Tokens(
+            tokenize(
+                buffer.toString()
+            )
+        ).parse()
+    ).printAssemblies()
     println("  ret")
 }
 
