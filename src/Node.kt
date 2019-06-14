@@ -151,12 +151,12 @@ data class Node(
 
                 println("pop rdi")
                 println("pop rax")
-                println("rax, rdi")
-
-                println("push rax")
+                println("add rax, rdi")
+            }
+            NUMBER -> {
+                println("mov rax, ${token.value}")
             }
         }
     }
-
 
 }

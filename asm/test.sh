@@ -22,7 +22,7 @@ kotlinc *.kt -include-runtime -d ../temp
 cd ../temp
 jar cfm ../asm/Assembly.jar ../asm/MANIFEST.MF *.class
 
-try 0 0;
-try 42 42;
-try 5 2+3;
+try 0 0\;
+try 42 42\;
+try 5 2+3\;
 echo OK
