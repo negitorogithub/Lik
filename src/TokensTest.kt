@@ -351,6 +351,51 @@ internal class TokensTest {
                 )
             ).parse()
         )
+
+        assertEquals(
+            listOf(
+                Node(
+                    Token(FUN, funName = "a"),
+                    Node(
+                        Token(ARGUMENT),
+                        argumentsOnDeclare = mutableListOf(
+                            Val("b"),
+                            Val("c")
+                        )
+                    ),
+                    Node(
+                        NODES,
+                        nodes = Nodes(
+                            listOf(
+                                Node(
+                                    RETURN,
+                                    null,
+                                    Node(2)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+            ,
+            // fun a(b,c){return 2;}
+            Tokens(
+                listOf(
+                    Token(FUN, funName = "a"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ARGUMENT, val_ = Val("b")),
+                    Token(COMMA),
+                    Token(ARGUMENT, val_ = Val("c")),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(RETURN),
+                    Token(2),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()
+        )
+
     }
 
 }

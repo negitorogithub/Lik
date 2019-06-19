@@ -5,19 +5,27 @@ data class Node(
     val leftNode: Node? = null,
     val rightNode: Node? = null,
     val valMap: MutableMap<String, Int> = mutableMapOf(),
-    val nodes: Nodes? = null
+    val funMap: MutableMap<String, Node> = mutableMapOf(),
+    val nodes: Nodes = Nodes(),
+    val argumentsOnDeclare: MutableList<Val> = mutableListOf()
 ) {
     constructor(
         type: TokenType,
         leftNode: Node? = null,
         rightNode: Node? = null,
-        nodes: Nodes? = null
+        nodes: Nodes = Nodes(),
+        valMap: MutableMap<String, Int> = mutableMapOf(),
+        funMap: MutableMap<String, Node> = mutableMapOf(),
+        arguments: MutableList<Val> = mutableListOf()
     ) :
             this(
                 Token(type),
                 leftNode,
                 rightNode,
-                nodes = nodes
+                nodes = nodes,
+                valMap = valMap,
+                funMap = funMap,
+                argumentsOnDeclare = arguments
             )
 
     constructor(
@@ -41,6 +49,18 @@ data class Node(
             }
         }
 
+        if (token.type == FUN) {
+            if (funMap[token.funName!!] == null) {
+                //定義
+                token.funName.let {
+                    funMap[it] = Node(token, leftNode, rightNode, valMap, mutableMapOf(), nodes, argumentsOnDeclare)
+                    return Evaled(EvaledType.FUN_DECLARATION)
+                }
+            } else {
+
+            }
+        }
+
         if (token.type == WHILE) {
             leftNode!!.valMap.putAll(valMap)
             while (leftNode.eval().evaledBool!!)//これは例外で落としてよい
@@ -54,7 +74,7 @@ data class Node(
         }
 
         if (token.type == NODES) {
-            nodes!!.valMap.putAll(valMap)
+            nodes.valMap.putAll(valMap)
             val result = nodes.exec() //これは確定できる
             valMap.putAll(nodes.valMap)
             return result
