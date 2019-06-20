@@ -176,6 +176,9 @@ data class Node(
             PLUS -> {
                 println("  add rax, rdi")
             }
+            MINUS -> {
+                println("  sub rax, rdi")
+            }
         }
         println("  push rax")
     }
