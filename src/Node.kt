@@ -179,6 +179,9 @@ data class Node(
             MINUS -> {
                 println("  sub rax, rdi")
             }
+            MULTIPLY -> {
+                println("  imul rdi")
+            }
         }
         println("  push rax")
     }
