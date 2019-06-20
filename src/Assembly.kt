@@ -16,6 +16,7 @@ class Assembly {
                     )
                 ).parse()
             ).printAssemblies()
+            println("  pop rax")
             println("  ret")
         }
     }

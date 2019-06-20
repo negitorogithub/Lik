@@ -144,19 +144,23 @@ data class Node(
     }
 
     fun printAssembly() {
-        when (token.type) {
-            PLUS -> {
-                println("push ${leftNode!!.token.value}")
-                println("push ${rightNode!!.token.value}")
+        if (token.type == NUMBER) {
+            println("  push ${token.value}")
+            return
+        }
+        leftNode?.printAssembly()
+        rightNode?.printAssembly()
+        println("  pop rdi")
+        println("  pop rax")
 
-                println("pop rdi")
-                println("pop rax")
-                println("add rax, rdi")
-            }
-            NUMBER -> {
-                println("mov rax, ${token.value}")
+        when (token.type) {
+
+            PLUS -> {
+                println("  add rax, rdi")
+
             }
         }
+        println("  push rax")
     }
 
 }
