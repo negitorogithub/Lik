@@ -223,11 +223,7 @@ class Tokens(private val innerList: List<Token>) {
             }
 
         }
-
-
-
         throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
     }
-
 
 }

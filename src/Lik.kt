@@ -125,7 +125,6 @@ fun tokenize(str: String): List<Token> {
     return resultList
 }
 
-
 fun numberList2number(list: List<String>): Int {
     val buffer = StringBuilder()
     list.forEach {

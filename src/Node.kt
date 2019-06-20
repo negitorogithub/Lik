@@ -39,7 +39,6 @@ data class Node(
                 rightNode
             )
 
-
     fun eval(): Evaled {
         token.value?.let { return it.toEvaled() }//数字単体
         token.val_?.name?.let { valName ->
@@ -174,10 +173,8 @@ data class Node(
         println("  pop rax")
 
         when (token.type) {
-
             PLUS -> {
                 println("  add rax, rdi")
-
             }
         }
         println("  push rax")

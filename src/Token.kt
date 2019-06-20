@@ -16,5 +16,4 @@ data class Token(val type: TokenType, val value: Int? = null, val val_: Val? = n
 
     }
 
-
 }

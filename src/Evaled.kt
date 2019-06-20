@@ -19,7 +19,6 @@ fun Boolean.toEvaled(): Evaled {
     return Evaled(this)
 }
 
-
 operator fun Evaled.plus(other: Evaled): Evaled {
     return (evaledInt!! + other.evaledInt!!).toEvaled()
 }
