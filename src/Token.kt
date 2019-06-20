@@ -1,6 +1,6 @@
 import TokenType.NUMBER
 
-data class Token(val type: TokenType, val value: Int? = null, val val_: Val? = null) {
+data class Token(val type: TokenType, val value: Int? = null, val val_: Val? = null, val funName: String? = null) {
 
     constructor(value: Int) : this(NUMBER, value)
 

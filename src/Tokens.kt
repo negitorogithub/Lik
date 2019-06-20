@@ -69,6 +69,23 @@ class Tokens(private val innerList: List<Token>) {
                 }
             }
 
+            consume(FUN) -> {
+                val funToken = innerList[cursor - 1]
+                val argumentNode = Node(ARGUMENT)
+                consume(ROUND_BRACKET_OPEN)
+                while (innerList[cursor].type == ARGUMENT) {
+                    argumentNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
+                    cursor++
+                    if (!consume(COMMA)) break
+                }
+                if (!consume(ROUND_BRACKET_CLOSE)) {
+                    throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
+                } else {
+                    val innerNodes = statement()
+                    return Node(funToken, argumentNode, innerNodes)
+                }
+            }
+
             consume(CURLY_BRACKET_OPEN) -> {
                 val resultList = mutableListOf<Node>()
                 while (!consume(CURLY_BRACKET_CLOSE)) {

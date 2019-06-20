@@ -9,20 +9,24 @@ data class ConsumableString(var innerString: String) {
 
     fun popNumber(): String {
         if (innerString.isEmpty()) throw Exception("Number not found in head")
-        if (numbers.contains(innerString.toCharArray()[0].toString())) {
+        if (numbers.contains(innerString.toCharArray()[0])) {
             val temp = innerString
-            innerString = innerString.dropWhile { char: Char -> numbers.contains(char.toString()) }
-            return temp.takeWhile { char: Char -> numbers.contains(char.toString()) }
+            innerString = innerString.dropWhile { char: Char -> numbers.contains(char) }
+            return temp.takeWhile { char: Char -> numbers.contains(char) }
         }
         throw Exception("Number not found in head")
     }
 
-    fun popAlphabets(): String {
-        if (innerString.isEmpty()) throw Exception("Alphabet not found in head")
+    fun popIdentification(): String {//先頭はアルファベット
+        if (innerString.isEmpty()) throw Exception("string is empty")
         if (alphabets.contains(innerString.toCharArray()[0])) {
             val temp = innerString
-            innerString = innerString.dropWhile { char: Char -> alphabets.contains(char) }
-            return temp.takeWhile { char: Char -> alphabets.contains(char) }
+            innerString = innerString.dropWhile { char: Char ->
+                (alphabets.contains(char) || numbers.contains(char))
+            }
+            return temp.takeWhile { char: Char ->
+                (alphabets.contains(char) || numbers.contains(char))
+            }
         }
         throw Exception("Alphabet not found in head")
     }
@@ -39,7 +43,7 @@ data class ConsumableString(var innerString: String) {
 
     fun startWithNumber(): Boolean {
         if (isEmpty()) return false
-        return numbers.contains(innerString.toCharArray()[0].toString())
+        return numbers.contains(innerString.toCharArray()[0])
     }
 
     fun startWithAlphabet(): Boolean {
@@ -52,11 +56,40 @@ data class ConsumableString(var innerString: String) {
         if (!startWithAlphabet()) return false
         val clone = this.copy(innerString = innerString)
         clone.innerString = clone.innerString.filterNot { it.toString() == space }
-        clone.popAlphabets()
+        clone.popIdentification()
         if (clone.innerString.startsWith(equal)) {
             return false
         }
         return clone.innerString.startsWith(assign)
     }
 
+    fun isFunExpression(): Boolean {
+        if (isEmpty()) return false
+        if (!startWithAlphabet()) return false
+        val clone = this.copy(innerString = innerString)
+        if (!clone.consume(fun_)) return false
+        if (!clone.consume(space)) return false
+        clone.popIdentification()
+        return clone.innerString.startsWith(roundBracketOpen)
+    }
+
+    fun isArgumentExpression(): Boolean {
+        //関数宣言から(を取った後の形かどうか
+        if (isEmpty()) return false
+        val clone = this.copy(innerString = innerString)
+        clone.innerString = clone.innerString.filterNot { it.toString() == space }
+        return if (clone.startWithAlphabet()) {
+            clone.popIdentification()
+            (clone.innerString.startsWith(roundBracketClose) || clone.innerString.startsWith(comma))
+        } else {
+            clone.innerString.startsWith(roundBracketClose)
+        }
+    }
+
+    fun hasNextArgument(): Boolean {
+        if (isEmpty()) return false
+        val clone = this.copy(innerString = innerString)
+        clone.innerString = clone.innerString.filterNot { it.toString() == space }
+        return clone.startWithAlphabet()
+    }
 }

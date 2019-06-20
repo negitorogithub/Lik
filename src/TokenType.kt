@@ -12,6 +12,7 @@ enum class TokenType {
     ASSIGN,
     ASSIGNED_VAL,
     NOT_ASSIGNED_VAL,
+    ARGUMENT,
     EQUAL,
     NOT_EQUAL,
     LESS_THAN,
@@ -21,6 +22,8 @@ enum class TokenType {
     SEMI_COLON,
     RETURN,
     IF,
+    FUN,
+    COMMA,
     WHILE,
     NODES,
     NULL//使わないはず

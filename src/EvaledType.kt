@@ -6,5 +6,6 @@ enum class EvaledType {
     RETURN,
     WHILE,
     IF_FALSE,
+    FUN_DECLARATION,
     NULL
 }

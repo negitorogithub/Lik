@@ -212,6 +212,42 @@ internal class NodesTest {
             }.valMap["a"]
         )
 
+        assertEquals(
+            Node(
+                Token(FUN, funName = "a"),
+                Node(
+                    ARGUMENT,
+                    arguments = mutableListOf(
+                        Val("b"),
+                        Val("c")
+                    )
+                ),
+                Node(
+                    RETURN,
+                    null,
+                    Node(3)
+                )
+            ),
+            Nodes(
+                listOf(
+                    Node(
+                        Token(FUN, funName = "a"),
+                        Node(
+                            ARGUMENT,
+                            arguments = mutableListOf(
+                                Val("b"),
+                                Val("c")
+                            )
+                        ),
+                        Node(
+                            RETURN,
+                            null,
+                            Node(3)
+                        )
+                    )
+                )
+            ).apply { exec() }.funMap["a"]
+        )
 
     }
 }

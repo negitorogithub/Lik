@@ -44,12 +44,52 @@ fun tokenize(str: String): List<Token> {
             rest.consume(lessThan) -> resultList.add(Token(LESS_THAN))
             rest.consume(greaterThan) -> resultList.add(Token(GREATER_THAN))
             rest.consume(semiColon) -> resultList.add(Token(SEMI_COLON))
+            rest.isFunExpression() -> {
+                rest.consume(fun_)
+                rest.consume(space)
+                resultList.apply {
+                    add(
+                        Token(
+                            FUN,
+                            funName = rest.popIdentification()
+                        )
+                    )
+                    rest.consume(roundBracketOpen)
+                    add(
+                        Token(
+                            ROUND_BRACKET_OPEN
+                        )
+                    )
+                    while (rest.hasNextArgument()) {
+                        while (rest.consume(space)) {
+                        }
+                        add(
+                            Token(
+                                ARGUMENT,
+                                val_ = Val(rest.popIdentification())
+                            )
+                        )
+                        while (rest.consume(space)) {
+                        }
+                        if (!rest.consume(comma)) {
+                            break
+                        }
+                    }
+                    rest.consume(roundBracketClose)
+                    add(
+                        Token(
+                            ROUND_BRACKET_CLOSE
+                        )
+                    )
+                }
+            }
+
             rest.isAssignExpression() -> {
                 resultList.apply {
                     add(
                         Token(
                             NOT_ASSIGNED_VAL,
-                            val_ = Val(rest.popAlphabets())
+                            val_ = Val(rest.popIdentification())
                         )
                     )
                     add(Token(ASSIGN))
@@ -67,7 +107,7 @@ fun tokenize(str: String): List<Token> {
             rest.startWithAlphabet() -> resultList.add(
                 Token(
                     ASSIGNED_VAL,
-                    val_ = Val(rest.popAlphabets())
+                    val_ = Val(rest.popIdentification())
                 )
             )//代入の文脈ではない変数
             rest.consume(space) -> {
