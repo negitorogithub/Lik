@@ -182,6 +182,10 @@ data class Node(
             MULTIPLY -> {
                 println("  imul rdi")
             }
+            DIVIDE -> {
+                println("  cqo")
+                println("  idiv rdi")
+            }
         }
         println("  push rax")
     }
