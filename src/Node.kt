@@ -186,6 +186,12 @@ data class Node(
                 println("  cqo")
                 println("  idiv rdi")
             }
+            EQUAL -> {
+                println("  cmp rax, rdi")
+                println("  sete al")
+                println("  movzb rax, al")
+            }
+
         }
         println("  push rax")
     }

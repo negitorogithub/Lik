@@ -4,6 +4,8 @@
       <w>evaled</w>
       <w>evcaled</w>
       <w>idiv</w>
+      <w>movzb</w>
+      <w>sete</w>
     </words>
   </dictionary>
 </component>
