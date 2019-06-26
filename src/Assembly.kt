@@ -9,10 +9,12 @@ class Assembly {
             println(".intel_syntax noprefix")
             println(".global main")
             println("main:")
+            println("")
 
             println("  push rbp")
             println("  mov rbp, rsp")
             println("  sub rsp, 208")
+            println("")
 
             Nodes(
                 Tokens(

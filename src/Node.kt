@@ -172,9 +172,10 @@ data class Node(
             throw Exception("代入の左辺値が変数ではありません")
         }
 
-        println("  mov rax, rbp\n")
-        println("  sub rax, ${(valMap.keys.indexOf(token.val_!!.name) + 1) * 8}\n")
-        println("  push rax\n")
+        println("  mov rax, rbp")
+        println("  sub rax, ${(valMap.keys.indexOf(token.val_!!.name) + 1) * 8}")
+        println("  push rax")
+        println("")
     }
 
     fun printAssembly() {
@@ -182,6 +183,7 @@ data class Node(
         rightNode?.valMap?.putAll(valMap)
         if (token.type == NUMBER) {
             println("  push ${token.value}")
+            println("")
             return
         }
 
@@ -190,6 +192,7 @@ data class Node(
             println("  pop rax")
             println("  mov rax, [rax]")
             println("  push rax")
+            println("")
             return
         }
 
@@ -201,6 +204,7 @@ data class Node(
             println("  pop rax")
             println("  mov [rax], rdi")
             println("  push rdi")
+            println("")
             return
         }
 
@@ -230,8 +234,10 @@ data class Node(
             }
 
         }
-
+        println("")
         println("  push rax")
+        println("")
+
     }
 
 }
