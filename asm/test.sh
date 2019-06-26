@@ -52,5 +52,10 @@ try 0 3==4\;
 try 1 5==3+2\;
 try 1 100==2*5*3/3*2*5\;
 
+try 3 ab=3\;ab\;
+try 4 ab=3\;ab+1\;
+try 12 ab=3\;ab*4\;
+try 15 ab=3\;cd=5\;ab*cd\;
+try 2 ab=3\;cd=5\;cd-ab\;
 
 echo OK

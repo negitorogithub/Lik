@@ -4,19 +4,22 @@ data class Node(
     val token: Token,
     val leftNode: Node? = null,
     val rightNode: Node? = null,
-    val valMap: MutableMap<String, Int> = mutableMapOf(),
+    val valMap: LinkedHashMap<String, Int> = linkedMapOf(),
     val funMap: MutableMap<String, Node> = mutableMapOf(),
     val nodes: Nodes = Nodes(),
-    val argumentsOnDeclare: MutableList<Val> = mutableListOf()
+    val argumentsOnDeclare: MutableList<Val> = mutableListOf(),
+    val offset: Int = 0
 ) {
+
     constructor(
         type: TokenType,
         leftNode: Node? = null,
         rightNode: Node? = null,
         nodes: Nodes = Nodes(),
-        valMap: MutableMap<String, Int> = mutableMapOf(),
+        valMap: LinkedHashMap<String, Int> = linkedMapOf(),
         funMap: MutableMap<String, Node> = mutableMapOf(),
-        arguments: MutableList<Val> = mutableListOf()
+        arguments: MutableList<Val> = mutableListOf(),
+        offset: Int = 0
     ) :
             this(
                 Token(type),
@@ -25,7 +28,8 @@ data class Node(
                 nodes = nodes,
                 valMap = valMap,
                 funMap = funMap,
-                argumentsOnDeclare = arguments
+                argumentsOnDeclare = arguments,
+                offset = offset
             )
 
     constructor(
@@ -162,11 +166,44 @@ data class Node(
         }
     }
 
+    //変数のアドレスを計算しpush
+    private fun printAssemblyPushValAddress() {
+        if (token.type != NOT_ASSIGNED_VAL && token.type != ASSIGNED_VAL) {
+            throw Exception("代入の左辺値が変数ではありません")
+        }
+
+        println("  mov rax, rbp\n")
+        println("  sub rax, ${(valMap.keys.indexOf(token.val_!!.name) + 1) * 8}\n")
+        println("  push rax\n")
+    }
+
     fun printAssembly() {
+        leftNode?.valMap?.putAll(valMap)
+        rightNode?.valMap?.putAll(valMap)
         if (token.type == NUMBER) {
             println("  push ${token.value}")
             return
         }
+
+        if (token.type == ASSIGNED_VAL) {
+            printAssemblyPushValAddress()
+            println("  pop rax")
+            println("  mov rax, [rax]")
+            println("  push rax")
+            return
+        }
+
+        if (token.type == ASSIGN) {
+            leftNode!!.printAssemblyPushValAddress()
+            rightNode!!.printAssembly()
+
+            println("  pop rdi")
+            println("  pop rax")
+            println("  mov [rax], rdi")
+            println("  push rdi")
+            return
+        }
+
         leftNode?.printAssembly()
         rightNode?.printAssembly()
         println("  pop rdi")
@@ -193,6 +230,7 @@ data class Node(
             }
 
         }
+
         println("  push rax")
     }
 

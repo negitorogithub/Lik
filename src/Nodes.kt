@@ -24,6 +24,7 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         for (node in innerList) {
             node.valMap.putAll(valMap)
             node.printAssembly()
+            println("  pop rax")
             valMap.putAll(node.valMap)
         }
     }
