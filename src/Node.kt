@@ -179,46 +179,44 @@ data class Node(
     }
 
     fun printAssembly() {
+        //とりあえずやっておく
         leftNode?.valMap?.putAll(valMap)
         rightNode?.valMap?.putAll(valMap)
-        if (token.type == NUMBER) {
-            println("  push ${token.value}")
-            println("")
-            return
+
+        when (token.type) {
+            NUMBER -> {
+                println("  push ${token.value}")
+            }
+            ASSIGNED_VAL -> {
+                printAssemblyPushValAddress()
+                println("  pop rax")
+                println("  mov rax, [rax]")
+                println("  push rax")
+            }
+            ASSIGN -> {
+                leftNode!!.printAssemblyPushValAddress()
+                rightNode!!.printAssembly()
+                println("  pop rdi")
+                println("  pop rax")
+                println("  mov [rax], rdi")
+                println("  push rdi")
+            }
+            RETURN -> {
+                rightNode!!.printAssembly()
+                println("  pop rax")
+                println("  mov rsp, rbp")
+                println("  pop rbp")
+                println("  ret")
+            }
+            else -> {
+                //二項取るタイプ
+                printAssemblyBinaryOperator()
+            }
         }
+        println("")
+    }
 
-        if (token.type == ASSIGNED_VAL) {
-            printAssemblyPushValAddress()
-            println("  pop rax")
-            println("  mov rax, [rax]")
-            println("  push rax")
-            println("")
-            return
-        }
-
-        if (token.type == ASSIGN) {
-            leftNode!!.printAssemblyPushValAddress()
-            rightNode!!.printAssembly()
-
-            println("  pop rdi")
-            println("  pop rax")
-            println("  mov [rax], rdi")
-            println("  push rdi")
-            println("")
-            return
-        }
-
-        if (token.type == RETURN) {
-            rightNode!!.printAssembly()
-            println("  pop rax")
-            println("  mov rsp, rbp")
-            println("  pop rbp")
-            println("  ret")
-            return
-        }
-
-
-        //以下二項取るタイプ
+    private fun printAssemblyBinaryOperator() {
         leftNode!!.printAssembly()
         rightNode!!.printAssembly()
         println("  pop rdi")
@@ -243,11 +241,12 @@ data class Node(
                 println("  sete al")
                 println("  movzb rax, al")
             }
+            else -> {
+                throw Exception("演算子${token.type}は未対応ナリ")
+            }
         }
         println("")
         println("  push rax")
-        println("")
-
     }
 
 }
