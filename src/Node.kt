@@ -208,8 +208,19 @@ data class Node(
             return
         }
 
-        leftNode?.printAssembly()
-        rightNode?.printAssembly()
+        if (token.type == RETURN) {
+            rightNode!!.printAssembly()
+            println("  pop rax")
+            println("  mov rsp, rbp")
+            println("  pop rbp")
+            println("  ret")
+            return
+        }
+
+
+        //以下二項取るタイプ
+        leftNode!!.printAssembly()
+        rightNode!!.printAssembly()
         println("  pop rdi")
         println("  pop rax")
 
@@ -232,7 +243,6 @@ data class Node(
                 println("  sete al")
                 println("  movzb rax, al")
             }
-
         }
         println("")
         println("  push rax")
