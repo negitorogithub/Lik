@@ -7,6 +7,10 @@
       <w>movzb</w>
       <w>noprefix</w>
       <w>sete</w>
+      <w>setg</w>
+      <w>setge</w>
+      <w>setl</w>
+      <w>setle</w>
       <w>setne</w>
     </words>
   </dictionary>

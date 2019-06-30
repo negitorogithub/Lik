@@ -255,6 +255,27 @@ data class Node(
                 println("  setne al")
                 println("  movzb rax, al")
             }
+            GREATER_THAN -> {
+                println("  cmp rax, rdi")
+                println("  setg al")
+                println("  movzb rax, al")
+            }
+            GREATER_THAN_OR_EQUAL -> {
+                println("  cmp rax, rdi")
+                println("  setge al")
+                println("  movzb rax, al")
+            }
+            LESS_THAN -> {
+                println("  cmp rax, rdi")
+                println("  setl al")
+                println("  movzb rax, al")
+            }
+            LESS_THAN_OR_EQUAL -> {
+                println("  cmp rax, rdi")
+                println("  setle al")
+                println("  movzb rax, al")
+            }
+
             else -> {
                 throw Exception("演算子${token.type}は未対応ナリ")
             }
