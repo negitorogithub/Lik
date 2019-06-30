@@ -63,4 +63,7 @@ try 1 "return 1; return 2;3;4;"
 try 1 "3;4;return 1;return 2;"
 try 2 "ab=3;cd=5;return cd-ab; return 6; return 7;"
 
+try 3 "ab=3;cd=5;if(ab==cd)return 2;return 3;"
+try 2 "ab=3;cd=5;if(ab!=cd)return 2;return 3;"
+
 echo OK

@@ -208,6 +208,15 @@ data class Node(
                 println("  pop rbp")
                 println("  ret")
             }
+            IF -> {
+                val labelNumber = UniqueNumber.next()
+                leftNode!!.printAssembly()
+                println("  pop rax")
+                println("  cmp rax, 0")
+                println("  je .Lend$labelNumber")
+                rightNode!!.printAssembly()
+                println(".Lend$labelNumber:")
+            }
             else -> {
                 //二項取るタイプ
                 printAssemblyBinaryOperator()
@@ -239,6 +248,11 @@ data class Node(
             EQUAL -> {
                 println("  cmp rax, rdi")
                 println("  sete al")
+                println("  movzb rax, al")
+            }
+            NOT_EQUAL -> {
+                println("  cmp rax, rdi")
+                println("  setne al")
                 println("  movzb rax, al")
             }
             else -> {

@@ -128,7 +128,7 @@ class Tokens(private val innerList: List<Token>) {
                 consume(EQUAL) -> {
                     result = Node(EQUAL, result, relational())
                 }
-                consume(NOT_EQUAL) -> innerList[cursor].value?.let {
+                consume(NOT_EQUAL) -> {
                     result = Node(NOT_EQUAL, result, relational())
                 }
                 else -> break@loop
