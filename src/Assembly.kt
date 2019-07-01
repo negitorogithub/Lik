@@ -6,6 +6,24 @@ class Assembly {
             args.forEach {
                 buffer.append(it)
             }
+            printPrologue()
+            Nodes(
+                Tokens(
+                    tokenize(
+                        buffer.toString()
+                    )
+                ).parse()
+            ).apply { exec() }.printAssemblies()
+            printEpilogue()
+        }
+
+        private fun printEpilogue() {
+            println("  mov rsp, rbp")
+            println("  pop rbp")
+            println("  ret")
+        }
+
+        private fun printPrologue() {
             println(".intel_syntax noprefix")
             println(".global main")
             println("main:")
@@ -15,17 +33,6 @@ class Assembly {
             println("  mov rbp, rsp")
             println("  sub rsp, 208")
             println("")
-
-            Nodes(
-                Tokens(
-                    tokenize(
-                        buffer.toString()
-                    )
-                ).parse()
-            ).apply { exec() }.printAssemblies()
-            println("  mov rsp, rbp")
-            println("  pop rbp")
-            println("  ret")
         }
     }
 }
