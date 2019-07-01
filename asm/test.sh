@@ -74,4 +74,7 @@ try 2 "ab=4;cd=5;if(ab<=cd)return 2;return 3;"
 try 3 "ab=6;cd=5;if(ab<=cd)return 2;return 3;"
 try 2 "ab=5;cd=5;if(ab<=cd)return 2;return 3;"
 
+try 3 "{return 3; return 4}return 5;"
+try 2 "ab=5;cd=5;if(ab==cd){return 2;return 3;}return 5;"
+
 echo OK

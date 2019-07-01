@@ -217,6 +217,9 @@ data class Node(
                 rightNode!!.printAssembly()
                 println(".Lend$labelNumber:")
             }
+            NODES -> {
+                nodes.printAssemblies()
+            }
             else -> {
                 //二項取るタイプ
                 printAssemblyBinaryOperator()
