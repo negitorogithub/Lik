@@ -13,7 +13,7 @@ class Assembly {
                         buffer.toString()
                     )
                 ).parse()
-            ).apply { exec() }.printAssemblies()
+            ).apply { refreshValSet() }.printAssemblies()
             printEpilogue()
         }
 

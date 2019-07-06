@@ -149,7 +149,73 @@ internal class LikTest {
             tokenize("fun isA()")
         )
 
+        assertEquals(
+            listOf(
+                Token(FUN_CALL, funName = "isA"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE)
+            ),
+            tokenize("isA()")
+        )
+        assertEquals(
+            listOf(
+                Token(FUN_CALL, funName = "isA123"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE)
+            ),
+            tokenize("isA123()")
+        )
+
+        assertEquals(
+            listOf(
+                Token(FUN_CALL, funName = "isA123"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ASSIGNED_VAL, val_ = Val("a")),
+                Token(ROUND_BRACKET_CLOSE)
+            ),
+            tokenize("isA123(a)")
+        )
+        assertEquals(
+            listOf(
+                Token(FUN_CALL, funName = "isA123"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(1),
+                Token(ROUND_BRACKET_CLOSE)
+            ),
+            tokenize("isA123(1)")
+        )
+        assertEquals(
+            listOf(
+                Token(FUN_CALL, funName = "isA123"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ASSIGNED_VAL, val_ = Val("a")),
+                Token(COMMA),
+                Token(1),
+                Token(COMMA),
+                Token(3),
+                Token(ROUND_BRACKET_CLOSE)
+            ),
+            tokenize("isA123( a , 1 , 3 )")
+        )
+
+        assertEquals(
+            listOf(
+                Token(FUN_CALL, funName = "isA123"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(FUN_CALL, funName = "getString"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(1),
+                Token(COMMA),
+                Token(2),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(COMMA),
+                Token(3),
+                Token(ROUND_BRACKET_CLOSE)
+            ),
+            tokenize("isA123( getString( 1 , 2 ) , 3 )")
+        )
     }
+
 
     @Test
     fun numberList2numberTest() {

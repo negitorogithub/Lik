@@ -75,3 +75,13 @@ internal class ConsumableStringTest {
     }
 
 }
+/*
+    @Test
+    fun isFunCallExpression() {
+        assertEquals(true, "a(".toConsumableString().isFunCallExpression())
+        assertEquals(true, "abc123(".toConsumableString().isFunCallExpression())
+        assertEquals(false, "a (".toConsumableString().isFunCallExpression())
+        assertEquals(false, "1(".toConsumableString().isFunCallExpression())
+        assertEquals(false, "1*(".toConsumableString().isFunCallExpression())
+    }
+ */

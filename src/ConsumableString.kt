@@ -92,4 +92,13 @@ data class ConsumableString(var innerString: String) {
         clone.innerString = clone.innerString.filterNot { it.toString() == space }
         return clone.startWithAlphabet()
     }
+
+    fun isFunCallExpression(): Boolean {
+        if (isEmpty()) return false
+        if (!startWithAlphabet()) return false
+        val clone = this.copy(innerString = innerString)
+        clone.popIdentification()
+        return clone.innerString.startsWith(roundBracketOpen)
+    }
+
 }

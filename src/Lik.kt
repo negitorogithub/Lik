@@ -104,6 +104,12 @@ fun tokenize(str: String): List<Token> {
             rest.consume(if_) -> resultList.add(Token(IF))
             rest.consume(while_) -> resultList.add(Token(WHILE))
             rest.startWithNumber() -> resultList.add(Token(Integer.parseInt(rest.popNumber())))//consumeだと数字が特定できないため
+            rest.isFunCallExpression() -> {
+                resultList.apply {
+                    add(Token(FUN_CALL, funName = rest.popIdentification()))
+                }
+            }
+            rest.consume(comma) -> resultList.add(Token(COMMA))
             rest.startWithAlphabet() -> resultList.add(
                 Token(
                     ASSIGNED_VAL,

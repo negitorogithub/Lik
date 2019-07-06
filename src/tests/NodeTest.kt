@@ -6,6 +6,7 @@ internal class NodeTest {
 
     @Test
     fun evalTest() {
+
         assertEquals(
             7,
             Node(
@@ -133,7 +134,7 @@ internal class NodeTest {
             Node(
                 Token(FUN, funName = "a"),
                 Node(
-                    ARGUMENT,
+                    ARGUMENTS,
                     arguments = mutableListOf(
                         Val("b"),
                         Val("c")
@@ -148,7 +149,7 @@ internal class NodeTest {
             Node(
                 Token(FUN, funName = "a"),
                 Node(
-                    ARGUMENT,
+                    ARGUMENTS,
                     arguments = mutableListOf(
                         Val("b"),
                         Val("c")
@@ -161,6 +162,5 @@ internal class NodeTest {
                 )
             ).apply { eval() }.funMap["a"]
         )
-
     }
 }

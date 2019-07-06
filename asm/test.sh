@@ -77,4 +77,6 @@ try 2 "ab=5;cd=5;if(ab<=cd)return 2;return 3;"
 try 3 "{return 3; return 4}return 5;"
 try 2 "ab=5;cd=5;if(ab==cd){return 2;return 3;}return 5;"
 
+try 3 "fun get3(){return 3;} get3();"
+
 echo OK

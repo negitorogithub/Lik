@@ -69,12 +69,24 @@ class Tokens(private val innerList: List<Token>) {
                 }
             }
 
+            consume(FUN_CALL) -> {
+                val funToken = innerList[cursor - 1].copy(type = FUN_CALL)
+                consume(ROUND_BRACKET_OPEN)
+                val nodes2add = mutableListOf<Node>()
+                while (!consume(ROUND_BRACKET_CLOSE)) {
+                    nodes2add.add(expression())
+                    consume(COMMA)
+                }
+                val argumentsNode = Node(ARGUMENTS, nodes = Nodes(nodes2add))
+                return Node(funToken, argumentsNode, Node(NULL))
+            }
+
             consume(FUN) -> {
                 val funToken = innerList[cursor - 1]
-                val argumentNode = Node(ARGUMENT)
+                val argumentsNode = Node(ARGUMENTS)
                 consume(ROUND_BRACKET_OPEN)
                 while (innerList[cursor].type == ARGUMENT) {
-                    argumentNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
+                    argumentsNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
                     cursor++
                     if (!consume(COMMA)) break
                 }
@@ -82,7 +94,7 @@ class Tokens(private val innerList: List<Token>) {
                     throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
                 } else {
                     val innerNodes = statement()
-                    return Node(funToken, argumentNode, innerNodes)
+                    return Node(funToken, argumentsNode, innerNodes)
                 }
             }
 
@@ -223,7 +235,11 @@ class Tokens(private val innerList: List<Token>) {
             }
 
         }
+
+
+
         throw java.lang.Exception("数字でも()でもないトークンです: $cursor")
     }
+
 
 }

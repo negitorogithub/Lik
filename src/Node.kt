@@ -5,6 +5,7 @@ data class Node(
     val leftNode: Node? = null,
     val rightNode: Node? = null,
     val valMap: LinkedHashMap<String, Int> = linkedMapOf(),
+    val valSet: LinkedHashSet<String> = linkedSetOf(),
     val funMap: MutableMap<String, Node> = mutableMapOf(),
     val nodes: Nodes = Nodes(),
     val argumentsOnDeclare: MutableList<Val> = mutableListOf(),
@@ -17,6 +18,7 @@ data class Node(
         rightNode: Node? = null,
         nodes: Nodes = Nodes(),
         valMap: LinkedHashMap<String, Int> = linkedMapOf(),
+        valSet: LinkedHashSet<String> = linkedSetOf(),
         funMap: MutableMap<String, Node> = mutableMapOf(),
         arguments: MutableList<Val> = mutableListOf(),
         offset: Int = 0
@@ -27,6 +29,7 @@ data class Node(
                 rightNode,
                 nodes = nodes,
                 valMap = valMap,
+                valSet = valSet,
                 funMap = funMap,
                 argumentsOnDeclare = arguments,
                 offset = offset
@@ -56,7 +59,8 @@ data class Node(
             if (funMap[token.funName!!] == null) {
                 //定義
                 token.funName.let {
-                    funMap[it] = Node(token, leftNode, rightNode, valMap, mutableMapOf(), nodes, argumentsOnDeclare)
+                    funMap[it] =
+                        Node(token, leftNode, rightNode, valMap, valSet, mutableMapOf(), nodes, argumentsOnDeclare)
                     return Evaled(EvaledType.FUN_DECLARATION)
                 }
             } else {
@@ -208,6 +212,15 @@ data class Node(
                 println("  pop rbp")
                 println("  ret")
             }
+            FUN_CALL -> {
+                println("  call ${token.funName}")
+                funMap[token.funName]!!.printAssembly()
+            }
+            FUN -> {
+                printPrologue()
+                rightNode!!.printAssembly()
+                printEpilogue()
+            }
             IF -> {
                 val labelNumber = UniqueNumber.next()
                 leftNode!!.printAssembly()
@@ -285,6 +298,38 @@ data class Node(
         }
         println("")
         println("  push rax")
+    }
+
+    private fun printEpilogue() {
+        println("  mov rsp, rbp")
+        println("  pop rbp")
+        println("  ret")
+    }
+
+    private fun printPrologue() {
+        println("  push rbp")
+        println("  mov rbp, rsp")
+        println("  sub rsp, ${valMap.size * 8 + 8}")
+        println("")
+    }
+
+    fun refreshValSet() {
+        if (token.type == ASSIGN) {
+            val valName = leftNode?.token?.val_?.name
+            if (valSet.contains(valName)) {
+                //代入済み時
+            } else {
+                // 未代入時
+                valSet.add(valName!!)
+            }
+            return
+        }
+        if (token.type == NODES) {
+            nodes.valSet.addAll(valSet)
+            nodes.refreshValSet()
+            valSet.addAll(nodes.valSet)
+            return
+        }
     }
 
 }

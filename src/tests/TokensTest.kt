@@ -357,7 +357,7 @@ internal class TokensTest {
                 Node(
                     Token(FUN, funName = "a"),
                     Node(
-                        Token(ARGUMENT),
+                        Token(ARGUMENTS),
                         argumentsOnDeclare = mutableListOf(
                             Val("b"),
                             Val("c")
@@ -395,6 +395,41 @@ internal class TokensTest {
                 )
             ).parse()
         )
+
+        assertEquals(
+            listOf(
+                Node(
+                    Token(FUN_CALL, funName = "isA123"),
+                    Node(
+                        Token(ARGUMENTS),
+                        nodes =
+                        Nodes(
+                            mutableListOf(
+                                Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
+                                Node(1),
+                                Node(3)
+                            )
+                        )
+                    ),
+                    Node(NULL)
+                )
+            )
+            ,
+            // isA123(a,1,3)
+            Tokens(
+                listOf(
+                    Token(FUN_CALL, funName = "isA123"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ASSIGNED_VAL, val_ = Val("a")),
+                    Token(COMMA),
+                    Token(1),
+                    Token(COMMA),
+                    Token(3),
+                    Token(ROUND_BRACKET_CLOSE)
+                )
+            ).parse()
+        )
+
 
     }
 

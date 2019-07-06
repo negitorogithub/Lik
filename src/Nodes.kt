@@ -2,7 +2,7 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
 
     val valMap = mutableMapOf<String, Int>()
     val funMap: MutableMap<String, Node> = mutableMapOf()
-
+    val valSet: LinkedHashSet<String> = linkedSetOf()
     fun exec(): Evaled {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
         var lastEvaled = Evaled(0)//仕方なく
@@ -26,6 +26,14 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
             node.printAssembly()
             println("  pop rax")
             valMap.putAll(node.valMap)
+        }
+    }
+
+    fun refreshValSet() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            node.valSet.addAll(valSet)
+            valSet.addAll(node.valSet)
         }
     }
 }
