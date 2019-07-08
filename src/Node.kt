@@ -60,7 +60,16 @@ data class Node(
                 //定義
                 token.funName.let {
                     funMap[it] =
-                        Node(token, leftNode, rightNode, valMap, valSet, mutableMapOf(), nodes, argumentsOnDeclare)
+                        Node(
+                            token.copy(type = FUN_CONTENT),
+                            leftNode,
+                            rightNode,
+                            valMap,
+                            valSet,
+                            mutableMapOf(),
+                            nodes,
+                            argumentsOnDeclare
+                        )
                     return Evaled(EvaledType.FUN_DECLARATION)
                 }
             } else {
@@ -176,8 +185,8 @@ data class Node(
             throw Exception("代入の左辺値が変数ではありません")
         }
 
-        println("  mov rax, rbp")
-        println("  sub rax, ${(valMap.keys.indexOf(token.val_!!.name) + 1) * 8}")
+        println("  mov rax, rbp #変数のアドレスを計算しpush")
+        println("  sub rax, ${(valSet.indexOf(token.val_!!.name) + 1) * 8}")
         println("  push rax")
         println("")
     }
@@ -185,46 +194,47 @@ data class Node(
     fun printAssembly() {
         //とりあえずやっておく
         leftNode?.valMap?.putAll(valMap)
+        leftNode?.valSet?.addAll(valSet)
         rightNode?.valMap?.putAll(valMap)
+        rightNode?.valSet?.addAll(valSet)
 
         when (token.type) {
             NUMBER -> {
-                println("  push ${token.value}")
+                println("  push ${token.value} #数字をpush")
             }
             ASSIGNED_VAL -> {
                 printAssemblyPushValAddress()
-                println("  pop rax")
+                println("  pop rax #代入済み変数をpush!")
                 println("  mov rax, [rax]")
                 println("  push rax")
             }
             ASSIGN -> {
                 leftNode!!.printAssemblyPushValAddress()
                 rightNode!!.printAssembly()
-                println("  pop rdi")
+                println("  pop rdi #変数に代入し右辺をpush")
                 println("  pop rax")
                 println("  mov [rax], rdi")
                 println("  push rdi")
             }
             RETURN -> {
                 rightNode!!.printAssembly()
-                println("  pop rax")
+                println("  pop rax #リターン")
                 println("  mov rsp, rbp")
                 println("  pop rbp")
                 println("  ret")
             }
             FUN_CALL -> {
                 println("  call ${token.funName}")
-                funMap[token.funName]!!.printAssembly()
             }
             FUN -> {
-                printPrologue()
-                rightNode!!.printAssembly()
+                rightNode!!.printPrologue(token.funName!!)
+                rightNode.printAssembly()
                 printEpilogue()
             }
             IF -> {
                 val labelNumber = UniqueNumber.next()
                 leftNode!!.printAssembly()
-                println("  pop rax")
+                println("  pop rax #if文")
                 println("  cmp rax, 0")
                 println("  je .Lend$labelNumber")
                 rightNode!!.printAssembly()
@@ -303,13 +313,13 @@ data class Node(
     private fun printEpilogue() {
         println("  mov rsp, rbp")
         println("  pop rbp")
-        println("  ret")
     }
 
-    private fun printPrologue() {
+    private fun printPrologue(funName: String) {
+        println("$funName:")
         println("  push rbp")
         println("  mov rbp, rsp")
-        println("  sub rsp, ${valMap.size * 8 + 8}")
+        println("  sub rsp, ${valSet.size * 8}")
         println("")
     }
 
@@ -330,6 +340,22 @@ data class Node(
             valSet.addAll(nodes.valSet)
             return
         }
+        if (token.type == FUN) {
+            rightNode!!.refreshValSet()
+        }
     }
+
+    fun refreshFunMap() {
+        if (token.type == FUN) {
+            if (funMap[token.funName!!] == null) {
+                //定義
+                token.funName.let {
+                    funMap[it] =
+                        Node(token, leftNode, rightNode, valMap, valSet, mutableMapOf(), nodes, argumentsOnDeclare)
+                }
+            }
+        }
+    }
+
 
 }

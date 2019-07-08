@@ -24,8 +24,31 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         for (node in innerList) {
             node.valMap.putAll(valMap)
             node.printAssembly()
-            println("  pop rax")
+            println("  pop rax #ノードブロックの結果")
             valMap.putAll(node.valMap)
+        }
+    }
+
+    fun printFunDeclareAssemblies() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            if (node.token.type == TokenType.FUN) {
+                node.printAssembly()
+            }
+        }
+    }
+
+    fun printMainAssemblies() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            if (node.token.type != TokenType.FUN) {
+                if (node.token.type != TokenType.FUN_CALL) {
+                    node.printAssembly()
+                    println("  pop rax #結果を戻り値に")
+                } else {
+                    node.printAssembly()//戻り値がraxにある
+                }
+            }
         }
     }
 
@@ -33,7 +56,17 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
             node.valSet.addAll(valSet)
+            node.refreshValSet()
             valSet.addAll(node.valSet)
+        }
+    }
+
+    fun refreshFunMap() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            node.funMap.putAll(funMap)
+            node.refreshFunMap()
+            funMap.putAll(node.funMap)
         }
     }
 }
