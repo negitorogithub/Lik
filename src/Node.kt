@@ -191,13 +191,27 @@ data class Node(
         println("")
     }
 
+    //変数のアドレスを計算しpush
+    private fun printAssemblyPushValAddress(valName: String) {
+        if (token.type != NOT_ASSIGNED_VAL && token.type != ASSIGNED_VAL && token.type != ARGUMENTS) {
+            throw Exception("代入の左辺値が変数ではありません")
+        }
+
+        println("  mov rax, rbp #変数のアドレスを計算しpush")
+        println("  sub rax, ${(valSet.indexOf(valName) + 1) * 8}")
+        println("  push rax")
+        println("")
+    }
+
+    private val registerListOfArguments = listOf("rdi", "rdi", "rdx", "rcx", "r8", "r9")
+
     fun printAssembly() {
         //とりあえずやっておく
         leftNode?.valMap?.putAll(valMap)
         leftNode?.valSet?.addAll(valSet)
         rightNode?.valMap?.putAll(valMap)
         rightNode?.valSet?.addAll(valSet)
-
+        nodes.valSet.addAll(valSet)
         when (token.type) {
             NUMBER -> {
                 println("  push ${token.value} #数字をpush")
@@ -224,11 +238,17 @@ data class Node(
                 println("  ret")
             }
             FUN_CALL -> {
+                leftNode?.nodes?.innerList?.forEachIndexed { index, node ->
+                    node.printAssembly()
+                    println("  pop rax")
+                    println("  mov ${registerListOfArguments[index]},rax")
+                }
                 println("  call ${token.funName}")
             }
             FUN -> {
-                rightNode!!.printPrologue(token.funName!!)
-                rightNode.printAssembly()
+                leftNode!!.printPrologue(token.funName!!)
+                leftNode.printAssemblyArgumentsOnDeclare()
+                rightNode!!.printAssembly()
                 printEpilogue()
             }
             IF -> {
@@ -249,6 +269,19 @@ data class Node(
             }
         }
         println("")
+    }
+
+    private fun printAssemblyArgumentsOnDeclare() {
+        //まだ途中
+        //引数を変数とみなして引数レジスタリストを参照しながら代入アセンブリを生成
+        argumentsOnDeclare.forEachIndexed { index, val_ ->
+            printAssemblyPushValAddress(val_.name)
+            println("  mov rdi,${registerListOfArguments[index]} #引数に代入し右辺をpush")
+            println("  pop rax")
+            println("  mov [rax], rdi")
+            println("  push rdi")
+        }
+
     }
 
     private fun printAssemblyBinaryOperator() {
@@ -341,7 +374,16 @@ data class Node(
             return
         }
         if (token.type == FUN) {
-            rightNode!!.refreshValSet()
+            leftNode!!.refreshValSet()
+            valSet.addAll(leftNode.valSet)
+
+            rightNode!!.valSet.addAll(valSet)
+            rightNode.refreshValSet()
+            valSet.addAll(rightNode.valSet)
+            return
+        }
+        if (token.type == ARGUMENTS) {
+            valSet.addAll(argumentsOnDeclare.map { it.name })
         }
     }
 

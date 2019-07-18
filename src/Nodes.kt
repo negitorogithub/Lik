@@ -59,6 +59,9 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
             node.refreshValSet()
             valSet.addAll(node.valSet)
         }
+        for (node in innerList) {
+            node.valSet.addAll(valSet)
+        }
     }
 
     fun refreshFunMap() {

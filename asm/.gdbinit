@@ -1,0 +1,9 @@
+break main
+display $rax
+display {int}$rax
+display $rsp
+display {int}$rsp
+display $rbp
+display {int}$rbp
+display $rdi
+display {int}$rdi
