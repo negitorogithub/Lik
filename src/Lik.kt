@@ -71,8 +71,8 @@ fun tokenize(str: String): List<Token> {
                         )
                         while (rest.consume(space)) {
                         }
-                        if (!rest.consume(comma)) {
-                            break
+                        rest.consume(comma)
+                        while (rest.consume(space)) {
                         }
                     }
                     rest.consume(roundBracketClose)

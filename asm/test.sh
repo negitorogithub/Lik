@@ -84,8 +84,8 @@ try 3 "fun get3(){ab=6;cd=5;if(ab<=cd)return 2;return 3;} get3();"
 try 3 "fun get3(){ab=2;cd=5;return cd-ab; return 6; return 7;} get3();"
 
 try 3 "fun id(a){return a;} id(3);"
-try 3 "fun add(a,b){return a+b;} add(3, 4);"
-try 3 "fun add5(a,b){c=5; return a+b+c;} add5(3, 4);"
-try 3 "fun addAll(a,b,c,d,e,f){return a+b+c+d+e+f;} addAll(1,2,3,4,5,6);"
+try 7 "fun add(a,b){return a+b;} add(3, 4);"
+try 12 "fun add5(a,b){c=5; return a+b+c;} add5(3, 4);"
+try 21 "fun addAll(a,b,c,d,e,f){return a+b+c+d+e+f;} addAll(1,2,3,4,5,6);"
 
 echo OK

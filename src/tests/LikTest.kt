@@ -137,6 +137,17 @@ internal class LikTest {
                 Token(ARGUMENT, val_ = Val("c")),
                 Token(ROUND_BRACKET_CLOSE)
             ),
+            tokenize("fun isA(b,c)")
+        )
+        
+        assertEquals(
+            listOf(
+                Token(FUN, funName = "isA"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ARGUMENT, val_ = Val("b")),
+                Token(ARGUMENT, val_ = Val("c")),
+                Token(ROUND_BRACKET_CLOSE)
+            ),
             tokenize("fun isA( b , c )")
         )
 

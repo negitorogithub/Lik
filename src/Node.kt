@@ -203,8 +203,6 @@ data class Node(
         println("")
     }
 
-    private val registerListOfArguments = listOf("rdi", "rdi", "rdx", "rcx", "r8", "r9")
-
     fun printAssembly() {
         //とりあえずやっておく
         leftNode?.valMap?.putAll(valMap)
@@ -241,7 +239,7 @@ data class Node(
                 leftNode?.nodes?.innerList?.forEachIndexed { index, node ->
                     node.printAssembly()
                     println("  pop rax")
-                    println("  mov ${registerListOfArguments[index]},rax")
+                    println("  mov ${Companion.registerListOfArguments[index]},rax")
                 }
                 println("  call ${token.funName}")
             }
@@ -276,7 +274,7 @@ data class Node(
         //引数を変数とみなして引数レジスタリストを参照しながら代入アセンブリを生成
         argumentsOnDeclare.forEachIndexed { index, val_ ->
             printAssemblyPushValAddress(val_.name)
-            println("  mov rdi,${registerListOfArguments[index]} #引数に代入し右辺をpush")
+            println("  mov rdi,${Companion.registerListOfArguments[index]} #引数に代入し右辺をpush")
             println("  pop rax")
             println("  mov [rax], rdi")
             println("  push rdi")
@@ -397,6 +395,10 @@ data class Node(
                 }
             }
         }
+    }
+
+    companion object {
+        private val registerListOfArguments = listOf("rdi", "rsi", "rdx", "rcx", "r8", "r9")
     }
 
 

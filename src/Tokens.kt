@@ -88,7 +88,6 @@ class Tokens(private val innerList: List<Token>) {
                 while (innerList[cursor].type == ARGUMENT) {
                     argumentsNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
                     cursor++
-                    if (!consume(COMMA)) break
                 }
                 if (!consume(ROUND_BRACKET_CLOSE)) {
                     throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")

@@ -384,7 +384,6 @@ internal class TokensTest {
                     Token(FUN, funName = "a"),
                     Token(ROUND_BRACKET_OPEN),
                     Token(ARGUMENT, val_ = Val("b")),
-                    Token(COMMA),
                     Token(ARGUMENT, val_ = Val("c")),
                     Token(ROUND_BRACKET_CLOSE),
                     Token(CURLY_BRACKET_OPEN),
