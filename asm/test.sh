@@ -87,5 +87,13 @@ try 3 "fun id(a){return a;} id(3);"
 try 7 "fun add(a,b){return a+b;} add(3, 4);"
 try 12 "fun add5(a,b){c=5; return a+b+c;} add5(3, 4);"
 try 21 "fun addAll(a,b,c,d,e,f){return a+b+c+d+e+f;} addAll(1,2,3,4,5,6);"
+try 120 "fun mulAll(a,b,c,d,e){return a*b*c*d*e;} mulAll(1,2,3,4,5);"
+try 1 "fun is5(n){if(n == 5){return 1;} return 2; return 3;} is5(5);"
+try 2 "fun is5(n){if(n == 5){return 1;} return 2; return 3;} is5(14);"
+try 100 "fun id5(n){if((n == 5)){return 100;} return n; return 2;} id5(5);"
+try 20  "fun id5(n){if((n == 5)){return 100;} return n; return 2;} id5(20);"
+try 15 "fun sum(n){if(n == 1){return 1;} return n + sum(n-1);} sum(5);"
+try 120 "fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);"
+try 5 "fun fib(n){if(n == 1){return 1;}if(n == 2){return 1;} return fib(n-1) + fib(n-2);} fib(5);"
 
 echo OK

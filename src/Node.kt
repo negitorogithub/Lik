@@ -46,6 +46,47 @@ data class Node(
                 rightNode
             )
 
+    override fun toString(): String {
+        val result = mutableListOf<String>()
+        result.apply {
+            add("[")
+            add("token=")
+            add(token.toString())
+            add(",")
+            leftNode?.toString()?.let {
+                add("leftNode=")
+                add(it)
+                add(",")
+            }
+            rightNode?.toString()?.let {
+                add("rightNode=")
+                add(it)
+                add(",")
+            }
+            if (nodes.innerList.isNotEmpty()) {
+                add("Nodes=")
+                add(nodes.toString())
+                add(",")
+            }
+            if (valSet.isNotEmpty()) {
+                add("valSet=")
+                add(valSet.toString())
+                add(",")
+            }
+            if (funMap.isNotEmpty()) {
+                add("funMap=")
+                add(funMap.toString())
+                add(",")
+            }
+            if (argumentsOnDeclare.isNotEmpty()) {
+                add("argumentsOnDeclare=")
+                add(argumentsOnDeclare.toString())
+            }
+            add("}")
+        }
+        return result.joinToString(separator = "")
+    }
+
     fun eval(): Evaled {
         token.value?.let { return it.toEvaled() }//数字単体
         token.val_?.name?.let { valName ->
@@ -205,11 +246,6 @@ data class Node(
 
     fun printAssembly() {
         //とりあえずやっておく
-        leftNode?.valMap?.putAll(valMap)
-        leftNode?.valSet?.addAll(valSet)
-        rightNode?.valMap?.putAll(valMap)
-        rightNode?.valSet?.addAll(valSet)
-        nodes.valSet.addAll(valSet)
         when (token.type) {
             NUMBER -> {
                 println("  push ${token.value} #数字をpush")
