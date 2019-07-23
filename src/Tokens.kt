@@ -69,23 +69,12 @@ class Tokens(private val innerList: List<Token>) {
                 }
             }
 
-            consume(FUN_CALL) -> {
-                val funToken = innerList[cursor - 1].copy(type = FUN_CALL)
-                consume(ROUND_BRACKET_OPEN)
-                val nodes2add = mutableListOf<Node>()
-                while (!consume(ROUND_BRACKET_CLOSE)) {
-                    nodes2add.add(expression())
-                    consume(COMMA)
-                }
-                val argumentsNode = Node(ARGUMENTS, nodes = Nodes(nodes2add))
-                return Node(funToken, argumentsNode, Node(NULL))
-            }
 
             consume(FUN) -> {
                 val funToken = innerList[cursor - 1]
                 val argumentsNode = Node(ARGUMENTS)
                 consume(ROUND_BRACKET_OPEN)
-                while (innerList[cursor].type == ARGUMENT) {
+                while (innerList[cursor].type == ARGUMENTS) {
                     argumentsNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
                     cursor++
                 }
@@ -233,6 +222,18 @@ class Tokens(private val innerList: List<Token>) {
                 result
             }
 
+        }
+
+        if (consume(FUN_CALL)) {
+            val funToken = innerList[cursor - 1].copy(type = FUN_CALL)
+            consume(ROUND_BRACKET_OPEN)
+            val nodes2add = mutableListOf<Node>()
+            while (!consume(ROUND_BRACKET_CLOSE)) {
+                nodes2add.add(expression())
+                consume(COMMA)
+            }
+            val argumentsNode = Node(ARGUMENTS, nodes = Nodes(nodes2add))
+            return Node(funToken, argumentsNode, Node(NULL))
         }
 
 
