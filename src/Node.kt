@@ -390,7 +390,7 @@ data class Node(
         println("")
     }
 
-    fun refreshValSet() {
+    fun genValSet() {
         if (token.type == ASSIGN) {
             val valName = leftNode?.token?.val_?.name
             if (valSet.contains(valName)) {
@@ -403,22 +403,32 @@ data class Node(
         }
         if (token.type == NODES) {
             nodes.valSet.addAll(valSet)
-            nodes.refreshValSet()
+            nodes.genValSet()
             valSet.addAll(nodes.valSet)
             return
         }
         if (token.type == FUN) {
-            leftNode!!.refreshValSet()
+            leftNode!!.genValSet()
             valSet.addAll(leftNode.valSet)
-
-            rightNode!!.valSet.addAll(valSet)
-            rightNode.refreshValSet()
+            rightNode!!.genValSet()
             valSet.addAll(rightNode.valSet)
             return
         }
         if (token.type == ARGUMENTS) {
             valSet.addAll(argumentsOnDeclare.map { it.name })
         }
+    }
+
+    fun propagateValSet() {
+        leftNode?.valSet?.clear()
+        leftNode?.valSet?.addAll(valSet)
+        leftNode?.propagateValSet()
+        rightNode?.valSet?.clear()
+        rightNode?.valSet?.addAll(valSet)
+        rightNode?.propagateValSet()
+        nodes.valSet.clear()
+        nodes.valSet.addAll(valSet)
+        nodes.propagateValSet()
     }
 
     fun refreshFunMap() {
@@ -429,6 +439,8 @@ data class Node(
                     funMap[it] =
                         Node(token, leftNode, rightNode, valMap, valSet, mutableMapOf(), nodes, argumentsOnDeclare)
                 }
+                rightNode!!.funMap.putAll(funMap)
+                rightNode.refreshFunMap()
             }
         }
     }

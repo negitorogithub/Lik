@@ -14,8 +14,8 @@ class Assembly {
                     )
                 ).parse()
             ).apply {
-                refreshFunMap()
-                refreshValSet()
+                genValSet()
+                propagateValSet()
                 printFunDeclareAssemblies()
                 printPrologue()
                 printMainAssemblies()

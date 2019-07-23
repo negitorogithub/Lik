@@ -52,24 +52,19 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         }
     }
 
-    fun refreshValSet() {
+    fun genValSet() {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
-            node.valSet.addAll(valSet)
-            node.refreshValSet()
+            node.genValSet()
             valSet.addAll(node.valSet)
-        }
-        for (node in innerList) {
-            node.valSet.addAll(valSet)
         }
     }
 
-    fun refreshFunMap() {
-        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+    fun propagateValSet() {
         for (node in innerList) {
-            node.funMap.putAll(funMap)
-            node.refreshFunMap()
-            funMap.putAll(node.funMap)
+            node.valSet.clear()
+            node.valSet.addAll(valSet)
+            node.propagateValSet()
         }
     }
 }
