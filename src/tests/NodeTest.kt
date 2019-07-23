@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 internal class NodeTest {
-
+/*
     @Test
     fun evalTest() {
 
@@ -163,4 +163,7 @@ internal class NodeTest {
             ).apply { eval() }.funMap["a"]
         )
     }
+
+ */
+
 }
