@@ -65,7 +65,7 @@ fun tokenize(str: String): List<Token> {
                         }
                         add(
                             Token(
-                                ARGUMENT,
+                                ARGUMENTS,
                                 val_ = Val(rest.popIdentification())
                             )
                         )

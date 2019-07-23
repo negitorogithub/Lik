@@ -12,7 +12,6 @@ enum class TokenType {
     ASSIGN,
     ASSIGNED_VAL,
     NOT_ASSIGNED_VAL,
-    ARGUMENT,
     ARGUMENTS,
     EQUAL,
     NOT_EQUAL,

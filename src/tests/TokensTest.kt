@@ -383,8 +383,8 @@ internal class TokensTest {
                 listOf(
                     Token(FUN, funName = "a"),
                     Token(ROUND_BRACKET_OPEN),
-                    Token(ARGUMENT, val_ = Val("b")),
-                    Token(ARGUMENT, val_ = Val("c")),
+                    Token(ARGUMENTS, val_ = Val("b")),
+                    Token(ARGUMENTS, val_ = Val("c")),
                     Token(ROUND_BRACKET_CLOSE),
                     Token(CURLY_BRACKET_OPEN),
                     Token(RETURN),
