@@ -1,27 +1,5 @@
 import TokenType.*
 
-fun main() {
-    while (true) {
-
-        val inputs = mutableListOf<String>()
-        while (true) {
-            val input = readLine()
-            if (input == "***") break
-            input?.let { inputs.add(it) }
-        }
-        val buffer = StringBuilder()
-        inputs.forEach {
-            buffer.append(it)
-        }
-        println(parse(buffer.toString()))
-    }
-}
-
-fun parse(likScript: String): String {
-    val tokens = Tokens(tokenize(likScript))
-    return Nodes(tokens.parse()).exec().evaledInt.toString()
-}
-
 fun tokenize(str: String): List<Token> {
     val resultList = mutableListOf<Token>()
     val rest = str.toConsumableString()

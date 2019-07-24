@@ -23,7 +23,6 @@ enum class TokenType {
     RETURN,
     IF,
     FUN,
-    FUN_CONTENT,
     FUN_CALL,
     COMMA,
     WHILE,

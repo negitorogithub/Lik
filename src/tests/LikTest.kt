@@ -5,61 +5,6 @@ import kotlin.test.assertEquals
 
 internal class LikTest {
 
-    @Test
-    fun parseTest() {
-
-        assertEquals(
-            "13",
-            parse(
-                "a = 4;" +
-                        "b = 3;" +
-                        "a*b+(a-b);"
-            )
-        )
-        assertEquals(
-            "1",
-            parse(
-                "a = 5;" +
-                        "b = 3;" +
-                        "a*b+(a-b);" +
-                        "return a/b;" +
-                        "return a;"
-            )
-        )
-
-        assertEquals(
-            "3",
-            parse(
-                "if(2==2)" +
-                        "return 3;" +
-                        "return 4;"
-            )
-        )
-
-
-        assertEquals(
-            "4",
-            parse(
-                "a=2;" +
-                        "b=34;" +
-                        "if(a==b)" +
-                        "return 3;" +
-                        "return 4;"
-            )
-        )
-
-        assertEquals(
-            "4",
-            parse(
-                "a=2;" +
-                        "a++;" +
-                        "a++;" +
-                        "return a;"
-            )
-        )
-
-
-    }
 
     @Test
     fun tokenizeTest() {
