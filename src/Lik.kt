@@ -1,5 +1,17 @@
 import TokenType.*
 
+//TODO:while
+//TODO:for
+//TODO:配列
+//TODO:ポインタ
+//TODO:else
+//TODO:クラス
+//TODO:when
+//TODO:val
+//TODO:宣言時の型
+//TODO:&&,||
+//TODO:宣言時の型
+
 fun tokenize(str: String): List<Token> {
     val resultList = mutableListOf<Token>()
     val rest = str.toConsumableString()
