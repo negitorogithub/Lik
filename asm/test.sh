@@ -110,5 +110,10 @@ try 5 "fun fib(n){if(n == 1){return 1;}if(n == 2){return 1;} return fib(n-1) + f
 
 try 5 "fun assign(){n=2;n=3;return n;} fun main(){n=5; assign(); return n;}"
 try 5 "fun reassign(){n=5;n=6;return n;} fun assign(){n=2;n=3;return n;}fun main(){n=5; assign(); reassign(); return n;}"
+try 5 "fun main(){n=5; assign(); reassign(); return n;}fun reassign(){n=5;n=6;return n;} fun assign(){n=2;n=3;return n;}"
+try 5 "fun main(){n=5; assign(); reassign(); return n;}fun assign(){n=2;n=3;return n;}fun reassign(){n=5;n=6;return n;}"
+try 5 "fun reassign(){n=5;n=6;return n;} fun main(){n=5; assign(); reassign(); return n;}fun assign(){n=2;n=3;return n;}"
+try 5 "fun assign(){n=2;n=3;return n;}fun main(){n=5; assign(); reassign(); return n;}fun reassign(){n=5;n=6;return n;} "
+try 5 "fun assign(){n=2;n=3;return n;}fun reassign(){n=5;n=6;return n;}fun main(){n=5; assign(); reassign(); return n;} "
 
 echo OK
