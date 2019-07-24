@@ -7,6 +7,7 @@ class Assembly {
                 buffer.append(it)
             }
             println(".intel_syntax noprefix")
+            println(".global main #mainのプロローグ")
             Nodes(
                 Tokens(
                     tokenize(
@@ -17,25 +18,7 @@ class Assembly {
                 genValSet()
                 propagateValSet()
                 printFunDeclareAssemblies()
-                printPrologue()
-                printMainAssemblies()
-                printEpilogue()
             }
-        }
-
-        private fun printEpilogue() {
-            println("  mov rsp, rbp #mainのエピローグ")
-            println("  pop rbp")
-            println("  ret")
-        }
-
-        private fun printPrologue() {
-            println(".global main #mainのプロローグ")
-            println("main:")
-            println("  push rbp")
-            println("  mov rbp, rsp")
-            println("  sub rsp, 208")
-            println("")
         }
     }
 }

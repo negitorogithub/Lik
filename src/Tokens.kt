@@ -30,7 +30,7 @@ class Tokens(private val innerList: List<Token>) {
     private fun program(): List<Node> {
         val result = mutableListOf<Node>()
         while (!hasFinishedReading()) {
-            result.add(statement())
+            result.add(functions())
         }
         return result
     }
@@ -39,6 +39,25 @@ class Tokens(private val innerList: List<Token>) {
         return (cursor >= innerList.lastIndex)
     }
 
+    private fun functions(): Node {
+        if (consume(FUN)) {
+            val funToken = innerList[cursor - 1]
+            val argumentsNode = Node(ARGUMENTS)
+            consume(ROUND_BRACKET_OPEN)
+            while (innerList[cursor].type == ARGUMENTS) {
+                argumentsNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
+                cursor++
+            }
+            if (!consume(ROUND_BRACKET_CLOSE)) {
+                throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
+            } else {
+                val innerNodes = statement()
+                return Node(funToken, argumentsNode, innerNodes)
+            }
+        } else {
+            throw Exception("トップレベルに関数以外のトークンが有ります@cursor=$cursor, content=${innerList[cursor]}")
+        }
+    }
 
     private fun statement(): Node {
 
@@ -66,23 +85,6 @@ class Tokens(private val innerList: List<Token>) {
                     throw java.lang.Exception("開きカッコに対応する閉じカッコがありません: $cursor")
                 } else {
                     Node(WHILE, condition, statement())
-                }
-            }
-
-
-            consume(FUN) -> {
-                val funToken = innerList[cursor - 1]
-                val argumentsNode = Node(ARGUMENTS)
-                consume(ROUND_BRACKET_OPEN)
-                while (innerList[cursor].type == ARGUMENTS) {
-                    argumentsNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
-                    cursor++
-                }
-                if (!consume(ROUND_BRACKET_CLOSE)) {
-                    throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
-                } else {
-                    val innerNodes = statement()
-                    return Node(funToken, argumentsNode, innerNodes)
                 }
             }
 
