@@ -278,6 +278,7 @@ data class Node(
                     println("  mov ${Companion.registerListOfArguments[index]},rax")
                 }
                 println("  call ${token.funName}")
+                println("  push rax")
             }
             FUN -> {
                 leftNode!!.printPrologue(token.funName!!)
@@ -291,7 +292,13 @@ data class Node(
                 println("  pop rax #if文")
                 println("  cmp rax, 0")
                 println("  je .Lend$labelNumber")
-                rightNode!!.printAssembly()
+                if (rightNode!!.token.type == NODES) {
+                    rightNode.nodes.printAssembliesIf()
+                } else {
+                    rightNode.printAssembly()
+                }
+
+
                 println(".Lend$labelNumber:")
             }
             NODES -> {

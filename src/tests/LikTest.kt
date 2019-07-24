@@ -225,6 +225,45 @@ internal class LikTest {
             ),
             tokenize("isA123( getString( 1 , 2 ) , 3 )")
         )
+        assertEquals(
+            listOf(
+                Token(FUN, funName = "fac"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ARGUMENTS, val_ = Val("n")),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(IF),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ASSIGNED_VAL, val_ = Val("n")),
+                Token(EQUAL),
+                Token(1),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(RETURN),
+                Token(1),
+                Token(SEMI_COLON),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(RETURN),
+                Token(ASSIGNED_VAL, val_ = Val("n")),
+                Token(MULTIPLY),
+                Token(FUN_CALL, funName = "fac"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ASSIGNED_VAL, val_ = Val("n")),
+                Token(MINUS),
+                Token(1),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(SEMI_COLON),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(FUN_CALL, funName = "fac"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(5),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(SEMI_COLON)
+            ),
+            tokenize("fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);")
+        )
+
+
     }
 
 

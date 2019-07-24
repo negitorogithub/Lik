@@ -414,7 +414,7 @@ internal class TokensTest {
                 )
             )
             ,
-            // isA123(a,1,3)
+            // isA123(a,1,3);
             Tokens(
                 listOf(
                     Token(FUN_CALL, funName = "isA123"),
@@ -424,7 +424,127 @@ internal class TokensTest {
                     Token(1),
                     Token(COMMA),
                     Token(3),
-                    Token(ROUND_BRACKET_CLOSE)
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON)
+                )
+            ).parse()
+        )
+
+        //fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);
+        assertEquals(
+            listOf(
+                Node(
+                    Token(FUN, funName = "fac"),
+                    Node(
+                        Token(ARGUMENTS),
+                        argumentsOnDeclare = mutableListOf(
+                            Val("n")
+                        )
+                    ),
+                    Node(
+                        NODES,
+                        nodes = Nodes(
+                            listOf(
+                                Node(
+                                    IF,
+                                    Node(
+                                        EQUAL,
+                                        Node(Token(ASSIGNED_VAL, val_ = Val("n"))),
+                                        Node(1)
+                                    ),
+                                    Node(
+                                        NODES,
+                                        nodes =
+                                        Nodes(
+                                            listOf(
+                                                Node(
+                                                    RETURN,
+                                                    null,
+                                                    Node(1)
+                                                )
+                                            )
+                                        )
+                                    )
+                                ),
+                                Node(
+                                    RETURN,
+                                    null,
+                                    Node(
+                                        MULTIPLY,
+                                        Node(Token(ASSIGNED_VAL, val_ = Val("n"))),
+                                        Node(
+                                            Token(FUN_CALL, funName = "fac"),
+                                            Node(
+                                                Token(ARGUMENTS),
+                                                nodes =
+                                                Nodes(
+                                                    mutableListOf(
+                                                        Node(
+                                                            MINUS,
+                                                            Node(Token(ASSIGNED_VAL, val_ = Val("n"))),
+                                                            Node(1)
+                                                        )
+                                                    )
+                                                )
+                                            ),
+                                            Node(NULL)
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                Node(
+                    Token(FUN_CALL, funName = "fac"),
+                    Node(
+                        Token(ARGUMENTS),
+                        nodes =
+                        Nodes(
+                            mutableListOf(
+                                Node(5)
+                            )
+                        )
+                    ),
+                    Node(NULL)
+                )
+            )
+            ,
+            //fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);
+            Tokens(
+                listOf(
+                    Token(FUN, funName = "fac"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ARGUMENTS, val_ = Val("n")),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(IF),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ASSIGNED_VAL, val_ = Val("n")),
+                    Token(EQUAL),
+                    Token(1),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(RETURN),
+                    Token(1),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(RETURN),
+                    Token(ASSIGNED_VAL, val_ = Val("n")),
+                    Token(MULTIPLY),
+                    Token(FUN_CALL, funName = "fac"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ASSIGNED_VAL, val_ = Val("n")),
+                    Token(MINUS),
+                    Token(1),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(FUN_CALL, funName = "fac"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(5),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON)
                 )
             ).parse()
         )

@@ -24,7 +24,18 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         for (node in innerList) {
             node.valMap.putAll(valMap)
             node.printAssembly()
-            println("  pop rax #ノードブロックの結果")
+            if (node.token.type != TokenType.IF) {
+                println("  pop rax #ノードブロックの結果")
+            }
+            valMap.putAll(node.valMap)
+        }
+    }
+
+    fun printAssembliesIf() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            node.valMap.putAll(valMap)
+            node.printAssembly()
             valMap.putAll(node.valMap)
         }
     }
