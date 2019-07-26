@@ -142,7 +142,7 @@ data class Node(
                 leftNode?.nodes?.innerList?.forEachIndexed { index, node ->
                     node.printAssembly()
                     println("  pop rax")
-                    println("  mov ${Companion.registerListOfArguments[index]},rax")
+                    println("  mov ${registerListOfArguments[index]},rax")
                 }
                 println("  call ${token.funName}")
                 println("  push rax")
@@ -184,7 +184,7 @@ data class Node(
         //引数を変数とみなして引数レジスタリストを参照しながら代入アセンブリを生成
         argumentsOnDeclare.forEachIndexed { index, val_ ->
             printAssemblyPushValAddress(val_.name)
-            println("  mov rdi,${Companion.registerListOfArguments[index]} #引数に代入し右辺をpush")
+            println("  mov rdi,${registerListOfArguments[index]} #引数に代入し右辺をpush")
             println("  pop rax")
             println("  mov [rax], rdi")
             println("  push rdi")
