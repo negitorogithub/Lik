@@ -305,20 +305,6 @@ data class Node(
         nodes.propagateValSet()
     }
 
-    fun refreshFunMap() {
-        if (token.type == FUN) {
-            if (funMap[token.funName!!] == null) {
-                //定義
-                token.funName.let {
-                    funMap[it] =
-                        Node(token, leftNode, rightNode, valMap, valSet, mutableMapOf(), nodes, argumentsOnDeclare)
-                }
-                rightNode!!.funMap.putAll(funMap)
-                rightNode.refreshFunMap()
-            }
-        }
-    }
-
     companion object {
         private val registerListOfArguments = listOf("rdi", "rsi", "rdx", "rcx", "r8", "r9")
     }
