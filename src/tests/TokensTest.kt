@@ -1,4 +1,11 @@
+package tests
+
+import Node
+import Nodes
+import Token
 import TokenType.*
+import Tokens
+import Val
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -19,14 +26,19 @@ internal class TokensTest {
             ),
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(1),
                     Token(PLUS),
                     Token(2),
                     Token(MULTIPLY),
                     Token(3),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()[0]
+            ).parse()[0].rightNode?.nodes?.innerList?.get(0)
         )
 
         assertEquals(
@@ -41,14 +53,19 @@ internal class TokensTest {
             ),
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(1),
                     Token(MULTIPLY),
                     Token(2),
                     Token(PLUS),
                     Token(3),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()[0]
+            ).parse()[0].rightNode?.nodes?.innerList?.get(0)
         )
 
         assertEquals(
@@ -63,6 +80,10 @@ internal class TokensTest {
             ),
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(5),
                     Token(MULTIPLY),
                     Token(ROUND_BRACKET_OPEN),
@@ -70,9 +91,10 @@ internal class TokensTest {
                     Token(PLUS),
                     Token(3),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()[0]
+            ).parse()[0].rightNode?.nodes?.innerList?.get(0)
         )
 
         assertEquals(
@@ -92,6 +114,10 @@ internal class TokensTest {
             ,
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(MINUS),
                     Token(5),
                     Token(MULTIPLY),
@@ -100,9 +126,10 @@ internal class TokensTest {
                     Token(PLUS),
                     Token(3),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()[0]
+            ).parse()[0].rightNode?.nodes?.innerList?.get(0)
         )
 
         assertEquals(
@@ -134,6 +161,10 @@ internal class TokensTest {
             ,
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(10),
                     Token(EQUAL),
                     Token(MINUS),
@@ -148,9 +179,10 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_CLOSE),
                     Token(PLUS),
                     Token(11),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()[0]
+            ).parse()[0].rightNode?.nodes?.innerList?.get(0)
         )
 
 
@@ -177,6 +209,10 @@ internal class TokensTest {
             ,
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(NOT_ASSIGNED_VAL, val_ = Val("a")),
                     Token(ASSIGN),
                     Token(5),
@@ -190,9 +226,10 @@ internal class TokensTest {
                     Token(ASSIGNED_VAL, val_ = Val("a")),
                     Token(PLUS),
                     Token(ASSIGNED_VAL, val_ = Val("b")),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()
+            ).parse()[0].rightNode?.nodes?.innerList
         )
 
 
@@ -213,6 +250,10 @@ internal class TokensTest {
             ),
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(ASSIGNED_VAL, val_ = Val("a")),
                     Token(MULTIPLY),
                     Token(ASSIGNED_VAL, val_ = Val("b")),
@@ -222,9 +263,10 @@ internal class TokensTest {
                     Token(MINUS),
                     Token(ASSIGNED_VAL, val_ = Val("b")),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()[0]
+            ).parse()[0].rightNode?.nodes?.innerList?.get(0)
         )
 
         assertEquals(
@@ -240,13 +282,18 @@ internal class TokensTest {
             ),
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(2),
                     Token(SEMI_COLON),
                     Token(RETURN),
                     Token(3),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()
+            ).parse()[0].rightNode?.nodes?.innerList
         )
         assertEquals(
             listOf(
@@ -272,6 +319,10 @@ internal class TokensTest {
             //if(2==2)return 3;return 4;
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(IF),
                     Token(ROUND_BRACKET_OPEN),
                     Token(2),
@@ -283,9 +334,10 @@ internal class TokensTest {
                     Token(SEMI_COLON),
                     Token(RETURN),
                     Token(4),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()
+            ).parse()[0].rightNode?.nodes?.innerList
         )
 
         assertEquals(
@@ -312,11 +364,17 @@ internal class TokensTest {
                     )
                 )
             ),
+            //fun main(){
             // while(1==2){
             //     a = 3;
             // }
+            //}
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(WHILE),
                     Token(ROUND_BRACKET_OPEN),
                     Token(1),
@@ -328,9 +386,10 @@ internal class TokensTest {
                     Token(ASSIGN),
                     Token(3),
                     Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE),
                     Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()
+            ).parse()[0].rightNode?.nodes?.innerList
         )
 
         assertEquals(
@@ -345,11 +404,16 @@ internal class TokensTest {
             // a++;
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(ASSIGNED_VAL, val_ = Val("a")),
                     Token(INCREASE),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()
+            ).parse()[0].rightNode?.nodes?.innerList
         )
 
         assertEquals(
@@ -417,6 +481,10 @@ internal class TokensTest {
             // isA123(a,1,3);
             Tokens(
                 listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(FUN_CALL, funName = "isA123"),
                     Token(ROUND_BRACKET_OPEN),
                     Token(ASSIGNED_VAL, val_ = Val("a")),
@@ -425,12 +493,13 @@ internal class TokensTest {
                     Token(COMMA),
                     Token(3),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()
+            ).parse()[0].rightNode?.nodes?.innerList
         )
 
-        //fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);
+        //fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fun main(){fac(5);}
         assertEquals(
             listOf(
                 Node(
@@ -496,21 +565,37 @@ internal class TokensTest {
                     )
                 ),
                 Node(
-                    Token(FUN_CALL, funName = "fac"),
+                    Token(FUN, funName = "main"),
                     Node(
                         Token(ARGUMENTS),
-                        nodes =
-                        Nodes(
-                            mutableListOf(
-                                Node(5)
+                        argumentsOnDeclare = mutableListOf(
+                        )
+                    )
+                    ,
+                    Node(
+                        NODES,
+                        nodes = Nodes(
+                            listOf(
+                                Node(
+                                    Token(FUN_CALL, funName = "fac"),
+                                    Node(
+                                        Token(ARGUMENTS),
+                                        nodes =
+                                        Nodes(
+                                            mutableListOf(
+                                                Node(5)
+                                            )
+                                        )
+                                    ),
+                                    Node(NULL)
+                                )
                             )
                         )
-                    ),
-                    Node(NULL)
+                    )
                 )
             )
             ,
-            //fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);
+            //fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fun main(){fac(5);}
             Tokens(
                 listOf(
                     Token(FUN, funName = "fac"),
@@ -540,11 +625,16 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_CLOSE),
                     Token(SEMI_COLON),
                     Token(CURLY_BRACKET_CLOSE),
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
                     Token(FUN_CALL, funName = "fac"),
                     Token(ROUND_BRACKET_OPEN),
                     Token(5),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON)
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()
         )
