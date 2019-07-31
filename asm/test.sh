@@ -1,6 +1,6 @@
 #!/bin/bash
 try() {
-  cd ../asm
+  cd ../asm || exit
   expected="$1"
   input="$2"
   java -jar Assembly.jar "$input" >test.s
@@ -17,10 +17,10 @@ try() {
   fi
 }
 
-cd ../src
+cd ../src || exit
 kotlinc *.kt -include-runtime -d ../temp
 
-cd ../temp
+cd ../temp || exit
 jar cfm ../asm/Assembly.jar ../asm/MANIFEST.MF *.class
 
 try 42 "class A(){b=42;} fun main(){return A().b;}"
