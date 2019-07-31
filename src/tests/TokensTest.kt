@@ -6,6 +6,7 @@ import Token
 import TokenType.*
 import Tokens
 import Val
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -13,6 +14,74 @@ internal class TokensTest {
 
     @Test
     fun parseTest() {
+
+        //class a(){} fun b(){} fun main(){b();a();}
+
+        assertEquals(
+            listOf(
+                Node(
+                    Token(CLASS, className = "a"),
+                    Node(ARGUMENTS),
+                    Node(
+                        NODES,
+                        nodes = Nodes()
+                    )
+                ),
+                Node(
+                    Token(FUN, funName = "b"),
+                    Node(ARGUMENTS),
+                    Node(NODES)
+                ),
+                Node(
+                    Token(FUN, funName = "main"),
+                    Node(ARGUMENTS),
+                    Node(
+                        NODES,
+                        nodes = Nodes(
+                            listOf(
+                                Node(
+                                    Token(FUN_CALL, funName = "b"),
+                                    Node(ARGUMENTS)
+                                ),
+                                Node(
+                                    Token(CLASS_CALL, className = "a"),
+                                    Node(ARGUMENTS)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+            ,
+            Tokens(
+                listOf(
+                    Token(CLASS, className = "a"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(FUN, funName = "b"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(CLASS_OR_FUN_CALL, classOrFunName = "b"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON),
+                    Token(CLASS_OR_FUN_CALL, classOrFunName = "a"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()
+        )
+
 
         assertEquals(
             Node(
@@ -397,7 +466,7 @@ internal class TokensTest {
                 Node(
                     INCREASE,
                     Node(Token(ASSIGNED_VAL, val_ = Val("a"))),
-                    Node(Token(NULL))
+                    null
                 )
             )
             ,
@@ -474,7 +543,7 @@ internal class TokensTest {
                             )
                         )
                     ),
-                    Node(NULL)
+                    null
                 )
             )
             ,
@@ -556,7 +625,7 @@ internal class TokensTest {
                                                     )
                                                 )
                                             ),
-                                            Node(NULL)
+                                            null
                                         )
                                     )
                                 )
@@ -587,7 +656,7 @@ internal class TokensTest {
                                             )
                                         )
                                     ),
-                                    Node(NULL)
+                                    null
                                 )
                             )
                         )
@@ -639,6 +708,124 @@ internal class TokensTest {
             ).parse()
         )
 
+        //class a(){}
+        assertEquals(
+            Node(
+                Token(CLASS, className = "a"),
+                Node(ARGUMENTS),
+                Node(
+                    NODES,
+                    nodes = Nodes()
+                )
+            )
+            ,
+            Tokens(
+                listOf(
+                    Token(CLASS, className = "a"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()[0]
+        )
+
+        //class a(){b=42;}
+        assertEquals(
+            Node(
+                Token(CLASS, className = "a"),
+                Node(ARGUMENTS),
+                Node(
+                    NODES,
+                    nodes = Nodes(
+                        listOf(
+                            Node(
+                                ASSIGN,
+                                Node(Token(NOT_ASSIGNED_VAL, val_ = Val("b"))),
+                                Node(42)
+                            )
+                        )
+                    )
+                )
+            )
+            ,
+            Tokens(
+                listOf(
+                    Token(CLASS, className = "a"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
+                    Token(ASSIGN),
+                    Token(42),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()[0]
+        )
+
+        //class a(){b=42;}
+        assertEquals(
+            Node(
+                Token(CLASS, className = "a"),
+                Node(ARGUMENTS),
+                Node(
+                    NODES,
+                    nodes = Nodes(
+                        listOf(
+                            Node(
+                                ASSIGN,
+                                Node(Token(NOT_ASSIGNED_VAL, val_ = Val("b"))),
+                                Node(42)
+                            )
+                        )
+                    )
+                )
+            )
+            ,
+            Tokens(
+                listOf(
+                    Token(CLASS, className = "a"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
+                    Token(ASSIGN),
+                    Token(42),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()[0]
+        )
+
+        Assertions.assertEquals(
+            Node(
+                DOT,
+                Node(Token(CLASS_CALL, className = "A")),
+                Node(Token(ASSIGNED_VAL, val_ = Val("member")))
+            ),
+            Tokens(
+                listOf(
+                    Token(CLASS, className = "A"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(RETURN),
+                    Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(DOT),
+                    Token(ASSIGNED_VAL, val_ = Val("member")),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()[1].rightNode
+        )
 
     }
 

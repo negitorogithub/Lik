@@ -24,8 +24,11 @@ enum class TokenType {
     IF,
     FUN,
     FUN_CALL,
+    CLASS_OR_FUN_CALL,
+    CLASS,
+    CLASS_CALL,
     COMMA,
+    DOT,
     WHILE,
-    NODES,
-    NULL//使わないはず
+    NODES
 }

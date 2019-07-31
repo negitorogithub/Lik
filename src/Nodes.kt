@@ -1,6 +1,7 @@
 data class Nodes(val innerList: List<Node> = mutableListOf()) {
 
     val valSet: LinkedHashSet<String> = linkedSetOf()
+    val classSizeMap: LinkedHashMap<String, Int> = linkedMapOf()
 
     fun printAssemblies() {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
@@ -23,6 +24,15 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
             if (node.token.type == TokenType.FUN) {
+                node.printAssembly()
+            }
+        }
+    }
+
+    fun printClassDeclareAssemblies() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            if (node.token.type == TokenType.CLASS) {
                 node.printAssembly()
             }
         }
@@ -55,6 +65,22 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
             node.valSet.clear()
             node.valSet.addAll(valSet)
             node.propagateValSet()
+        }
+    }
+
+    fun genClassSizeMap() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            node.genClassSizeMap()
+            classSizeMap.putAll(node.classSizeMap)
+        }
+    }
+
+    fun propagateClassSizeMap() {
+        for (node in innerList) {
+            node.classSizeMap.clear()
+            node.classSizeMap.putAll(classSizeMap)
+            node.propagateClassSizeMap()
         }
     }
 }

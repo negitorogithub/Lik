@@ -73,7 +73,12 @@ fun tokenize(str: String): List<Token> {
                     )
                 }
             }
-
+            rest.isClassExpression() -> {
+                rest.consume(class_)
+                rest.consume(space)
+                val className = rest.popIdentification()
+                resultList.add(Token(CLASS, className = className))
+            }
             rest.isAssignExpression() -> {
                 resultList.apply {
                     add(
@@ -94,12 +99,11 @@ fun tokenize(str: String): List<Token> {
             rest.consume(if_) -> resultList.add(Token(IF))
             rest.consume(while_) -> resultList.add(Token(WHILE))
             rest.startWithNumber() -> resultList.add(Token(Integer.parseInt(rest.popNumber())))//consumeだと数字が特定できないため
-            rest.isFunCallExpression() -> {
-                resultList.apply {
-                    add(Token(FUN_CALL, funName = rest.popIdentification()))
-                }
+            rest.isClassOrFunCallExpression() -> {
+                resultList.add(Token(CLASS_OR_FUN_CALL, classOrFunName = rest.popIdentification()))
             }
             rest.consume(comma) -> resultList.add(Token(COMMA))
+            rest.consume(dot) -> resultList.add(Token(DOT))
             rest.startWithAlphabet() -> resultList.add(
                 Token(
                     ASSIGNED_VAL,
@@ -113,7 +117,7 @@ fun tokenize(str: String): List<Token> {
                 //飛ばす
             }
             else -> {
-                throw Exception("予期せぬ文字です")
+                throw Exception("${rest.innerString[0]}は予期せぬ文字です")
             }
         }
     }

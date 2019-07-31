@@ -6,10 +6,10 @@ data class Node(
     val rightNode: Node? = null,
     val valMap: LinkedHashMap<String, Int> = linkedMapOf(),
     val valSet: LinkedHashSet<String> = linkedSetOf(),
+    val classSizeMap: LinkedHashMap<String, Int> = linkedMapOf(),
     val funMap: MutableMap<String, Node> = mutableMapOf(),
     val nodes: Nodes = Nodes(),
-    val argumentsOnDeclare: MutableList<Val> = mutableListOf(),
-    val offset: Int = 0
+    val argumentsOnDeclare: MutableList<Val> = mutableListOf()
 ) {
 
     constructor(
@@ -19,9 +19,9 @@ data class Node(
         nodes: Nodes = Nodes(),
         valMap: LinkedHashMap<String, Int> = linkedMapOf(),
         valSet: LinkedHashSet<String> = linkedSetOf(),
+        classSizeMap: LinkedHashMap<String, Int> = linkedMapOf(),
         funMap: MutableMap<String, Node> = mutableMapOf(),
-        arguments: MutableList<Val> = mutableListOf(),
-        offset: Int = 0
+        arguments: MutableList<Val> = mutableListOf()
     ) :
             this(
                 Token(type),
@@ -30,9 +30,9 @@ data class Node(
                 nodes = nodes,
                 valMap = valMap,
                 valSet = valSet,
+                classSizeMap = classSizeMap,
                 funMap = funMap,
-                argumentsOnDeclare = arguments,
-                offset = offset
+                argumentsOnDeclare = arguments
             )
 
     constructor(
@@ -46,6 +46,9 @@ data class Node(
                 rightNode
             )
 
+    //TODO:"class A(){member = 42;} fun main(){return A().member} => 42　を通す"
+
+    //TODO: ここらへんで変数代入時の型解決をする
     override fun toString(): String {
         val result = mutableListOf<String>()
         result.apply {
@@ -85,6 +88,15 @@ data class Node(
             add("}")
         }
         return result.joinToString(separator = "")
+    }
+
+
+    //TODO: 変数にクラスが代入されている場合の処理
+    fun genClassSizeMap() {
+        if (token.type == CLASS) {
+            val classSize = rightNode!!.valSet.size
+            classSizeMap[token.className!!] = classSize
+        }
     }
 
     //変数のアドレスを計算しpush
@@ -148,10 +160,28 @@ data class Node(
                 println("  push rax")
             }
             FUN -> {
-                leftNode!!.printPrologue(token.funName!!)
+                leftNode!!.printFunPrologue(token.funName!!)
                 leftNode.printAssemblyArgumentsOnDeclare()
                 rightNode!!.printAssembly()
-                printEpilogue()
+                printFunEpilogue()
+            }
+            CLASS -> {
+                printClassPrologue(token.className!!)
+                rightNode!!.printAssembly()
+                printClassEpilogue()
+            }
+            CLASS_CALL -> {
+                println("  mov rax,rsp")
+                println("  call ${token.className}_$init")
+            }
+            DOT -> {
+                leftNode!!.printAssembly()//インスタンス生成またはインスタンスにアクセスし、this(rbp)をraxに返却
+                println("  sub rax, ${(valSet.indexOf(rightNode!!.token.val_!!.name) + 1) * 8}")
+                println("  push rax")
+                println("")
+                println("  pop rax #代入済み変数をpush!")
+                println("  mov rax, [rax]")
+                println("  push rax")
             }
             IF -> {
                 val labelNumber = UniqueNumber.next()
@@ -251,17 +281,32 @@ data class Node(
         println("  push rax")
     }
 
-    private fun printEpilogue() {
+    private fun printFunEpilogue() {
         println("  mov rsp, rbp")
         println("  pop rbp")
     }
 
-    private fun printPrologue(funName: String) {
+    private fun printFunPrologue(funName: String) {
         println("$funName:")
         println("  push rbp")
         println("  mov rbp, rsp")
         println("  sub rsp, ${valSet.size * 8}")
         println("")
+    }
+
+    private fun printClassPrologue(className: String) {
+        println("${className}_$init:")
+        println("  push rbp")
+        println("  mov rbp, rsp")
+        println("  sub rsp, ${valSet.size * 8}")
+        println("")
+    }
+
+    private fun printClassEpilogue() {
+        println("  mov rax, rbp #thisにあたるポインタをraxで返している")
+        println("  mov rsp, rbp")
+        println("  pop rbp")
+        println("  ret")
     }
 
     fun genValSet() {
@@ -291,6 +336,15 @@ data class Node(
         if (token.type == ARGUMENTS) {
             valSet.addAll(argumentsOnDeclare.map { it.name })
         }
+
+        if (token.type == CLASS) {
+            leftNode!!.genValSet()
+            rightNode!!.genValSet()
+            valSet.addAll(leftNode.valSet)
+            valSet.addAll(rightNode.valSet)
+            return
+        }
+
     }
 
     fun propagateValSet() {
@@ -303,6 +357,18 @@ data class Node(
         nodes.valSet.clear()
         nodes.valSet.addAll(valSet)
         nodes.propagateValSet()
+    }
+
+    fun propagateClassSizeMap() {
+        leftNode?.classSizeMap?.clear()
+        leftNode?.classSizeMap?.putAll(classSizeMap)
+        leftNode?.propagateClassSizeMap()
+        rightNode?.classSizeMap?.clear()
+        rightNode?.classSizeMap?.putAll(classSizeMap)
+        rightNode?.propagateClassSizeMap()
+        nodes.classSizeMap.clear()
+        nodes.classSizeMap.putAll(classSizeMap)
+        nodes.propagateClassSizeMap()
     }
 
     companion object {

@@ -1,14 +1,14 @@
 #!/bin/bash
 try() {
- cd ../asm
+  cd ../asm
   expected="$1"
   input="$2"
-  java -jar Assembly.jar "$input" > test.s
+  java -jar Assembly.jar "$input" >test.s
   gcc -o test test.s
   ./test
   actual="$?"
 
-  if [[ "$actual" = "$expected" ]]; then
+  if [[ "$actual" == "$expected" ]]; then
     echo "$input => $actual"
   else
     echo "$expected expected, but got $actual"
@@ -22,6 +22,12 @@ kotlinc *.kt -include-runtime -d ../temp
 
 cd ../temp
 jar cfm ../asm/Assembly.jar ../asm/MANIFEST.MF *.class
+
+try 42 "class A(){b=42;} fun main(){return A().b;}"
+try 6 "class A(){b=42;c=6;d=4;} fun main(){return A().c;}"
+try 4 "class A(){b=42;c=6;d=4;} fun main(){return A().d;}"
+try 6 "class A(){b=42;c=6;d=4;} fun main(){c=100; return A().c;}"
+try 4 "class A(){b=42;c=6;d=4;} fun main(){d=111; return A().d;}"
 
 try 0 "fun main(){return 0;}"
 try 42 "fun main(){return 42;}"
@@ -91,11 +97,11 @@ try 120 "fun mulAll(a,b,c,d,e){return a*b*c*d*e;} fun main(){return mulAll(1,2,3
 try 1 "fun is5(n){if(n == 5){return 1;} return 2; return 3;} fun main(){return is5(5);}"
 try 2 "fun is5(n){if(n == 5){return 1;} return 2; return 3;} fun main(){return is5(14);}"
 try 100 "fun id5(n){if((n == 5)){return 100;} return n; return 2;} fun main(){return id5(5);}"
-try 20  "fun id5(n){if((n == 5)){return 100;} return n; return 2;} fun main(){return id5(20);}"
-try 5  "fun get4(){return 4;} fun get5(){return get4() + 1;} fun main(){return get5();}"
-try 7  "fun get3(){return 3;} fun getPlus3(n){return get3() + n;} fun main(){return getPlus3(4);}"
-try 7  "fun id(n){return n;} fun add(a,b){return id(a) + id(b);} fun main(){return add(3,4);}"
-try 7  "fun id(a){return a;} fun add(a,b){return id(a) + id(b);} fun main(){return add(3,4);}"
+try 20 "fun id5(n){if((n == 5)){return 100;} return n; return 2;} fun main(){return id5(20);}"
+try 5 "fun get4(){return 4;} fun get5(){return get4() + 1;} fun main(){return get5();}"
+try 7 "fun get3(){return 3;} fun getPlus3(n){return get3() + n;} fun main(){return getPlus3(4);}"
+try 7 "fun id(n){return n;} fun add(a,b){return id(a) + id(b);} fun main(){return add(3,4);}"
+try 7 "fun id(a){return a;} fun add(a,b){return id(a) + id(b);} fun main(){return add(3,4);}"
 try 1 "fun sum(n){if(n == 1){return 1;} return n + sum(n-1);} fun main(){return sum(1);}"
 try 3 "fun sum(n){if(n == 1){return 1;} return n + sum(n-1);} fun main(){return sum(2);}"
 try 6 "fun sum(n){if(n == 1){return 1;} return n + sum(n-1);} fun main(){return sum(3);}"

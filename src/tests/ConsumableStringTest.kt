@@ -1,5 +1,8 @@
+package tests
+
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import toConsumableString
 
 internal class ConsumableStringTest {
 
@@ -53,6 +56,14 @@ internal class ConsumableStringTest {
         assertEquals(false, "funabc123(".toConsumableString().isFunExpression())
         assertEquals(false, "fun(".toConsumableString().isFunExpression())
         assertEquals(false, "fun abc123".toConsumableString().isFunExpression())
+    }
+
+    @Test
+    fun isClassExpression() {
+        assertEquals(true, "class a".toConsumableString().isClassExpression())
+        assertEquals(true, "class abc123(){".toConsumableString().isClassExpression())
+        assertEquals(false, "classa".toConsumableString().isClassExpression())
+        assertEquals(false, "classabc123(){".toConsumableString().isClassExpression())
     }
 
     @Test

@@ -1,6 +1,6 @@
 import TokenType.*
 
-class Tokens(private val innerList: List<Token>) {
+class Tokens(private var innerList: List<Token>) {
 
     init {
         if (innerList.isEmpty()) {
@@ -21,8 +21,36 @@ class Tokens(private val innerList: List<Token>) {
         }
     }
 
+    private fun resolveClassOrFunCall() {
+        val funNameSet = mutableSetOf<String>()
+        val classNameSet = mutableSetOf<String>()
+        val resultList = mutableListOf<Token>()
+        for (token in innerList) {
+            if (token.type == FUN) {
+                funNameSet.add(token.funName!!)
+            }
+            if (token.type == CLASS) {
+                classNameSet.add(token.className!!)
+            }
+        }
+        for (token in innerList) {
+            resultList.add(
+                if (token.type == CLASS_OR_FUN_CALL) {
+                    when {
+                        funNameSet.contains(token.classOrFunName) -> token.interpretAsFunCall()
+                        classNameSet.contains(token.classOrFunName) -> token.interpretAsClassCall()
+                        else -> throw  Exception("CLASS_OR_FUN_CALLで呼び出された${token.classOrFunName}は関数呼び出しかインスタンス化か分かりませんでした")
+                    }
+                } else {
+                    token
+                }
+            )
+        }
+        innerList = resultList
+    }
 
     fun parse(): List<Node> {
+        resolveClassOrFunCall()
         val result = program()
         return result
     }
@@ -53,6 +81,20 @@ class Tokens(private val innerList: List<Token>) {
             } else {
                 val innerNodes = statement()
                 return Node(funToken, argumentsNode, innerNodes)
+            }
+        } else if (consume(CLASS)) {
+            val classToken = innerList[cursor - 1]
+            val constructorNode = Node(ARGUMENTS)
+            consume(ROUND_BRACKET_OPEN)
+            while (innerList[cursor].type == ARGUMENTS) {
+                constructorNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
+                cursor++
+            }
+            if (!consume(ROUND_BRACKET_CLOSE)) {
+                throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
+            } else {
+                val innerNodes = statement()
+                return Node(classToken, constructorNode, innerNodes)
             }
         } else {
             throw Exception("トップレベルに関数以外のトークンが有ります@cursor=$cursor, content=${innerList[cursor]}")
@@ -196,12 +238,20 @@ class Tokens(private val innerList: List<Token>) {
 
     private fun unary(): Node {
         if (consume(PLUS)) {
-            return term()
+            return memberAccess()
         }
         if (consume(MINUS)) {
-            return Node(MINUS, Node(0), term())
+            return Node(MINUS, Node(0), memberAccess())
         }
-        return term()
+        return memberAccess()
+    }
+
+    private fun memberAccess(): Node {
+        var result = term()
+        if (consume(DOT)) {
+            result = Node(DOT, result, term())
+        }
+        return result
     }
 
     private fun term(): Node {
@@ -219,7 +269,7 @@ class Tokens(private val innerList: List<Token>) {
         if (innerList[cursor].val_ != null) {//変数
             val result = Node(innerList[cursor++])
             return if (consume(INCREASE)) {
-                Node(INCREASE, result, Node(NULL))
+                Node(INCREASE, result, null)
             } else {
                 result
             }
@@ -235,7 +285,19 @@ class Tokens(private val innerList: List<Token>) {
                 consume(COMMA)
             }
             val argumentsNode = Node(ARGUMENTS, nodes = Nodes(nodes2add))
-            return Node(funToken, argumentsNode, Node(NULL))
+            return Node(funToken, argumentsNode, null)
+        }
+
+        if (consume(CLASS_CALL)) {
+            val classToken = innerList[cursor - 1].copy(type = CLASS_CALL)
+            consume(ROUND_BRACKET_OPEN)
+            val nodes2add = mutableListOf<Node>()
+            while (!consume(ROUND_BRACKET_CLOSE)) {
+                nodes2add.add(expression())
+                consume(COMMA)
+            }
+            val argumentsNode = Node(ARGUMENTS, nodes = Nodes(nodes2add))
+            return Node(classToken, argumentsNode, null)
         }
 
 

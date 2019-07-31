@@ -63,14 +63,16 @@ data class ConsumableString(var innerString: String) {
         return clone.innerString.startsWith(assign)
     }
 
-    fun isFunExpression(): Boolean {
+    //class name
+    //ならtrue
+    fun isClassExpression(): Boolean {
         if (isEmpty()) return false
         if (!startWithAlphabet()) return false
         val clone = this.copy(innerString = innerString)
-        if (!clone.consume(fun_)) return false
+        if (!clone.consume(class_)) return false
         if (!clone.consume(space)) return false
-        clone.popIdentification()
-        return clone.innerString.startsWith(roundBracketOpen)
+        if (clone.popIdentification().isEmpty()) return false
+        return true
     }
 
     fun isArgumentExpression(): Boolean {
@@ -86,6 +88,16 @@ data class ConsumableString(var innerString: String) {
         }
     }
 
+    fun isFunExpression(): Boolean {
+        if (isEmpty()) return false
+        if (!startWithAlphabet()) return false
+        val clone = this.copy(innerString = innerString)
+        if (!clone.consume(fun_)) return false
+        if (!clone.consume(space)) return false
+        clone.popIdentification()
+        return clone.innerString.startsWith(roundBracketOpen)
+    }
+
     fun hasNextArgument(): Boolean {
         if (isEmpty()) return false
         val clone = this.copy(innerString = innerString)
@@ -93,12 +105,11 @@ data class ConsumableString(var innerString: String) {
         return clone.startWithAlphabet()
     }
 
-    fun isFunCallExpression(): Boolean {
+    fun isClassOrFunCallExpression(): Boolean {
         if (isEmpty()) return false
         if (!startWithAlphabet()) return false
         val clone = this.copy(innerString = innerString)
         clone.popIdentification()
         return clone.innerString.startsWith(roundBracketOpen)
     }
-
 }

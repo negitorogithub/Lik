@@ -1,6 +1,12 @@
+package tests
+
+import Token
 import TokenType.*
+import Val
+import numberList2number
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import tokenize
 import kotlin.test.assertEquals
 
 internal class LikTest {
@@ -107,7 +113,7 @@ internal class LikTest {
 
         assertEquals(
             listOf(
-                Token(FUN_CALL, funName = "isA"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "isA"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ROUND_BRACKET_CLOSE)
             ),
@@ -115,7 +121,7 @@ internal class LikTest {
         )
         assertEquals(
             listOf(
-                Token(FUN_CALL, funName = "isA123"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "isA123"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ROUND_BRACKET_CLOSE)
             ),
@@ -124,7 +130,7 @@ internal class LikTest {
 
         assertEquals(
             listOf(
-                Token(FUN_CALL, funName = "isA123"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "isA123"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ASSIGNED_VAL, val_ = Val("a")),
                 Token(ROUND_BRACKET_CLOSE)
@@ -133,7 +139,7 @@ internal class LikTest {
         )
         assertEquals(
             listOf(
-                Token(FUN_CALL, funName = "isA123"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "isA123"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(1),
                 Token(ROUND_BRACKET_CLOSE)
@@ -142,7 +148,7 @@ internal class LikTest {
         )
         assertEquals(
             listOf(
-                Token(FUN_CALL, funName = "isA123"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "isA123"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ASSIGNED_VAL, val_ = Val("a")),
                 Token(COMMA),
@@ -156,9 +162,9 @@ internal class LikTest {
 
         assertEquals(
             listOf(
-                Token(FUN_CALL, funName = "isA123"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "isA123"),
                 Token(ROUND_BRACKET_OPEN),
-                Token(FUN_CALL, funName = "getString"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "getString"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(1),
                 Token(COMMA),
@@ -191,7 +197,7 @@ internal class LikTest {
                 Token(RETURN),
                 Token(ASSIGNED_VAL, val_ = Val("n")),
                 Token(MULTIPLY),
-                Token(FUN_CALL, funName = "fac"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "fac"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ASSIGNED_VAL, val_ = Val("n")),
                 Token(MINUS),
@@ -199,7 +205,7 @@ internal class LikTest {
                 Token(ROUND_BRACKET_CLOSE),
                 Token(SEMI_COLON),
                 Token(CURLY_BRACKET_CLOSE),
-                Token(FUN_CALL, funName = "fac"),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "fac"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(5),
                 Token(ROUND_BRACKET_CLOSE),
@@ -208,7 +214,111 @@ internal class LikTest {
             tokenize("fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);")
         )
 
+        assertEquals(
+            listOf(
+                Token(CLASS, className = "a"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(CURLY_BRACKET_CLOSE)
+            ),
+            tokenize("class a(){}")
+        )
 
+        assertEquals(
+            listOf(
+                Token(CLASS, className = "a"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(CURLY_BRACKET_CLOSE)
+            ),
+            tokenize("class a\n(){}")
+        )
+
+        assertEquals(
+            listOf(
+                Token(CLASS, className = "A"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(NOT_ASSIGNED_VAL, val_ = Val("a")),
+                Token(ASSIGN),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(SEMI_COLON)
+            ),
+            tokenize("class A(){} a=A();")
+        )
+
+        assertEquals(
+            listOf(
+                Token(CLASS, className = "a"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(FUN, funName = "b"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(FUN, funName = "main"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "b"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(SEMI_COLON),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "a"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(SEMI_COLON),
+                Token(CURLY_BRACKET_CLOSE)
+            ),
+            tokenize("class a(){} fun b(){} fun main(){b();a();}")
+        )
+
+        assertEquals(
+            listOf(
+                Token(CLASS, className = "a"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
+                Token(ASSIGN),
+                Token(42),
+                Token(SEMI_COLON),
+                Token(CURLY_BRACKET_CLOSE)
+            ),
+            tokenize("class a(){b=42;}")
+        )
+
+        assertEquals(
+            listOf(
+                Token(CLASS, className = "A"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(FUN, funName = "main"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(RETURN),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(DOT),
+                Token(ASSIGNED_VAL, val_ = Val("member")),
+                Token(SEMI_COLON),
+                Token(CURLY_BRACKET_CLOSE)
+            ),
+            tokenize("class A(){} fun main(){return A().member;}")
+        )
     }
 
 

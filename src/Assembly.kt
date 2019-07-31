@@ -17,6 +17,8 @@ class Assembly {
             ).apply {
                 genValSet()
                 propagateValSet()
+                genClassSizeMap()
+                printClassDeclareAssemblies()
                 printFunDeclareAssemblies()
             }
         }
