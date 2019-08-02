@@ -29,6 +29,10 @@ try 4 "class A(){b=42;c=6;d=4;} fun main(){return A().d;}"
 try 6 "class A(){b=42;c=6;d=4;} fun main(){c=100; return A().c;}"
 try 4 "class A(){b=42;c=6;d=4;} fun main(){d=111; return A().d;}"
 
+try 42 "class A(){a=42;} class B(){b=A().a;} fun main(){return B().b;}"
+
+try 42 "class A(){fun get42(){return 42;}} fun main(){return A().get42()}"
+
 try 0 "fun main(){return 0;}"
 try 42 "fun main(){return 42;}"
 try 5 "fun main() {return 2+3;}"

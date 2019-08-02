@@ -15,6 +15,7 @@ class Assembly {
                     )
                 ).parse()
             ).apply {
+                genValType()
                 genValSet()
                 propagateValSet()
                 genClassSizeMap()

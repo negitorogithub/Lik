@@ -58,7 +58,7 @@ class Tokens(private var innerList: List<Token>) {
     private fun program(): List<Node> {
         val result = mutableListOf<Node>()
         while (!hasFinishedReading()) {
-            result.add(functions())
+            result.add(classes())
         }
         return result
     }
@@ -67,7 +67,27 @@ class Tokens(private var innerList: List<Token>) {
         return (cursor >= innerList.lastIndex)
     }
 
-    private fun functions(): Node {
+    private fun classes(): Node {
+        if (consume(CLASS)) {
+            val classToken = innerList[cursor - 1]
+            val constructorNode = Node(ARGUMENTS)
+            consume(ROUND_BRACKET_OPEN)
+            while (innerList[cursor].type == ARGUMENTS) {
+                constructorNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
+                cursor++
+            }
+            if (!consume(ROUND_BRACKET_CLOSE)) {
+                throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
+            } else {
+                val innerNodes = function()
+                return Node(classToken, constructorNode, innerNodes)
+            }
+        } else {
+            return function()
+        }
+    }
+
+    private fun function(): Node {
         if (consume(FUN)) {
             val funToken = innerList[cursor - 1]
             val argumentsNode = Node(ARGUMENTS)
@@ -82,23 +102,10 @@ class Tokens(private var innerList: List<Token>) {
                 val innerNodes = statement()
                 return Node(funToken, argumentsNode, innerNodes)
             }
-        } else if (consume(CLASS)) {
-            val classToken = innerList[cursor - 1]
-            val constructorNode = Node(ARGUMENTS)
-            consume(ROUND_BRACKET_OPEN)
-            while (innerList[cursor].type == ARGUMENTS) {
-                constructorNode.argumentsOnDeclare.add(innerList[cursor].val_!!)
-                cursor++
-            }
-            if (!consume(ROUND_BRACKET_CLOSE)) {
-                throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
-            } else {
-                val innerNodes = statement()
-                return Node(classToken, constructorNode, innerNodes)
-            }
         } else {
-            throw Exception("トップレベルに関数以外のトークンが有ります@cursor=$cursor, content=${innerList[cursor]}")
+            return statement()
         }
+
     }
 
     private fun statement(): Node {
@@ -133,7 +140,7 @@ class Tokens(private var innerList: List<Token>) {
             consume(CURLY_BRACKET_OPEN) -> {
                 val resultList = mutableListOf<Node>()
                 while (!consume(CURLY_BRACKET_CLOSE)) {
-                    resultList.add(statement())
+                    resultList.add(function())
                 }
                 return Node(NODES, nodes = Nodes(resultList))
             }

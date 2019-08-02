@@ -6,7 +6,6 @@ import Token
 import TokenType.*
 import Tokens
 import Val
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -14,6 +13,102 @@ internal class TokensTest {
 
     @Test
     fun parseTest() {
+
+        //class A(){fun get42(){return 42;}} fun main(){return A().get42();}
+        assertEquals(
+            listOf(
+                Node(
+                    Token(CLASS, className = "A"),
+                    Node(ARGUMENTS),
+                    Node(
+                        NODES,
+                        nodes =
+                        Nodes(
+                            listOf(
+                                Node(
+                                    Token(FUN, funName = "get42"),
+                                    Node(ARGUMENTS),
+                                    Node(
+                                        NODES,
+                                        nodes =
+                                        Nodes(
+                                            listOf(
+                                                Node(
+                                                    RETURN,
+                                                    null,
+                                                    Node(42)
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                Node(
+                    Token(FUN, funName = "main"),
+                    Node(ARGUMENTS),
+                    Node(
+                        NODES,
+                        nodes =
+                        Nodes(
+                            listOf(
+                                Node(
+                                    RETURN,
+                                    null,
+                                    Node(
+                                        DOT,
+                                        Node(
+                                            Token(CLASS_CALL, className = "A"),
+                                            Node(ARGUMENTS)
+                                        ),
+                                        Node(
+                                            Token(FUN_CALL, funName = "get42"),
+                                            Node(ARGUMENTS)
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+
+            )
+            ,
+            Tokens(
+                listOf(
+                    Token(CLASS, className = "A"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(FUN, funName = "get42"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(RETURN),
+                    Token(42),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(RETURN),
+                    Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(DOT),
+                    Token(CLASS_OR_FUN_CALL, classOrFunName = "get42"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()
+        )//class A(){fun get42(){return 42;}} fun main(){return A().get42();}
+
 
         //class a(){} fun b(){} fun main(){b();a();}
 
@@ -798,11 +893,18 @@ internal class TokensTest {
             ).parse()[0]
         )
 
-        Assertions.assertEquals(
+        assertEquals(
             Node(
-                DOT,
-                Node(Token(CLASS_CALL, className = "A")),
-                Node(Token(ASSIGNED_VAL, val_ = Val("member")))
+                RETURN,
+                null,
+                Node(
+                    DOT,
+                    Node(
+                        Token(CLASS_CALL, className = "A"),
+                        Node(ARGUMENTS)
+                    ),
+                    Node(Token(ASSIGNED_VAL, val_ = Val("member")))
+                )
             ),
             Tokens(
                 listOf(
@@ -824,7 +926,7 @@ internal class TokensTest {
                     Token(SEMI_COLON),
                     Token(CURLY_BRACKET_CLOSE)
                 )
-            ).parse()[1].rightNode
+            ).parse()[1].rightNode!!.nodes.innerList[0]
         )
 
     }
