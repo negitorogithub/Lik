@@ -1,0 +1,11 @@
+レジスタ用途:
+rax:返り値・コンストラクターの場合thisのアドレス(rbp)
+r12:メンバ関数を呼ぶときrbpを保存(rbpにthisを代入するため)
+
+in-out:
+  constructor:無し-thisのアドレス(rax)
+  topFun:無し-無し
+  inClassFun:スタック1つ(thisとして)-無し
+  topFunCall:引数(rdi,...)-戻り値(rax)
+  dot:無し-無し
+  assign:スタック2つ-スタックの始めの1つ
