@@ -33,6 +33,8 @@ try 42 "class A(){a=42;} class B(){b=A().a;} fun main(){return B().b;}"
 
 try 42 "class A(){fun get42(){return 42;}} fun main(){return A().get42()}"
 
+try 42 "class A(){a = 42; fun get42(){return a;}} fun main(){return A().get42()}"
+
 try 0 "fun main(){return 0;}"
 try 42 "fun main(){return 42;}"
 try 5 "fun main() {return 2+3;}"

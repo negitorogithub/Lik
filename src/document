@@ -5,7 +5,9 @@ r12:メンバ関数を呼ぶときrbpを保存(rbpにthisを代入するため)
 in-out:
   constructor:無し-thisのアドレス(rax)
   topFun:無し-無し
-  inClassFun:スタック1つ(thisとして)-無し
+  inClassFun:無し-無し
   topFunCall:引数(rdi,...)-戻り値(rax)
+  inClassFunCall:thisのアドレス(rax)-戻り値(rax)
   dot:無し-無し
-  assign:スタック2つ-スタックの始めの1つ
+  assign:スタック2つ-呼び出し時のスタックトップ
+  return:スタック1つ-無し

@@ -187,15 +187,12 @@ data class Node(
                     println("  push rax")
                 }
 
-
-
                 if (rightNode.token.type == FUN_CALL) {
                     val className = if (leftNode.token.type == CLASS_CALL) {
                         leftNode.token.className
                     } else {
                         leftNode.token.val_!!.valType
                     }
-                    println("  pop rax #thisのアドレスを取得")
                     println("  call ${className}_${rightNode.token.funName}")
                     println("  push rax")
                 }
@@ -227,9 +224,14 @@ data class Node(
     }
 
     fun printInClassFunAssembly(classname: String) {
-        leftNode!!.printFunPrologue("${classname}_${token.funName!!}")
+        leftNode!!.printInClassFunPrologue("${classname}_${token.funName!!}")
+        println("  mov r12, rbp")
+        println("  mov rbp, rax #rbpにthisを代入")
+        println("")
         leftNode.printAssemblyArgumentsOnDeclare()
         rightNode!!.printAssembly()
+        println("  mov rbp, r12")
+        println("")
         printFunEpilogue()
     }
 
@@ -311,6 +313,14 @@ data class Node(
     }
 
     private fun printFunPrologue(funName: String) {
+        println("$funName:")
+        println("  push rbp")
+        println("  mov rbp, rsp")
+        println("  sub rsp, ${valSet.size * 8}")
+        println("")
+    }
+
+    private fun printInClassFunPrologue(funName: String) {
         println("$funName:")
         println("  push rbp")
         println("  mov rbp, rsp")
