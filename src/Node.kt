@@ -225,12 +225,10 @@ data class Node(
 
     fun printInClassFunAssembly(classname: String) {
         leftNode!!.printInClassFunPrologue("${classname}_${token.funName!!}")
-        println("  mov r12, rbp")
         println("  mov rbp, rax #rbpにthisを代入")
         println("")
         leftNode.printAssemblyArgumentsOnDeclare()
         rightNode!!.printAssembly()
-        println("  mov rbp, r12")
         println("")
         printFunEpilogue()
     }
