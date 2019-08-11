@@ -168,6 +168,9 @@ class Tokens(private var innerList: List<Token>) {
         if (consume(ASSIGN)) {
             result = Node(ASSIGN, result, assign())
         }
+        if (consume(DECLARE_AND_ASSIGN_VAL)) {
+            result = Node(DECLARE_AND_ASSIGN_VAL, result, assign())
+        }
         return result
     }
 

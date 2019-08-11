@@ -244,7 +244,7 @@ internal class LikTest {
                 Token(CURLY_BRACKET_OPEN),
                 Token(CURLY_BRACKET_CLOSE),
                 Token(NOT_ASSIGNED_VAL, val_ = Val("a")),
-                Token(ASSIGN),
+                Token(DECLARE_AND_ASSIGN_VAL),
                 Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ROUND_BRACKET_CLOSE),
@@ -289,7 +289,7 @@ internal class LikTest {
                 Token(ROUND_BRACKET_CLOSE),
                 Token(CURLY_BRACKET_OPEN),
                 Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
-                Token(ASSIGN),
+                Token(DECLARE_AND_ASSIGN_VAL),
                 Token(42),
                 Token(SEMI_COLON),
                 Token(CURLY_BRACKET_CLOSE)

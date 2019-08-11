@@ -6,7 +6,6 @@ import TokenType.*
 //TODO:ポインタ
 //TODO:else
 //TODO:when
-//TODO:val
 //TODO:宣言時の型
 //TODO:&&,||
 
@@ -102,7 +101,7 @@ fun tokenize(str: String): List<Token> {
                             val_ = Val(rest.popIdentification())
                         )
                     )
-                    add(Token(ASSIGN))
+                    add(Token(DECLARE_AND_ASSIGN_VAL))
                 }
                 while (rest.consume(space)) {
 

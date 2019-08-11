@@ -144,6 +144,14 @@ data class Node(
                 println("  mov [rax], rdi")
                 println("  push rdi")
             }
+            DECLARE_AND_ASSIGN_VAL -> {
+                leftNode!!.printAssemblyPushValAddress()
+                rightNode!!.printAssembly()
+                println("  pop rdi #変数に代入し右辺をpush")
+                println("  pop rax")
+                println("  mov [rax], rdi")
+                println("  push rdi")
+            }
             RETURN -> {
                 rightNode!!.printAssembly()
                 println("  pop rax #リターン")
@@ -342,7 +350,7 @@ data class Node(
     }
 
     fun genValSet() {
-        if (token.type == ASSIGN) {
+        if (token.type == ASSIGN || token.type == DECLARE_AND_ASSIGN_VAL) {
             val valName = leftNode?.token?.val_?.name
             if (valSet.map { it.name }.contains(valName)) {
                 //代入済み時
