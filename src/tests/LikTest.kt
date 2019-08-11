@@ -250,7 +250,7 @@ internal class LikTest {
                 Token(ROUND_BRACKET_CLOSE),
                 Token(SEMI_COLON)
             ),
-            tokenize("class A(){} a=A();")
+            tokenize("class A(){} val a=A();")
         )
 
         assertEquals(
@@ -294,7 +294,7 @@ internal class LikTest {
                 Token(SEMI_COLON),
                 Token(CURLY_BRACKET_CLOSE)
             ),
-            tokenize("class a(){b=42;}")
+            tokenize("class a(){val b=42;}")
         )
 
         assertEquals(

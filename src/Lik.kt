@@ -5,12 +5,10 @@ import TokenType.*
 //TODO:配列
 //TODO:ポインタ
 //TODO:else
-//TODO:クラス
 //TODO:when
 //TODO:val
 //TODO:宣言時の型
 //TODO:&&,||
-//TODO:宣言時の型
 
 fun tokenize(str: String): List<Token> {
     val resultList = mutableListOf<Token>()
@@ -89,7 +87,23 @@ fun tokenize(str: String): List<Token> {
                     )
                     add(Token(ASSIGN))
                 }
+                while (rest.consume(space)) {
 
+                }
+                rest.consume(assign)
+            }
+            rest.isValDeclareAssignExpression() -> {
+                rest.consume(val_)
+                rest.consume(space)
+                resultList.apply {
+                    add(
+                        Token(
+                            NOT_ASSIGNED_VAL,
+                            val_ = Val(rest.popIdentification())
+                        )
+                    )
+                    add(Token(ASSIGN))
+                }
                 while (rest.consume(space)) {
 
                 }

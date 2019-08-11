@@ -25,5 +25,6 @@ const val init = "init"
 const val comma = ","
 const val dot = "."
 const val newLine = "\n"
+const val val_ = "val"
 val numbers = '0'..'9'
 val alphabets = listOf('a'..'z', 'A'..'Z').flatten()

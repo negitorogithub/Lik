@@ -55,8 +55,8 @@ data class ConsumableString(var innerString: String) {
         if (isEmpty()) return false
         if (!startWithAlphabet()) return false
         val clone = this.copy(innerString = innerString)
-        clone.innerString = clone.innerString.filterNot { it.toString() == space }
         clone.popIdentification()
+        clone.innerString = clone.innerString.filterNot { it.toString() == space }
         if (clone.innerString.startsWith(equal)) {
             return false
         }
@@ -111,5 +111,19 @@ data class ConsumableString(var innerString: String) {
         val clone = this.copy(innerString = innerString)
         clone.popIdentification()
         return clone.innerString.startsWith(roundBracketOpen)
+    }
+
+    fun isValDeclareAssignExpression(): Boolean {
+        if (isEmpty()) return false
+        if (!startWithAlphabet()) return false
+        val clone = this.copy(innerString = innerString)
+        if (!clone.consume(val_)) return false
+        if (!clone.consume(space)) return false
+        clone.innerString = clone.innerString.filterNot { it.toString() == space }
+        clone.popIdentification()
+        if (clone.innerString.startsWith(equal)) {
+            return false
+        }
+        return clone.innerString.startsWith(assign)
     }
 }

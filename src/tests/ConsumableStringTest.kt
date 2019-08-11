@@ -34,18 +34,28 @@ internal class ConsumableStringTest {
     @Test
     fun isAssignExpression() {
         assertEquals(
+            false,
+            "val a=".toConsumableString().isAssignExpression()
+        )
+
+        assertEquals(
+            false,
+            "val abc = ".toConsumableString().isAssignExpression()
+        )
+
+        assertEquals(
+            false,
+            "val abc ==".toConsumableString().isAssignExpression()
+        )
+
+        assertEquals(
             true,
             "a=".toConsumableString().isAssignExpression()
         )
 
         assertEquals(
             true,
-            "abc = ".toConsumableString().isAssignExpression()
-        )
-
-        assertEquals(
-            false,
-            "abc ==".toConsumableString().isAssignExpression()
+            "vala=".toConsumableString().isAssignExpression()
         )
     }
 
