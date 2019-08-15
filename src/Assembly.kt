@@ -15,10 +15,11 @@ class Assembly {
                     )
                 ).parse()
             ).apply {
-                genValType()
-                genValSet()
-                propagateValSet()
+                genValSetEach()
+                propagateValSetEach()
                 genClassSizeMap()
+                genValType()
+                genClassNodesTable()
                 printClassDeclareAssemblies()
                 printFunDeclareAssemblies()
             }

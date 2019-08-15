@@ -1,7 +1,7 @@
 import TokenType.*
 
 data class Node(
-    val token: Token,
+    var token: Token,
     val leftNode: Node? = null,
     val rightNode: Node? = null,
     val valMap: LinkedHashMap<String, Int> = linkedMapOf(),
@@ -89,10 +89,6 @@ data class Node(
     }
 
 
-    fun genValType() {
-
-    }
-
     //TODO: 変数にクラスが代入されている場合の処理
     fun genClassSizeMap() {
         if (token.type == CLASS) {
@@ -178,31 +174,44 @@ data class Node(
                 printClassPrologue(token.className!!)
                 rightNode!!.nodes.printInClassAssembliesWithoutFun()
                 printClassEpilogue()
-                rightNode.nodes.printInClassFunDeclareAssemblies(token.className)
+                rightNode.nodes.printInClassFunDeclareAssemblies(token.className!!)
             }
             CLASS_CALL -> {
                 println("  mov rax,rsp")
                 println("  call ${token.className}_$init")
+                println("  push rax #thisのアドレスをpush")
             }
             DOT -> {
                 leftNode!!.printAssembly()//インスタンス生成またはインスタンスにアクセスし、this(rbp)をraxに返却
-                if (rightNode!!.token.type == ASSIGNED_VAL) {
-                    println("  sub rax, ${(valSet.map { it.name }.indexOf(rightNode.token.val_!!.name) + 1) * 8}")
-                    println("  push rax")
-                    println("")
-                    println("  pop rax #代入済み変数をpush!")
-                    println("  mov rax, [rax]")
-                    println("  push rax")
-                }
-
-                if (rightNode.token.type == FUN_CALL) {
-                    val className = if (leftNode.token.type == CLASS_CALL) {
-                        leftNode.token.className
-                    } else {
-                        leftNode.token.val_!!.valType
+                println("  pop rax #thisのアドレスをpop ")
+                when (rightNode!!.token.type) {
+                    ASSIGNED_VAL -> {
+                        val className = when (leftNode.token.type) {
+                            CLASS_CALL -> leftNode.token.className
+                            ASSIGNED_VAL -> leftNode.token.val_!!.valType
+                            else -> throw Exception("ドットの左辺が${leftNode.token.type}で解決できません")
+                        }
+                        val classValSet = ClassNodesTable.mapOfClassNode[className]!!.valSet
+                        println("  sub rax, ${(classValSet.map { it.name }.indexOf(rightNode.token.val_!!.name) + 1) * 8}")//TODO:クラスコールの時クラスのvalSetを参照
+                        println("  push rax")
+                        println("")
+                        println("  pop rax #代入済み変数をpush!")
+                        println("  mov rax, [rax]")
+                        println("  push rax")
                     }
-                    println("  call ${className}_${rightNode.token.funName}")
-                    println("  push rax")
+                    FUN_CALL -> {//TODO:返り値がない関数の時もpushしてしまうためずれる
+                        if (leftNode.token.type == CLASS_CALL) {
+                            val className = leftNode.token.className
+                            println("  call ${className}_${rightNode.token.funName}")
+                            println("  push rax")
+                        }
+                        if (leftNode.token.type == ASSIGNED_VAL) {
+                            val className = leftNode.token.val_!!.valType
+                            println("  call ${className}_${rightNode.token.funName}")
+                            println("  push rax")
+                        }
+                    }
+                    else -> throw Exception("ドットの右辺が${rightNode.token.type}で解決できません")
                 }
             }
             IF -> {
@@ -316,6 +325,7 @@ data class Node(
     private fun printFunEpilogue() {
         println("  mov rsp, rbp")
         println("  pop rbp")
+        println("  ret")
     }
 
     private fun printFunPrologue(funName: String) {
@@ -349,48 +359,98 @@ data class Node(
         println("  ret")
     }
 
-    fun genValSet() {
-        if (token.type == ASSIGN || token.type == DECLARE_AND_ASSIGN_VAL) {
-            val valName = leftNode?.token?.val_?.name
-            if (valSet.map { it.name }.contains(valName)) {
-                //代入済み時
-            } else {
-                // 未代入時
-                val type = if (leftNode!!.token.type == CLASS_CALL) {
-                    leftNode.token.className!!
-                } else {
-                    "int"
-                }
-                valSet.add(Val("$valName", valType = type))
-            }
-            return
-        }
-        if (token.type == NODES) {
-            nodes.valSet.addAll(valSet)
-            nodes.genValSet()
-            valSet.addAll(nodes.valSet)
-            return
-        }
-        if (token.type == FUN) {
-            leftNode!!.genValSet()
-            valSet.addAll(leftNode.valSet)
-            rightNode!!.genValSet()
-            valSet.addAll(rightNode.valSet)
-            return
-        }
-        if (token.type == ARGUMENTS) {
-            valSet.addAll(argumentsOnDeclare)
-        }
+    private fun addValType(type: String) {
+        token.val_!!.valType = type
+    }
 
-        if (token.type == CLASS) {
-            leftNode!!.genValSet()
-            rightNode!!.genValSet()
-            valSet.addAll(leftNode.valSet)
-            valSet.addAll(rightNode.valSet)
-            return
+    fun genValSet() {
+        when (token.type) {
+            DECLARE_AND_ASSIGN_VAL,
+            ASSIGN -> {
+                val valName = leftNode?.token?.val_?.name
+                val hasAssigned = valSet.map { it.name }.contains(valName)
+                if (hasAssigned) {
+                } else {
+                    val type = if (rightNode!!.token.type == CLASS_CALL) {
+                        rightNode.token.className!!
+                    } else {
+                        "int"
+                    }
+                    valSet.add(Val("$valName", valType = type))
+                }
+            }
+            NODES -> {
+                nodes.valSet.addAll(valSet)
+                nodes.genValSet()
+                valSet.addAll(nodes.valSet)
+            }
+            FUN -> {
+                leftNode!!.genValSet()
+                valSet.addAll(leftNode.valSet)
+                rightNode!!.genValSet()
+                valSet.addAll(rightNode.valSet)
+            }
+            ARGUMENTS -> {
+                valSet.addAll(argumentsOnDeclare)
+            }
+            CLASS -> {
+                leftNode!!.genValSet()
+                rightNode!!.genValSet()
+                valSet.addAll(leftNode.valSet)
+                valSet.addAll(rightNode.valSet)
+            }
+            ASSIGNED_VAL -> {
+                val valType = valSet.find { it.name == token.val_!!.name }!!.valType
+                addValType(valType)
+            }
+            else -> {
+                //特になし
+            }
         }
 
     }
+
+    fun genValType() {
+        when (token.type) {
+            DECLARE_AND_ASSIGN_VAL,
+            ASSIGN -> {
+                val valName = leftNode?.token?.val_?.name
+                val hasAssigned = valSet.map { it.name }.contains(valName)
+                if (hasAssigned) {
+                    val valType = valSet.find { it.name == leftNode!!.token.val_!!.name }!!.valType
+                    leftNode!!.addValType(valType)
+                } else {
+                    if (rightNode!!.token.type == CLASS_CALL) {
+                        leftNode!!.addValType(rightNode.token.className!!)//TODO:ここらへんが作り途中 tokenにvalTypeをいつ付けるべきか？
+                    }
+                }
+            }
+            DOT -> {
+                when (leftNode!!.token.type) {
+                    CLASS_CALL -> {
+                        val valType = leftNode.token.className
+                        if (rightNode!!.token.type == ASSIGNED_VAL) {
+                            rightNode.addValType(valType!!)
+                        }
+                    }
+                    ASSIGNED_VAL -> {
+                        val valType = valSet.find { it.name == leftNode.token.val_!!.name }!!.valType
+                        leftNode.addValType(valType)
+                        //TODO:ドットの右辺の型情報付与
+                    }
+                    else -> {
+                        throw Exception("ドットの左辺が${leftNode.token.type}で解決できません")
+                    }
+                }
+            }
+            else -> {
+                nodes.genValType()
+                leftNode?.genValType()
+                rightNode?.genValType()
+            }
+        }
+    }
+
 
     fun propagateValSet() {
         leftNode?.valSet?.clear()

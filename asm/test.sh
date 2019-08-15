@@ -35,9 +35,17 @@ try 42 "class A(){fun get42(){return 42;}} fun main(){return A().get42()}"
 
 try 42 "class A(){val a = 42; fun get42(){return a;}} fun main(){return A().get42()}"
 
-try 42 "class A(){val a = 42; fun get42(){return a;}} fun main(){return A().get42()}"
+try 42 "class A(){val b = 42;} fun main(){val a = A(); return a.b}
+"
+try 42 "class A(){val a = 42;} fun main(){val a = A(); return a.a}"
 
-try 42 "class A(){val a = 42; fun get42(){return a;}} fun main(){return A().get42()}"
+try 42 "class A(){val a = 42; fun get42(){return a;}} fun main(){val a = A(); return a.get42()}"
+
+try 42 "fun main(){val a = 41; a = a + 1; return a}"
+
+try 42 "class A(){val b = 41; fun inc(){b = b + 1;} fun get42(){return b;}} fun main(){val a = A(); a.inc(); return a.get42()}"
+
+try 42 "class A(){val a = 41; fun inc(){a = a + 1;} fun get42(){return a;}} fun main(){val a = A(); a.inc(); return a.get42()}"
 
 try 0 "fun main(){return 0;}"
 try 42 "fun main(){return 42;}"

@@ -7,9 +7,6 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
             node.printAssembly()
-            if (node.token.type != TokenType.IF) {
-                println("  pop rax #ノードブロックの結果")
-            }
         }
     }
 
@@ -47,22 +44,16 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         }
     }
 
-    fun printMainAssemblies() {
-        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+    fun genClassNodesTable() {
         for (node in innerList) {
-            if (node.token.type != TokenType.FUN) {
-                if (node.token.type != TokenType.FUN_CALL) {
-                    node.printAssembly()
-                    println("  pop rax #結果を戻り値に")
-                } else {
-                    node.printAssembly()//戻り値がraxにある
-                }
+            if (node.token.type == TokenType.CLASS) {
+                ClassNodesTable.mapOfClassNode[node.token.className!!] = node
             }
         }
     }
 
+
     fun genValType() {
-        if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
             node.genValType()
         }
@@ -80,6 +71,19 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         for (node in innerList) {
             node.valSet.clear()
             node.valSet.addAll(valSet)
+            node.propagateValSet()
+        }
+    }
+
+    fun genValSetEach() {
+        if (innerList.isEmpty()) throw Exception("NodeListが空です")
+        for (node in innerList) {
+            node.genValSet()
+        }
+    }
+
+    fun propagateValSetEach() {
+        for (node in innerList) {
             node.propagateValSet()
         }
     }
