@@ -199,15 +199,15 @@ data class Node(
                         println("  mov rax, [rax]")
                         println("  push rax")
                     }
-                    FUN_CALL -> {//TODO:返り値がない関数の時もpushしてしまうためずれる
-                        if (leftNode.token.type == CLASS_CALL) {
-                            val className = leftNode.token.className
-                            println("  call ${className}_${rightNode.token.funName}")
-                            println("  push rax")
+                    FUN_CALL -> {
+                        val className = when {
+                            leftNode.token.type == CLASS_CALL -> leftNode.token.className
+                            leftNode.token.type == ASSIGNED_VAL -> leftNode.token.val_!!.valType
+                            else -> throw Exception("ドットの左辺が${leftNode.token.type}で解決できません")
                         }
-                        if (leftNode.token.type == ASSIGNED_VAL) {
-                            val className = leftNode.token.val_!!.valType
-                            println("  call ${className}_${rightNode.token.funName}")
+                        println("  call ${className}_${rightNode.token.funName}")
+                        if (rightNode.token.typeOfFun == null) {
+                        } else {
                             println("  push rax")
                         }
                     }
@@ -359,8 +359,9 @@ data class Node(
         println("  ret")
     }
 
-    private fun addValType(type: String) {
+    private fun addValTypeAndClassName(type: String) {
         token.val_!!.valType = type
+        token.className = type
     }
 
     fun genValSet() {
@@ -401,7 +402,7 @@ data class Node(
             }
             ASSIGNED_VAL -> {
                 val valType = valSet.find { it.name == token.val_!!.name }!!.valType
-                addValType(valType)
+                addValTypeAndClassName(valType)
             }
             else -> {
                 //特になし
@@ -418,10 +419,10 @@ data class Node(
                 val hasAssigned = valSet.map { it.name }.contains(valName)
                 if (hasAssigned) {
                     val valType = valSet.find { it.name == leftNode!!.token.val_!!.name }!!.valType
-                    leftNode!!.addValType(valType)
+                    leftNode!!.addValTypeAndClassName(valType)
                 } else {
                     if (rightNode!!.token.type == CLASS_CALL) {
-                        leftNode!!.addValType(rightNode.token.className!!)//TODO:ここらへんが作り途中 tokenにvalTypeをいつ付けるべきか？
+                        leftNode!!.addValTypeAndClassName(rightNode.token.className!!)
                     }
                 }
             }
@@ -430,12 +431,12 @@ data class Node(
                     CLASS_CALL -> {
                         val valType = leftNode.token.className
                         if (rightNode!!.token.type == ASSIGNED_VAL) {
-                            rightNode.addValType(valType!!)
+                            rightNode.addValTypeAndClassName(valType!!)
                         }
                     }
                     ASSIGNED_VAL -> {
                         val valType = valSet.find { it.name == leftNode.token.val_!!.name }!!.valType
-                        leftNode.addValType(valType)
+                        leftNode.addValTypeAndClassName(valType)
                         //TODO:ドットの右辺の型情報付与
                     }
                     else -> {
@@ -474,6 +475,22 @@ data class Node(
         nodes.classSizeMap.clear()
         nodes.classSizeMap.putAll(classSizeMap)
         nodes.propagateClassSizeMap()
+    }
+
+    fun setType2FunCall(prefix: String? = null) {
+        if (token.type == FUN_CALL) {
+            token.typeOfFun = FunNodesTable.mapOfFunNode[FunNodesTableName(prefix, token.funName)]!!.token.typeOfFun
+            return
+        }
+        if (token.type == DOT) {
+            if (rightNode!!.token.type == FUN_CALL) {
+                rightNode.setType2FunCall(leftNode!!.token.className!!)
+            }
+            return
+        }
+        leftNode?.setType2FunCall(prefix)
+        rightNode?.setType2FunCall(prefix)
+        nodes.setType2FunCall(prefix)
     }
 
     companion object {

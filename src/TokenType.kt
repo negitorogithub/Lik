@@ -23,6 +23,7 @@ enum class TokenType {
     SEMI_COLON,
     RETURN,
     IF,
+    TYPE_OF_FUN,
     FUN,
     FUN_CALL,
     CLASS_OR_FUN_CALL,

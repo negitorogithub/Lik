@@ -99,13 +99,19 @@ class Tokens(private var innerList: List<Token>) {
             if (!consume(ROUND_BRACKET_CLOSE)) {
                 throw Exception("開きカッコに対応する閉じカッコがありません@cursor=$cursor")
             } else {
-                val innerNodes = statement()
-                return Node(funToken, argumentsNode, innerNodes)
+                //TODO:ここらへんで関数に戻り値型付与
+                return if (consume(TYPE_OF_FUN)) {
+                    val typeToken = innerList[cursor - 1]
+                    val innerNodes = statement()
+                    Node(funToken.copy(typeOfFun = typeToken.typeOfFun), argumentsNode, innerNodes)
+                } else {
+                    val innerNodes = statement()
+                    Node(funToken, argumentsNode, innerNodes)
+                }
             }
         } else {
             return statement()
         }
-
     }
 
     private fun statement(): Node {

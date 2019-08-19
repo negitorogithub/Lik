@@ -929,6 +929,22 @@ internal class TokensTest {
             ).parse()[1].rightNode!!.nodes.innerList[0]
         )
 
+        assertEquals(
+            "Int"
+            ,
+            //fun main(): Int{ }
+            Tokens(
+                listOf(
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(TYPE_OF_FUN, typeOfFun = "Int"),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()[0].token.typeOfFun
+        )
+
     }
 
 }

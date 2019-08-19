@@ -20,6 +20,8 @@ class Assembly {
                 genClassSizeMap()
                 genValType()
                 genClassNodesTable()
+                genFunNodesTable()
+                setType2FunCall()
                 printClassDeclareAssemblies()
                 printFunDeclareAssemblies()
             }

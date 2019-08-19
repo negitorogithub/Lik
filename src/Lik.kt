@@ -123,6 +123,14 @@ fun tokenize(str: String): List<Token> {
                     val_ = Val(rest.popIdentification())
                 )
             )//代入の文脈ではない変数
+            rest.consume(colon) -> {
+                while (rest.consume(space)) {
+                }
+                val type = rest.popIdentification()
+                resultList.add(
+                    Token(TYPE_OF_FUN, typeOfFun = type)
+                )
+            }
             rest.consume(space) -> {
                 //飛ばす
             }

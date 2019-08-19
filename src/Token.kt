@@ -5,8 +5,10 @@ data class Token(
     val value: Int? = null,
     val val_: Val? = null,
     val funName: String? = null,
-    val className: String? = null,
-    val classOrFunName: String? = null
+    var className: String? = null,
+    val classOrFunName: String? = null,
+    var typeOfFun: String? = null
+
 ) {
 
     constructor(value: Int) : this(NUMBER, value)

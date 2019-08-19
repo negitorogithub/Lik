@@ -52,6 +52,20 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         }
     }
 
+    fun genFunNodesTable(prefix: String? = null) {
+        for (node in innerList) {
+            if (node.token.type == TokenType.FUN) {
+                FunNodesTable.mapOfFunNode[FunNodesTableName(prefix, node.token.funName!!)] = node
+            }
+            if (node.token.type == TokenType.CLASS) {
+                node.rightNode?.nodes?.genFunNodesTable(node.token.className)
+            }
+        }
+    }
+
+    fun setType2FunCall(prefix: String? = null) {
+        innerList.forEach { it.setType2FunCall(prefix) }
+    }
 
     fun genValType() {
         for (node in innerList) {
