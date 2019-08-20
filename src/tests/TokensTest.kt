@@ -6,8 +6,8 @@ import Token
 import TokenType.*
 import Tokens
 import Val
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 internal class TokensTest {
 

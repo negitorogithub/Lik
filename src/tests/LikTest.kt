@@ -4,10 +4,10 @@ import Token
 import TokenType.*
 import Val
 import numberList2number
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import tokenize
-import kotlin.test.assertEquals
 
 internal class LikTest {
 
