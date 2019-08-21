@@ -73,9 +73,43 @@ fun tokenize(str: String): List<Token> {
             rest.isClassExpression() -> {
                 rest.consume(class_)
                 rest.consume(space)
-                val className = rest.popIdentification()
-                resultList.add(Token(CLASS, className = className))
+                resultList.apply {
+                    add(
+                        Token(
+                            CLASS,
+                            className = rest.popIdentification()
+                        )
+                    )
+                    rest.consume(roundBracketOpen)
+                    add(
+                        Token(
+                            ROUND_BRACKET_OPEN
+                        )
+                    )
+                    while (rest.hasNextArgument()) {
+                        while (rest.consume(space)) {
+                        }
+                        add(
+                            Token(
+                                ARGUMENTS,
+                                val_ = Val(rest.popIdentification())
+                            )
+                        )
+                        while (rest.consume(space)) {
+                        }
+                        rest.consume(comma)
+                        while (rest.consume(space)) {
+                        }
+                    }
+                    rest.consume(roundBracketClose)
+                    add(
+                        Token(
+                            ROUND_BRACKET_CLOSE
+                        )
+                    )
+                }
             }
+
             rest.isAssignExpression() -> {
                 resultList.apply {
                     add(

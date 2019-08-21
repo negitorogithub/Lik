@@ -21,7 +21,7 @@ data class Node(
         valSet: LinkedHashSet<Val> = linkedSetOf(),
         classSizeMap: LinkedHashMap<String, Int> = linkedMapOf(),
         funMap: MutableMap<String, Node> = mutableMapOf(),
-        arguments: MutableList<Val> = mutableListOf()
+        argumentsOnDeclare: MutableList<Val> = mutableListOf()
     ) :
             this(
                 Token(type),
@@ -32,7 +32,7 @@ data class Node(
                 valSet = valSet,
                 classSizeMap = classSizeMap,
                 funMap = funMap,
-                argumentsOnDeclare = arguments
+                argumentsOnDeclare = argumentsOnDeclare
             )
 
     constructor(
@@ -172,12 +172,17 @@ data class Node(
             }
             CLASS -> {
                 printClassPrologue(token.className!!)
+                leftNode!!.printAssemblyArgumentsOnDeclare()
                 rightNode!!.nodes.printInClassAssembliesWithoutFun()
                 printClassEpilogue()
                 rightNode.nodes.printInClassFunDeclareAssemblies(token.className!!)
             }
             CLASS_CALL -> {
-                println("  mov rax,rsp")
+                leftNode?.nodes?.innerList?.forEachIndexed { index, node ->
+                    node.printAssembly()
+                    println("  pop rax")
+                    println("  mov ${registerListOfArguments[index]},rax")
+                }
                 println("  call ${token.className}_$init")
                 println("  push rax #thisのアドレスをpush")
             }
