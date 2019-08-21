@@ -233,7 +233,7 @@ internal class LikTest {
                 Token(CURLY_BRACKET_OPEN),
                 Token(CURLY_BRACKET_CLOSE)
             ),
-            tokenize("class a\n(){}")
+            tokenize("class a(){\n}")
         )
 
         assertEquals(
@@ -351,6 +351,43 @@ internal class LikTest {
                 Token(CURLY_BRACKET_CLOSE)
             ),
             tokenize("class A(){fun get42(){return 42;}} fun main(){return A().get42();}")
+        )
+
+        assertEquals(
+            listOf(
+                Token(CLASS, className = "A"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ARGUMENTS, val_ = Val("n")),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_OPEN),
+                Token(FUN, funName = "get42"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(TYPE_OF_FUN, typeOfFun = "Int"),
+                Token(CURLY_BRACKET_OPEN),
+                Token(RETURN),
+                Token(ASSIGNED_VAL, val_ = Val("n")),
+                Token(SEMI_COLON),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(CURLY_BRACKET_CLOSE),
+                Token(FUN, funName = "main"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(TYPE_OF_FUN, typeOfFun = "Int"),
+                Token(CURLY_BRACKET_OPEN),
+                Token(RETURN),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(DOT),
+                Token(CLASS_OR_FUN_CALL, classOrFunName = "get42"),
+                Token(ROUND_BRACKET_OPEN),
+                Token(42),
+                Token(ROUND_BRACKET_CLOSE),
+                Token(SEMI_COLON),
+                Token(CURLY_BRACKET_CLOSE)
+            ),
+            tokenize("class A(n){fun get42():Int{return n;}} fun main():Int{return A().get42(42);}")
         )
     }
 

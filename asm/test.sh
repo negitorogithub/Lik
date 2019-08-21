@@ -31,9 +31,9 @@ try 4 "class A(){val b=42;val c=6;val d=4;} fun main():Int{val d=111; return A()
 
 try 42 "class A(){val a=42;} class B(){val b=A().a;} fun main():Int{return B().b;}"
 
-try 42 "class A(){fun get42():Int{return 42;}} fun main():Int{return A().get42()}"
+try 42 "class A(){fun get42():Int{return 42;}} fun main():Int{return A().get42();}"
 
-try 42 "class A(){val a = 42; fun get42():Int{return a;}} fun main():Int{return A().get42()}"
+try 42 "class A(){val a = 42; fun get42():Int{return a;}} fun main():Int{return A().get42();}"
 
 try 42 "class A(){val b = 42;} fun main():Int{val a = A(); return a.b}
 "
@@ -46,6 +46,16 @@ try 42 "fun main():Int{val a = 41; a = a + 1; return a}"
 try 42 "class A(){val b = 41; fun inc(){b = b + 1;} fun get42():Int{return b;}} fun main():Int{val a = A(); a.inc(); return a.get42()}"
 
 try 42 "class A(){val a = 41; fun inc(){a = a + 1;} fun get42():Int{return a;}} fun main():Int{val a = A(); a.inc(); return a.get42()}"
+
+try 42 "class A(n){fun get42():Int{return n;}} fun main():Int{return A(42).get42();}"
+
+try 42 "class A(n){fun get42():Int{return n;}} fun main():Int{a = A(42); return a.get42();}"
+
+try 42 "class A(n){a = 4; b = 36; fun get42():Int{return n;}} fun main():Int{a = A(42); return a.get42();}"
+
+try 42 "class A(n){a = 4; b = 36; fun get42():Int{return a + b + n;}} fun main():Int{a = A(2); return a.get42();}"
+
+try 42 "class A(n){a = 4; b = 36;fun get42():Int{c = 1; return a + b + c + n;}} fun main():Int{a = A(1); return a.get42();}"
 
 try 0 "fun main():Int{return 0;}"
 try 42 "fun main():Int{return 42;}"

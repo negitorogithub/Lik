@@ -945,6 +945,104 @@ internal class TokensTest {
             ).parse()[0].token.typeOfFun
         )
 
+
+        //class A(n){fun get42():Int{return n;}} fun main():Int{return A().get42(42);}
+        assertEquals(
+            listOf(
+                Node(
+                    Token(CLASS, className = "A"),
+                    Node(
+                        Token(ARGUMENTS), argumentsOnDeclare = mutableListOf(Val("n"))
+                    ),
+                    Node(
+                        NODES,
+                        nodes = Nodes(
+                            listOf(
+                                Node(
+                                    Token(FUN, funName = "get42", typeOfFun = "Int"),
+                                    Node(ARGUMENTS),
+                                    Node(
+                                        NODES,
+                                        nodes = Nodes(
+                                            listOf(
+                                                Node(
+                                                    RETURN, null, Node(Token(ASSIGNED_VAL, val_ = Val("n")))
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+
+                )
+                , Node(
+                    Token(FUN, funName = "main", typeOfFun = "Int"),
+                    Node(
+                        Token(ARGUMENTS)
+                    )
+                    , Node(
+                        NODES,
+                        nodes = Nodes(
+                            listOf(
+                                Node(
+                                    RETURN, null,
+                                    Node(
+                                        DOT,
+                                        Node(
+                                            Token(CLASS_CALL, className = "A")
+                                            , Node(ARGUMENTS)
+                                        ),
+                                        Node(
+                                            Token(FUN_CALL, funName = "get42"),
+                                            Node(ARGUMENTS, nodes = Nodes(mutableListOf(Node(42))))
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+
+                )
+            ),
+            Tokens(
+                listOf(
+                    Token(CLASS, className = "A"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ARGUMENTS, val_ = Val("n")),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(FUN, funName = "get42"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(TYPE_OF_FUN, typeOfFun = "Int"),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(RETURN),
+                    Token(ASSIGNED_VAL, val_ = Val("n")),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(CURLY_BRACKET_CLOSE),
+                    Token(FUN, funName = "main"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(TYPE_OF_FUN, typeOfFun = "Int"),
+                    Token(CURLY_BRACKET_OPEN),
+                    Token(RETURN),
+                    Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(DOT),
+                    Token(CLASS_OR_FUN_CALL, classOrFunName = "get42"),
+                    Token(ROUND_BRACKET_OPEN),
+                    Token(42),
+                    Token(ROUND_BRACKET_CLOSE),
+                    Token(SEMI_COLON),
+                    Token(CURLY_BRACKET_CLOSE)
+                )
+            ).parse()
+        )
+
     }
 
 }
