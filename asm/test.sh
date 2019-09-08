@@ -43,6 +43,8 @@ val c = 1 + 2 + 3 + 4 + 5 + 6;
 
 try 42 "class A(){val b=42;} fun main():Int{val a = A(); b = 1 + 2 + 3 + 4 + 5 + 6 + 7;return a.b;}"
 
+try 42 "class A(){val b=20;} class B(){val c = 3; val d = 4;}  fun main():Int{val a = A(); val b = B();return a.b + b.c + b.d + 15;}"
+
 try 42 "
 class A(n){
   val a = 30;

@@ -139,7 +139,7 @@ data class Node(
                 println("  mov [rax], rdi")
                 println("  push rdi")
             }
-            DECLARE_AND_ASSIGN_VAL -> {//TODO:thisのアドレスはクラスコールのrbpではなくインスタンスのアドレスにする（インスタンスの場合）
+            DECLARE_AND_ASSIGN_VAL -> {
                 if (rightNode?.token?.type != CLASS_CALL) {
                     if (classScope == null) {
                         leftNode!!.printAssemblyPushFunValAddress()
@@ -153,7 +153,7 @@ data class Node(
                     println("  push rdi")
                 } else {
                     leftNode!!.printAssemblyPushFunValAddress()
-                    leftNode.printAssemblyPushInstanceValAddress()//TODO:ここを改造する
+                    leftNode.printAssemblyPushInstanceValAddress()
                     println("  pop rdi #変数にインスタンスを代入し右辺をpush")
                     println("  pop rax")
                     println("  mov [rax], rdi")
@@ -167,7 +167,6 @@ data class Node(
                             ClassSizeMap.mapOfClassSize[rightNode.token.className!!]!! * 8
                         )
                     }
-
                 }
             }
             RETURN -> {
