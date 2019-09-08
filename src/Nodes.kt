@@ -1,6 +1,6 @@
 data class Nodes(val innerList: List<Node> = mutableListOf()) {
 
-    val valSet: LinkedHashSet<Val> = linkedSetOf()
+    val valList: MutableList<Val> = mutableListOf()
     val classSizeMap: LinkedHashMap<String, Int> = linkedMapOf()
 
     fun printAssemblies() {
@@ -27,7 +27,6 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
     }
 
     fun printInClassFunDeclareAssemblies(className: String) {
-        if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
             if (node.token.type == TokenType.FUN) {
                 node.printInClassFunAssembly(className)
@@ -73,34 +72,21 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         }
     }
 
-    fun genValSet() {
+    fun genValList() {
+        for (node in innerList) {
+            node.genValList()
+            valList.addAll(node.valList)
+        }
+    }
+
+
+    fun genValListEach() {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
-            node.genValSet()
-            valSet.addAll(node.valSet)
+            node.genValList()
         }
     }
 
-    fun propagateValSet() {
-        for (node in innerList) {
-            node.valSet.clear()
-            node.valSet.addAll(valSet)
-            node.propagateValSet()
-        }
-    }
-
-    fun genValSetEach() {
-        if (innerList.isEmpty()) throw Exception("NodeListが空です")
-        for (node in innerList) {
-            node.genValSet()
-        }
-    }
-
-    fun propagateValSetEach() {
-        for (node in innerList) {
-            node.propagateValSet()
-        }
-    }
 
     fun genClassSizeMap() {
         if (innerList.isEmpty()) throw Exception("NodeListが空です")
@@ -119,7 +105,6 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
     }
 
     fun printInClassAssembliesWithoutFun() {
-        if (innerList.isEmpty()) throw Exception("NodeListが空です")
         for (node in innerList) {
             if (node.token.type != TokenType.FUN) {
                 node.printAssembly()
@@ -129,4 +114,67 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
             }
         }
     }
+
+    fun genClassConstructorsMap() {
+        for (node in innerList) {
+            if (node.token.type == TokenType.CLASS) {
+                ClassConstructorsMap.mapOfConstructors[node.token.className!!] =
+                    node.leftNode!!.argumentsOnDeclare
+            }
+        }
+    }
+
+    fun genClassMemberValsMap() {
+        for (node in innerList) {
+            if (node.token.type == TokenType.CLASS) {
+                ClassMemberValsMap.mapOfVals[node.token.className!!] =
+                    node.rightNode!!.valList
+            }
+        }
+    }
+
+    fun genFunArgumentsMap() {
+        for (node in innerList) {
+            if (node.token.type == TokenType.CLASS) {
+                node.rightNode!!.nodes.genFunArgumentsMap()
+            } else if (node.token.type == TokenType.FUN) {
+                FunArgumentsMap.mapOfArguments[node.token.funName!!] =
+                    node.leftNode!!.argumentsOnDeclare
+            }
+        }
+    }
+
+    fun genLocalValsMap() {
+        for (node in innerList) {
+            if (node.token.type == TokenType.CLASS) {
+                node.rightNode!!.nodes.genLocalValsMap()
+            } else if (node.token.type == TokenType.FUN) {
+                FunLocalValsMap.mapOfVals[node.token.funName!!] =
+                    node.rightNode!!.valList
+            }
+        }
+    }
+
+    fun genScopes() {
+        innerList.forEach { it.genScopes() }
+    }
+
+    fun propagateScopes() {
+        innerList.forEach { it.propagateScopes() }
+    }
+
+    fun propagateScopes(funName: String?, className: String?) {
+        innerList.forEach { it.propagateScopes(funName, className) }
+    }
+
+    fun addValTypeAndClassName2AssignedVal() {
+        innerList.forEach { it.addValTypeAndClassName2AssignedVal() }
+    }
+
+    fun genCurrentFunOffsetMap() {
+        FunNodesTable.mapOfFunNode.values.forEach { node: Node ->
+            CurrentFunOffsetMap.offsetMap[node.token.funName!!] = node.getFunOffset() + 8
+        }
+    }
+
 }

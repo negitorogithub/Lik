@@ -1,5 +1,5 @@
 class ClassNodesTable {
     companion object {
-        val mapOfClassNode: MutableMap<String, Node> = linkedMapOf()
+        val mapOfClassNode: MutableMap<String, Node> = mutableMapOf()
     }
 }

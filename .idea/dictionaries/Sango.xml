@@ -4,6 +4,7 @@
       <w>evaled</w>
       <w>evcaled</w>
       <w>idiv</w>
+      <w>imul</w>
       <w>movzb</w>
       <w>noprefix</w>
       <w>sete</w>
@@ -12,6 +13,7 @@
       <w>setl</w>
       <w>setle</w>
       <w>setne</w>
+      <w>vals</w>
     </words>
   </dictionary>
 </component>

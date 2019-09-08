@@ -4,23 +4,22 @@ data class Node(
     var token: Token,
     val leftNode: Node? = null,
     val rightNode: Node? = null,
-    val valMap: LinkedHashMap<String, Int> = linkedMapOf(),
-    val valSet: LinkedHashSet<Val> = linkedSetOf(),
+    val valList: MutableList<Val> = mutableListOf(),
     val classSizeMap: LinkedHashMap<String, Int> = linkedMapOf(),
-    val funMap: MutableMap<String, Node> = mutableMapOf(),
     val nodes: Nodes = Nodes(),
     val argumentsOnDeclare: MutableList<Val> = mutableListOf()
 ) {
+
+    private var funScope: String? = null
+    private var classScope: String? = null
 
     constructor(
         type: TokenType,
         leftNode: Node? = null,
         rightNode: Node? = null,
         nodes: Nodes = Nodes(),
-        valMap: LinkedHashMap<String, Int> = linkedMapOf(),
-        valSet: LinkedHashSet<Val> = linkedSetOf(),
+        valList: MutableList<Val> = mutableListOf(),
         classSizeMap: LinkedHashMap<String, Int> = linkedMapOf(),
-        funMap: MutableMap<String, Node> = mutableMapOf(),
         argumentsOnDeclare: MutableList<Val> = mutableListOf()
     ) :
             this(
@@ -28,10 +27,8 @@ data class Node(
                 leftNode,
                 rightNode,
                 nodes = nodes,
-                valMap = valMap,
-                valSet = valSet,
+                valList = valList,
                 classSizeMap = classSizeMap,
-                funMap = funMap,
                 argumentsOnDeclare = argumentsOnDeclare
             )
 
@@ -69,19 +66,22 @@ data class Node(
                 add(nodes.toString())
                 add(",")
             }
-            if (valSet.isNotEmpty()) {
+            if (valList.isNotEmpty()) {
                 add("valSet=")
-                add(valSet.toString())
-                add(",")
-            }
-            if (funMap.isNotEmpty()) {
-                add("funMap=")
-                add(funMap.toString())
+                add(valList.toString())
                 add(",")
             }
             if (argumentsOnDeclare.isNotEmpty()) {
                 add("argumentsOnDeclare=")
                 add(argumentsOnDeclare.toString())
+            }
+            if (funScope != null) {
+                add("funScope=")
+                add(funScope!!)
+            }
+            if (classScope != null) {
+                add("classScope=")
+                add(classScope!!)
             }
             add("}")
         }
@@ -92,31 +92,25 @@ data class Node(
     //TODO: 変数にクラスが代入されている場合の処理
     fun genClassSizeMap() {
         if (token.type == CLASS) {
-            val classSize = rightNode!!.valSet.size
+            val classSize = leftNode!!.valList.size + rightNode!!.valList.size + 1
             classSizeMap[token.className!!] = classSize
+            ClassSizeMap.mapOfClassSize[token.className!!] = classSize
         }
     }
 
     //変数のアドレスを計算しpush
-    private fun printAssemblyPushValAddress() {
-        if (token.type != NOT_ASSIGNED_VAL && token.type != ASSIGNED_VAL) {
-            throw Exception("代入の左辺値が変数ではありません")
-        }
-
-        println("  mov rax, rbp #変数のアドレスを計算しpush")
-        println("  sub rax, ${(valSet.map { it.name }.indexOf(token.val_!!.name) + 1) * 8}")
-        println("  push rax")
-        println("")
+    private fun printAssemblyPushFunValAddress() {
+        printAssemblyPushFunValAddress(token.val_!!.name)
     }
 
     //変数のアドレスを計算しpush
-    private fun printAssemblyPushValAddress(valName: String) {
+    private fun printAssemblyPushFunValAddress(valName: String) {
         if (token.type != NOT_ASSIGNED_VAL && token.type != ASSIGNED_VAL && token.type != ARGUMENTS) {
             throw Exception("代入の左辺値が変数ではありません")
         }
 
         println("  mov rax, rbp #変数のアドレスを計算しpush")
-        println("  sub rax, ${(valSet.map { it.name }.indexOf(valName) + 1) * 8}")
+        println("  sub rax, ${getValOffsetFunByName(valName, funScope)}")
         println("  push rax")
         println("")
     }
@@ -127,26 +121,49 @@ data class Node(
                 println("  push ${token.value} #数字をpush")
             }
             ASSIGNED_VAL -> {
-                printAssemblyPushValAddress()
+                printAssemblyPushFunValAddress()
                 println("  pop rax #代入済み変数をpush!")
                 println("  mov rax, [rax]")
                 println("  push rax")
             }
-            ASSIGN -> {
-                leftNode!!.printAssemblyPushValAddress()
+            ASSIGN -> {//TODO:↓のコピペ
+                leftNode!!.printAssemblyPushFunValAddress()
                 rightNode!!.printAssembly()
                 println("  pop rdi #変数に代入し右辺をpush")
                 println("  pop rax")
                 println("  mov [rax], rdi")
                 println("  push rdi")
             }
-            DECLARE_AND_ASSIGN_VAL -> {
-                leftNode!!.printAssemblyPushValAddress()
-                rightNode!!.printAssembly()
-                println("  pop rdi #変数に代入し右辺をpush")
-                println("  pop rax")
-                println("  mov [rax], rdi")
-                println("  push rdi")
+            DECLARE_AND_ASSIGN_VAL -> {//TODO:thisのアドレスはクラスコールのrbpではなくインスタンスのアドレスにする（インスタンスの場合）
+                if (rightNode?.token?.type != CLASS_CALL) {
+                    if (classScope == null) {
+                        leftNode!!.printAssemblyPushFunValAddress()
+                    } else {
+                        leftNode!!.printAssemblyPushMemberValAddress(leftNode.token.val_!!.name)
+                    }
+                    rightNode!!.printAssembly()
+                    println("  pop rdi #変数に代入し右辺をpush")
+                    println("  pop rax")
+                    println("  mov [rax], rdi")
+                    println("  push rdi")
+                } else {
+                    leftNode!!.printAssemblyPushFunValAddress()
+                    leftNode.printAssemblyPushInstanceValAddress()//TODO:ここを改造する
+                    println("  pop rdi #変数にインスタンスを代入し右辺をpush")
+                    println("  pop rax")
+                    println("  mov [rax], rdi")
+                    println("  push rdi")
+                    println("")
+                    println("  pop rbx #thisのアドレスをクラスコールに渡す")
+                    rightNode.printAssembly()
+                    funScope?.let {
+                        CurrentFunOffsetMap.addOffset(
+                            it,
+                            ClassSizeMap.mapOfClassSize[rightNode.token.className!!]!! * 8
+                        )
+                    }
+
+                }
             }
             RETURN -> {
                 rightNode!!.printAssembly()
@@ -171,6 +188,7 @@ data class Node(
                 printFunEpilogue()
             }
             CLASS -> {
+                //TODO:引数とローカル変数を区別しなければならない気がする
                 printClassPrologue(token.className!!)
                 leftNode!!.printAssemblyArgumentsOnDeclare()
                 rightNode!!.nodes.printInClassAssembliesWithoutFun()
@@ -178,6 +196,7 @@ data class Node(
                 rightNode.nodes.printInClassFunDeclareAssemblies(token.className!!)
             }
             CLASS_CALL -> {
+                //rbxにthisのアドレスが入っている
                 leftNode?.nodes?.innerList?.forEachIndexed { index, node ->
                     node.printAssembly()
                     println("  pop rax")
@@ -187,17 +206,24 @@ data class Node(
                 println("  push rax #thisのアドレスをpush")
             }
             DOT -> {
-                leftNode!!.printAssembly()//インスタンス生成またはインスタンスにアクセスし、this(rbp)をraxに返却
+                when (leftNode!!.token.type) {
+                    ASSIGNED_VAL -> {
+                        leftNode.printAssembly()//インスタンスにアクセスし、this(rbx)をraxに返却
+                    }
+                    CLASS_CALL -> throw Exception("クラスコールの直呼びは未対応")//TODO:対応
+                    else -> throw Exception("ドットの左辺が解決できませんでした")
+                }
+
+
                 println("  pop rax #thisのアドレスをpop ")
                 when (rightNode!!.token.type) {
                     ASSIGNED_VAL -> {
-                        val className = when (leftNode.token.type) {
-                            CLASS_CALL -> leftNode.token.className
-                            ASSIGNED_VAL -> leftNode.token.val_!!.valType
-                            else -> throw Exception("ドットの左辺が${leftNode.token.type}で解決できません")
-                        }
-                        val classValSet = ClassNodesTable.mapOfClassNode[className]!!.valSet
-                        println("  sub rax, ${(classValSet.map { it.name }.indexOf(rightNode.token.val_!!.name) + 1) * 8}")//TODO:クラスコールの時クラスのvalSetを参照
+                        println(
+                            "  sub rax, ${getValOffsetClassByName(
+                                rightNode.token.val_!!.name,
+                                getLeftClassType()
+                            )}"
+                        )
                         println("  push rax")
                         println("")
                         println("  pop rax #代入済み変数をpush!")
@@ -209,6 +235,11 @@ data class Node(
                             leftNode.token.type == CLASS_CALL -> leftNode.token.className
                             leftNode.token.type == ASSIGNED_VAL -> leftNode.token.val_!!.valType
                             else -> throw Exception("ドットの左辺が${leftNode.token.type}で解決できません")
+                        }
+                        rightNode.leftNode!!.nodes.innerList.forEachIndexed { index, node ->
+                            node.printAssembly()
+                            println("  pop rax")
+                            println("  mov ${registerListOfArguments[index]},rax")
                         }
                         println("  call ${className}_${rightNode.token.funName}")
                         if (rightNode.token.typeOfFun == null) {
@@ -245,9 +276,30 @@ data class Node(
         println("")
     }
 
+    private fun printAssemblyPushMemberValAddress(valName: String) {
+        if (token.type != NOT_ASSIGNED_VAL && token.type != ASSIGNED_VAL && token.type != ARGUMENTS) {
+            throw Exception("代入の左辺値が変数ではありません")
+        }
+
+        println("  mov rax, rbx #変数(メンバ)のアドレスを計算しpush")
+        println("  sub rax, ${getValOffsetClassByName(valName, classScope)}")
+        println("  push rax")
+        println("")
+    }
+
+    private fun printAssemblyPushInstanceValAddress() {
+        if (token.type != NOT_ASSIGNED_VAL && token.type != ASSIGNED_VAL && token.type != ARGUMENTS) {
+            throw Exception("代入の左辺値が変数ではありません")
+        }
+
+        println("  mov rax, rbp #変数のアドレスを計算しpush")
+        println("  sub rax, ${CurrentFunOffsetMap.offsetMap[funScope]}")
+        println("  push rax")
+        println("")
+    }
+
     fun printInClassFunAssembly(classname: String) {
         leftNode!!.printInClassFunPrologue("${classname}_${token.funName!!}")
-        println("  mov rbp, rax #rbpにthisを代入")
         println("")
         leftNode.printAssemblyArgumentsOnDeclare()
         rightNode!!.printAssembly()
@@ -259,7 +311,7 @@ data class Node(
         //まだ途中
         //引数を変数とみなして引数レジスタリストを参照しながら代入アセンブリを生成
         argumentsOnDeclare.forEachIndexed { index, val_ ->
-            printAssemblyPushValAddress(val_.name)
+            printAssemblyPushFunValAddress(val_.name)
             println("  mov rdi,${registerListOfArguments[index]} #引数に代入し右辺をpush")
             println("  pop rax")
             println("  mov [rax], rdi")
@@ -337,15 +389,39 @@ data class Node(
         println("$funName:")
         println("  push rbp")
         println("  mov rbp, rsp")
-        println("  sub rsp, ${valSet.size * 8}")
+        println("  sub rsp, ${getFunOffset()}")
         println("")
+    }
+
+    fun getFunOffset(): Int {
+        var localValsOffset = 0
+        FunLocalValsMap.mapOfVals[funScope]!!.forEach { localValsOffset += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
+        return getArgumentsOffSet() + localValsOffset
+    }
+
+    private fun getArgumentsOffSet(): Int {
+        var result = 0
+        FunArgumentsMap.mapOfArguments[funScope]!!.forEach { result += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
+        return result
+    }
+
+    private fun getClassOffset(): Int {
+        var classMembersOffset = 0
+        ClassMemberValsMap.mapOfVals[classScope]!!.forEach { classMembersOffset += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
+        return getConstructorsOffSet() + classMembersOffset
+    }
+
+    private fun getConstructorsOffSet(): Int {
+        var result = 0
+        ClassConstructorsMap.mapOfConstructors[classScope]!!.forEach { result += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
+        return result
     }
 
     private fun printInClassFunPrologue(funName: String) {
         println("$funName:")
         println("  push rbp")
         println("  mov rbp, rsp")
-        println("  sub rsp, ${valSet.size * 8}")
+        println("  sub rsp, ${getClassOffset()}")
         println("")
     }
 
@@ -353,12 +429,11 @@ data class Node(
         println("${className}_$init:")
         println("  push rbp")
         println("  mov rbp, rsp")
-        println("  sub rsp, ${valSet.size * 8}")
         println("")
     }
 
     private fun printClassEpilogue() {
-        println("  mov rax, rbp #thisにあたるポインタをraxで返している")
+        println("  mov rax, rbx #thisにあたるポインタをraxで返している")
         println("  mov rsp, rbp")
         println("  pop rbp")
         println("  ret")
@@ -369,45 +444,58 @@ data class Node(
         token.className = type
     }
 
-    fun genValSet() {
+    fun addValTypeAndClassName2AssignedVal() {//TODO:メンバアクセスが失敗する(メンバのクラススコープがnullのため)
+        if (token.type == ASSIGNED_VAL) {
+            val type = getValInfoByName(token.val_!!.name, funScope, classScope)!!.val_.valType
+            addValTypeAndClassName(type)
+        }
+        if (token.type == DOT) {
+            if (leftNode!!.token.type == ASSIGNED_VAL) {
+                leftNode.addValTypeAndClassName(getLeftClassType()!!)
+            }
+            if (rightNode!!.token.type == ASSIGNED_VAL) {
+                val rightType = getValInfoByName(rightNode.token.val_!!.name, null, getLeftClassType()!!)!!.val_.valType
+                rightNode.addValTypeAndClassName(rightType)
+            }
+            return
+        }
+        leftNode?.addValTypeAndClassName2AssignedVal()
+        rightNode?.addValTypeAndClassName2AssignedVal()
+        nodes.addValTypeAndClassName2AssignedVal()
+    }
+
+
+    fun genValList() {
         when (token.type) {
             DECLARE_AND_ASSIGN_VAL,
             ASSIGN -> {
                 val valName = leftNode?.token?.val_?.name
-                val hasAssigned = valSet.map { it.name }.contains(valName)
+                val hasAssigned = valList.map { it.name }.contains(valName)
                 if (hasAssigned) {
                 } else {
                     val type = if (rightNode!!.token.type == CLASS_CALL) {
                         rightNode.token.className!!
                     } else {
-                        "int"
+                        "Int"
                     }
-                    valSet.add(Val("$valName", valType = type))
+                    valList.add(Val("$valName", valType = type))
                 }
             }
             NODES -> {
-                nodes.valSet.addAll(valSet)
-                nodes.genValSet()
-                valSet.addAll(nodes.valSet)
+                nodes.valList.addAll(valList)
+                nodes.genValList()
+                valList.addAll(nodes.valList)
             }
             FUN -> {
-                leftNode!!.genValSet()
-                valSet.addAll(leftNode.valSet)
-                rightNode!!.genValSet()
-                valSet.addAll(rightNode.valSet)
+                leftNode!!.genValList()
+                rightNode!!.genValList()
             }
             ARGUMENTS -> {
-                valSet.addAll(argumentsOnDeclare)
+                valList.addAll(argumentsOnDeclare)
             }
             CLASS -> {
-                leftNode!!.genValSet()
-                rightNode!!.genValSet()
-                valSet.addAll(leftNode.valSet)
-                valSet.addAll(rightNode.valSet)
-            }
-            ASSIGNED_VAL -> {
-                val valType = valSet.find { it.name == token.val_!!.name }!!.valType
-                addValTypeAndClassName(valType)
+                leftNode!!.genValList()
+                rightNode!!.genValList()
             }
             else -> {
                 //特になし
@@ -421,9 +509,9 @@ data class Node(
             DECLARE_AND_ASSIGN_VAL,
             ASSIGN -> {
                 val valName = leftNode?.token?.val_?.name
-                val hasAssigned = valSet.map { it.name }.contains(valName)
+                val hasAssigned = valList.map { it.name }.contains(valName)
                 if (hasAssigned) {
-                    val valType = valSet.find { it.name == leftNode!!.token.val_!!.name }!!.valType
+                    val valType = valList.find { it.name == leftNode!!.token.val_!!.name }!!.valType
                     leftNode!!.addValTypeAndClassName(valType)
                 } else {
                     if (rightNode!!.token.type == CLASS_CALL) {
@@ -440,7 +528,7 @@ data class Node(
                         }
                     }
                     ASSIGNED_VAL -> {
-                        val valType = valSet.find { it.name == leftNode.token.val_!!.name }!!.valType
+                        val valType = getValInfoByName(leftNode.token.val_!!.name, funScope, classScope)!!.val_.valType
                         leftNode.addValTypeAndClassName(valType)
                         //TODO:ドットの右辺の型情報付与
                     }
@@ -457,18 +545,6 @@ data class Node(
         }
     }
 
-
-    fun propagateValSet() {
-        leftNode?.valSet?.clear()
-        leftNode?.valSet?.addAll(valSet)
-        leftNode?.propagateValSet()
-        rightNode?.valSet?.clear()
-        rightNode?.valSet?.addAll(valSet)
-        rightNode?.propagateValSet()
-        nodes.valSet.clear()
-        nodes.valSet.addAll(valSet)
-        nodes.propagateValSet()
-    }
 
     fun propagateClassSizeMap() {
         leftNode?.classSizeMap?.clear()
@@ -489,13 +565,57 @@ data class Node(
         }
         if (token.type == DOT) {
             if (rightNode!!.token.type == FUN_CALL) {
-                rightNode.setType2FunCall(leftNode!!.token.className!!)
+                val className = when {
+                    leftNode!!.token.type == ASSIGNED_VAL -> leftNode.token.val_!!.valType
+                    leftNode.token.type == CLASS_CALL -> leftNode.token.className
+                    else -> throw Exception("ドットの右辺が${leftNode.token}で解決できませんでした")
+                }
+                rightNode.setType2FunCall(className)
             }
             return
         }
         leftNode?.setType2FunCall(prefix)
         rightNode?.setType2FunCall(prefix)
         nodes.setType2FunCall(prefix)
+    }
+
+    fun genScopes() {
+        if (token.type == FUN) {
+            funScope = token.funName
+        }
+        if (token.type == CLASS) {
+            classScope = token.className
+            rightNode!!.nodes.genScopes()
+        }
+    }
+
+    fun propagateScopes(funName: String? = null, className: String? = null) {
+        funScope = funName
+        classScope = className
+        if (token.type == FUN) {
+            funScope = token.funName
+        }
+        if (token.type == CLASS) {
+            classScope = token.className
+        }
+        leftNode?.propagateScopes(funScope, classScope)
+        rightNode?.propagateScopes(funScope, classScope)
+        nodes.propagateScopes(funScope, classScope)
+    }
+
+
+    private fun getLeftClassType(): String? {
+        return when (leftNode?.token?.type) {
+            ASSIGNED_VAL -> {
+                leftNode.token.val_!!.valType
+            }
+            CLASS_CALL -> {
+                leftNode.token.className
+            }
+            else -> {
+                throw Exception("右辺の型は${leftNode?.token?.type}でクラスの情報が分かりません")
+            }
+        }
     }
 
     companion object {

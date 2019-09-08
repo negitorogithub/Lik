@@ -48,7 +48,7 @@ fun tokenize(str: String): List<Token> {
                         )
                     )
                     while (rest.hasNextArgument()) {
-                        while (rest.consume(space)) {
+                        while (rest.consume(space)) {//TODO: skipSpaces()の追加
                         }
                         add(
                             Token(
@@ -192,6 +192,71 @@ fun numberList2number(list: List<String>): Int {
 fun String.toConsumableString(): ConsumableString {
     return ConsumableString(this)
 }
+
+fun getValInfoByName(valName: String, funScope: String?, classScope: String?): ValInfo? {//TODO:メンバ変数がうまくいってない
+    //TODO:変数に抽出
+    if (FunLocalValsMap.mapOfVals[funScope]?.find { it.name == valName } != null) {
+        return ValInfo(FunLocalValsMap.mapOfVals[funScope]!!.find { it.name == valName }!!, Scope.LOCAL)
+    }
+    if (FunArgumentsMap.mapOfArguments[funScope]?.find { it.name == valName } != null) {
+        return ValInfo(FunArgumentsMap.mapOfArguments[funScope]!!.find { it.name == valName }!!, Scope.ARGUMENT)
+    }
+    if (ClassMemberValsMap.mapOfVals[classScope]?.find { it.name == valName } != null) {
+        return ValInfo(ClassMemberValsMap.mapOfVals[classScope]!!.find { it.name == valName }!!, Scope.MEMBER)
+    }
+    if (ClassConstructorsMap.mapOfConstructors[classScope]?.find { it.name == valName } != null) {
+        return ValInfo(
+            ClassConstructorsMap.mapOfConstructors[classScope]!!.find { it.name == valName }!!,
+            Scope.CONSTRUCTOR
+        )
+    }
+    return null
+}
+
+fun getValOffsetFunByName(valName: String, funScope: String?): Int {
+//TODO:アドレス空間の構造が複雑すぎでは? -> クラスはポインタにするべきでは?
+//TODO 関数分離
+
+    val localVals = FunLocalValsMap.mapOfVals[funScope]
+    val arguments = FunArgumentsMap.mapOfArguments[funScope]
+
+    val valInLocal = localVals?.find { it.name == valName }
+    val isValLocal = valInLocal != null
+    if (isValLocal) {
+        val offSetOfArguments = arguments!!.size * 8
+        val offSetOfValLocal = localVals!!.indexOfFirst { val_: Val -> val_.name == valName } * 8 + 8
+        return offSetOfArguments + offSetOfValLocal
+    }
+
+    val valInArguments = arguments?.find { it.name == valName }
+    val isValArgument = valInArguments != null
+    if (isValArgument) {
+        return arguments!!.indexOfFirst { val_: Val -> val_.name == valName } * 8 + 8
+    }
+    throw Exception("変数${valName}は関数${funScope}で解決できませんでした")
+}
+
+fun getValOffsetClassByName(valName: String, classScope: String?): Int {
+
+    val classMembers = ClassMemberValsMap.mapOfVals[classScope]
+    val constructors = ClassConstructorsMap.mapOfConstructors[classScope]
+    val valInClassMembers = classMembers?.find { it.name == valName }
+    val isValClassMembers = valInClassMembers != null
+    if (isValClassMembers) {
+        val offSetOfConstructors = constructors!!.size * 8 - 8
+        val offSetOfValMember = classMembers!!.indexOfFirst { val_: Val -> val_.name == valName } * 8 + 8
+        return offSetOfConstructors + offSetOfValMember
+    }
+
+    val valInConstructors = constructors?.find { it.name == valName }
+    val isValConstructor = valInConstructors != null
+    if (isValConstructor) {
+        return constructors!!.indexOfFirst { val_: Val -> val_.name == valName } * 8
+    }
+    throw Exception("変数${valName}はクラス${classScope}で解決できませんでした")
+
+}
+
 
 
 
