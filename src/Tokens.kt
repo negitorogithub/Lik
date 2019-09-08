@@ -3,11 +3,10 @@ import TokenType.*
 class Tokens(private var innerList: List<Token>) {
 
     init {
-        if (innerList.isEmpty()) {
-            throw IllegalArgumentException("The list is empty")
-        }
+        require(innerList.isNotEmpty()) { "The list is empty" }
     }
 
+    //TODO:セミコロンを消す
     private var cursor = 0
 
 

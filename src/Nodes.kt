@@ -173,7 +173,7 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
 
     fun genCurrentFunOffsetMap() {
         FunNodesTable.mapOfFunNode.values.forEach { node: Node ->
-            CurrentFunOffsetMap.offsetMap[node.token.funName!!] = node.getFunOffset() + 8
+            CurrentFunOffsetMap.offsetMap[node.token.funName!!] = node.getFunOffsetWithoutInstance() + 8
         }
     }
 

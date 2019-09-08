@@ -1,3 +1,4 @@
+import Scope.*
 import TokenType.*
 
 data class Node(
@@ -121,7 +122,11 @@ data class Node(
                 println("  push ${token.value} #数字をpush")
             }
             ASSIGNED_VAL -> {
-                printAssemblyPushFunValAddress()
+                val valInfo = getValInfoByName(token.val_!!.name, funScope, classScope)!!
+                when (valInfo.scope) {
+                    LOCAL, ARGUMENT -> printAssemblyPushFunValAddress()
+                    CONSTRUCTOR, MEMBER -> printAssemblyPushClassValAddress(valInfo.val_.name)
+                }
                 println("  pop rax #代入済み変数をpush!")
                 println("  mov rax, [rax]")
                 println("  push rax")
@@ -139,7 +144,7 @@ data class Node(
                     if (classScope == null) {
                         leftNode!!.printAssemblyPushFunValAddress()
                     } else {
-                        leftNode!!.printAssemblyPushMemberValAddress(leftNode.token.val_!!.name)
+                        leftNode!!.printAssemblyPushClassValAddress(leftNode.token.val_!!.name)
                     }
                     rightNode!!.printAssembly()
                     println("  pop rdi #変数に代入し右辺をpush")
@@ -276,7 +281,7 @@ data class Node(
         println("")
     }
 
-    private fun printAssemblyPushMemberValAddress(valName: String) {
+    private fun printAssemblyPushClassValAddress(valName: String) {
         if (token.type != NOT_ASSIGNED_VAL && token.type != ASSIGNED_VAL && token.type != ARGUMENTS) {
             throw Exception("代入の左辺値が変数ではありません")
         }
@@ -308,16 +313,17 @@ data class Node(
     }
 
     private fun printAssemblyArgumentsOnDeclare() {
-        //まだ途中
         //引数を変数とみなして引数レジスタリストを参照しながら代入アセンブリを生成
         argumentsOnDeclare.forEachIndexed { index, val_ ->
-            printAssemblyPushFunValAddress(val_.name)
+            when (getValInfoByName(val_.name, funScope, classScope)!!.scope) {
+                ARGUMENT, LOCAL -> printAssemblyPushFunValAddress(val_.name)
+                CONSTRUCTOR, MEMBER -> printAssemblyPushClassValAddress(val_.name)
+            }
             println("  mov rdi,${registerListOfArguments[index]} #引数に代入し右辺をpush")
             println("  pop rax")
             println("  mov [rax], rdi")
             println("  push rdi")
         }
-
     }
 
     private fun printAssemblyBinaryOperator() {
@@ -389,32 +395,36 @@ data class Node(
         println("$funName:")
         println("  push rbp")
         println("  mov rbp, rsp")
-        println("  sub rsp, ${getFunOffset()}")
+        println("  sub rsp, ${getWholeFunOffset()}")
         println("")
     }
 
-    fun getFunOffset(): Int {
+    fun getWholeFunOffset(): Int {
         var localValsOffset = 0
         FunLocalValsMap.mapOfVals[funScope]!!.forEach { localValsOffset += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
-        return getArgumentsOffSet() + localValsOffset
+        return getArgumentsWholeOffSet() + localValsOffset
     }
 
-    private fun getArgumentsOffSet(): Int {
+    fun getFunOffsetWithoutInstance(): Int {
+        return getArgumentsOffsetWithoutInstance() + FunLocalValsMap.mapOfVals[funScope]!!.size * 8
+    }
+
+    private fun getArgumentsWholeOffSet(): Int {
         var result = 0
         FunArgumentsMap.mapOfArguments[funScope]!!.forEach { result += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
         return result
     }
 
+    private fun getArgumentsOffsetWithoutInstance(): Int {
+        return FunArgumentsMap.mapOfArguments[funScope]!!.size * 8
+    }
+
     private fun getClassOffset(): Int {
-        var classMembersOffset = 0
-        ClassMemberValsMap.mapOfVals[classScope]!!.forEach { classMembersOffset += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
-        return getConstructorsOffSet() + classMembersOffset
+        return getConstructorsOffSet() + ClassMemberValsMap.mapOfVals[classScope]!!.size * 8
     }
 
     private fun getConstructorsOffSet(): Int {
-        var result = 0
-        ClassConstructorsMap.mapOfConstructors[classScope]!!.forEach { result += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
-        return result
+        return ClassConstructorsMap.mapOfConstructors[classScope]!!.size * 8
     }
 
     private fun printInClassFunPrologue(funName: String) {

@@ -23,6 +23,35 @@ kotlinc *.kt -include-runtime -d ../temp
 cd ../temp || exit
 jar cfm ../asm/Assembly.jar ../asm/MANIFEST.MF *.class
 
+try 42 "class A(){fun get42():Int{return 42;}} fun main():Int{val a = A(); return a.get42();}"
+
+try 42 "class A(){val b = 42;} fun main():Int{val a = A(); return a.b}"
+
+try 42 "class A(){val a = 42;} fun main():Int{val a = A(); return a.a}"
+
+try 42 "class A(){val a = 42; fun get42():Int{return a;}} fun main():Int{val a = A(); return a.get42()}"
+
+try 42 "class A(n){fun get42():Int{return n;}} fun main():Int{val a = A(42); return a.get42()}"
+
+try 42 "class A(n){val a = 40; fun get42():Int{return n + a;}} fun main():Int{val a = A(2); return a.get42()}"
+
+try 42 "class A(n){val a = 30;fun get42(m):Int{return n + m + a;}} fun main():Int{val a = A(3); return a.get42(9)}"
+
+try 42 "class A(n){val a = 30; fun get42(m):Int{return n + m + a;}} fun main():Int{val a = A(3);
+val c = 1 + 2 + 3 + 4 + 5 + 6;
+ return a.get42(9)}"
+
+try 42 "class A(){val b=42;} fun main():Int{val a = A(); b = 1 + 2 + 3 + 4 + 5 + 6 + 7;return a.b;}"
+
+try 42 "
+class A(n){
+  val a = 30;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = func(3); return a.get42(9)}
+fun func(n){return A(n)}
+"
+
 try 0 "fun main():Int{return 0;}"
 try 42 "fun main():Int{return 42;}"
 try 5 "fun main():Int {return 2+3;}"
@@ -116,14 +145,6 @@ try 5 "fun reassign():Int{val n=5;n=6;return n;} fun main():Int{val n=5; assign(
 try 5 "fun assign():Int{val n=2;n=3;return n;}fun main():Int{val n=5; assign(); reassign(); return n;}fun reassign():Int{val n=5;n=6;return n;} "
 try 5 "fun assign():Int{val n=2;n=3;return n;}fun reassign():Int{val n=5;n=6;return n;}fun main():Int{val n=5; assign(); reassign(); return n;} "
 
-try 42 "class A(){fun get42():Int{return 42;}} fun main():Int{val a = A(); return a.get42();}"
-
-try 42 "class A(){val b = 42;} fun main():Int{val a = A(); return a.b}"
-
-try 42 "class A(){val a = 42;} fun main():Int{val a = A(); return a.a}"
-
-try 42 "class A(){val a = 42; fun get42():Int{return a;}} fun main():Int{val a = A(); return a.get42()}"
-
 try 42 "class A(){val a = 42; fun get42():Int{return a;}} fun main():Int{return A().get42();}"
 
 try 42 "class A(){val a=42;} class B(){val b=A().a;} fun main():Int{return B().b;}"
@@ -159,7 +180,5 @@ try 6 "class A(){val b=42;val c=6;val d=4;} fun main():Int{return A().c;}"
 try 4 "class A(){val b=42;val c=6;val d=4;} fun main():Int{return A().d;}"
 try 6 "class A(){val b=42;val c=6;val d=4;} fun main():Int{val c=100; return A().c;}"
 try 4 "class A(){val b=42;val c=6;val d=4;} fun main():Int{val d=111; return A().d;}"
-
-try 42 "class A(){val b=42;} fun main():Int{val a = A(); b = 1 + 2 + 3 + 4 + 5 + 6 + 7;return A().b;}"
 
 echo OK
