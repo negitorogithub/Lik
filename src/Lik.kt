@@ -214,7 +214,6 @@ fun getValInfoByName(valName: String, funScope: String?, classScope: String?): V
 }
 
 fun getValOffsetFunByName(valName: String, funScope: String?): Int {
-//TODO:アドレス空間の構造が複雑すぎでは? -> クラスはポインタにするべきでは?
 //TODO 関数分離
 
     val localVals = FunLocalValsMap.mapOfVals[funScope]

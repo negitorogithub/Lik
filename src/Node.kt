@@ -131,15 +131,7 @@ data class Node(
                 println("  mov rax, [rax]")
                 println("  push rax")
             }
-            ASSIGN -> {//TODO:↓のコピペ
-                leftNode!!.printAssemblyPushFunValAddress()
-                rightNode!!.printAssembly()
-                println("  pop rdi #変数に代入し右辺をpush")
-                println("  pop rax")
-                println("  mov [rax], rdi")
-                println("  push rdi")
-            }
-            DECLARE_AND_ASSIGN_VAL -> {
+            ASSIGN, DECLARE_AND_ASSIGN_VAL -> {
                 if (rightNode?.token?.type != CLASS_CALL) {
                     if (classScope == null) {
                         leftNode!!.printAssemblyPushFunValAddress()
