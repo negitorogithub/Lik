@@ -23,6 +23,15 @@ kotlinc *.kt -include-runtime -d ../temp
 cd ../temp || exit
 jar cfm ../asm/Assembly.jar ../asm/MANIFEST.MF *.class
 
+try 42 "
+class A(){
+  val a = 42;
+  fun get42():Int{return a;}
+}
+fun main():Int{val a = func(); return a.get42()}
+fun func(): A{val a = A();  return a}
+"
+
 try 42 "class A(){fun get42():Int{return 42;}} fun main():Int{val a = A(); return a.get42();}"
 
 try 42 "class A(){val b = 42;} fun main():Int{val a = A(); return a.b}"
@@ -41,17 +50,180 @@ try 42 "class A(n){val a = 30; fun get42(m):Int{return n + m + a;}} fun main():I
 val c = 1 + 2 + 3 + 4 + 5 + 6;
  return a.get42(9)}"
 
-try 42 "class A(){val b=42;} fun main():Int{val a = A(); b = 1 + 2 + 3 + 4 + 5 + 6 + 7;return a.b;}"
+try 42 "class A(){val b=42;} fun main():Int{val a = A(); val b = 1 + 2 + 3 + 4 + 5 + 6 + 7;return a.b;}"
 
 try 42 "class A(){val b=20;} class B(){val c = 3; val d = 4;}  fun main():Int{val a = A(); val b = B();return a.b + b.c + b.d + 15;}"
 
+try 0 "
+class A(){
+  val a = 0;
+  fun get42(m):Int{return a + m;}
+}
+fun main():Int{val a = func(); return a.get42(0)}
+fun func(): A{val a = A();  return a}
+"
+try 0 "
+class A(n){
+  val a = 0;
+  fun get42():Int{return n + a;}
+}
+fun main():Int{val a = A(0); return a.get42()}
+"
+try 0 "
+class A(n){
+  fun get42():Int{return n;}
+}
+fun main():Int{val a = func(0); return a.get42()}
+fun func(n): A{val a = A(n);  return a}
+"
 try 42 "
 class A(n){
-  val a = 30;
+  val a = 15;
+  fun get42():Int{return n + a;}
+}
+fun main():Int{val a = func(27); return a.get42()}
+fun func(n): A{val a = A(n);  return a}
+"
+try 0 "
+class A(n){
+  val a = 0;
+  fun get42():Int{return n + a;}
+}
+fun main():Int{val a = func(0); return a.get42()}
+fun func(n): A{val a = A(n);  return a}
+"
+try 0 "
+class A(n){
+  val a = 0;
+  fun get42(m):Int{return n + a + m;}
+}
+fun main():Int{val a = func(0); return a.get42(0)}
+fun func(n): A{val a = A(n);  return a}
+"
+
+try 1 "
+class A(n){
+  val b = 1;
+  fun get42(m):Int{return n + m + b;}
+}
+fun main():Int{val a = func(0); return a.b}
+fun func(n): A{val a = A(n);  return a}
+"
+try 1 "
+class A(n){
+  val a = 1;
   fun get42(m):Int{return n + m + a;}
 }
-fun main():Int{val a = func(3); return a.get42(9)}
-fun func(n){return A(n)}
+fun main():Int{val a = func(0); return a.a}
+fun func(n): A{val a = A(n);  return a}
+"
+
+try 42 "
+class A(){
+  val a = 10;
+  fun get42(n):Int{return n + a;}
+}
+fun main():Int{val a = A(); return a.get42(32)}
+"
+
+try 0 "
+class A(n){
+  val a = 0;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = A(0); return a.get42(0)}
+"
+
+try 1 "
+class A(n){
+  val a = 1;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = A(0); return a.get42(0)}
+"
+
+try 1 "
+class A(n){
+  val a = 0;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = A(1); return a.get42(0)}
+"
+
+try 1 "
+class A(n){
+  val a = 1;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = A(0); return a.get42(0)}
+"
+
+try 42 "
+class A(n){
+  val a = 10;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = A(14); return a.get42(18)}
+"
+
+try 3 "
+class A(n){
+  val a = 1;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = func(3); return a.n}
+fun func(k): A{val a = A(k);  return a}
+"
+try 3 "
+class A(n){
+  val a = 3;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = A(3); return a.n}
+fun func(n): A{val a = A(n);  return a}
+"
+
+try 42 "
+class A(){
+  fun get42():Int{return 42;}
+}
+fun main():Int{val a = func(); return a.get42()}
+fun func(): A{val a = A();  return a}
+"
+
+try 1 "
+class A(n){
+  val a = 1;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = func(0); return a.get42(0)}
+fun func(n): A{val a = A(n);  return a}
+"
+
+try 3 "
+class A(n){
+  val a = 0;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = func(0); return a.get42(3)}
+fun func(n): A{val a = A(n);  return a}
+"
+
+try 1 "
+class A(n){
+  val a = 0;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = func(1); return a.get42(0)}
+fun func(n): A{val a = A(n);  return a}
+"
+try 42 "
+class A(n){
+  val a = 4;
+  fun get42(m):Int{return n + m + a;}
+}
+fun main():Int{val a = func(26); return a.get42(12)}
+fun func(n): A{val a = A(n);  return a}
 "
 
 try 0 "fun main():Int{return 0;}"

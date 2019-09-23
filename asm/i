@@ -1,0 +1,4 @@
+b main
+set disassembly-flavor intel
+disp/i $pc
+r

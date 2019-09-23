@@ -1,0 +1,20 @@
+p/d $rsp
+p/d {long}($rsp + 60)
+p/d {long}($rsp + 54)
+p/d {long}($rsp + 48)
+p/d {long}($rsp + 40)
+p/d {long}($rsp + 32)
+p/d {long}($rsp + 24)
+p/d {long}($rsp + 16)
+p/d {long}($rsp + 8)
+p/d -1
+p/d {long}$rsp
+p/d -1
+p/d {long}($rsp - 8)
+p/d {long}($rsp - 16)
+p/d {long}($rsp - 24)
+p/d {long}($rsp - 32)
+p/d {long}($rsp - 40)
+p/d {long}($rsp - 48)
+p/d {long}($rsp - 54)
+p/d {long}($rsp - 60)

@@ -1,0 +1,54 @@
+set auto-load safe-path ~
+set auto-load safe-path /
+break main
+display $rax
+display {int}$rax
+display $rsp
+display {int}$rsp
+display $rbp
+display {int}$rbp
+display $rdi
+display {int}$rdi
+
+disp/i $pc
+gdb -q -ex 'set disassembly-flavor intel' -ex 'disp/i $pc' test
+
+
+p/d $rsp
+p/d {long}($rsp + 54)
+p/d {long}($rsp + 48)
+p/d {long}($rsp + 40)
+p/d {long}($rsp + 32)
+p/d {long}($rsp + 24)
+p/d {long}($rsp + 16)
+p/d {long}($rsp + 8)
+p/d -1
+p/d {long}$rsp
+p/d -1
+p/d {long}($rsp - 8)
+p/d {long}($rsp - 16)
+p/d {long}($rsp - 24)
+p/d {long}($rsp - 32)
+p/d {long}($rsp - 40)
+p/d {long}($rsp - 48)
+p/d {long}($rsp - 54)
+
+p/d $rax
+p/d {long}($rax + 54)
+p/d {long}($rax + 48)
+p/d {long}($rax + 40)
+p/d {long}($rax + 32)
+p/d {long}($rax + 24)
+p/d {long}($rax + 16)
+p/d {long}($rax + 8)
+p/d -1
+p/d {long}$rax
+p/d -1
+p/d {long}($rax - 8)
+p/d {long}($rax - 16)
+p/d {long}($rax - 24)
+p/d {long}($rax - 32)
+p/d {long}($rax - 40)
+p/d {long}($rax - 48)
+p/d {long}($rax - 54)
+

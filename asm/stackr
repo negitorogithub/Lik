@@ -1,0 +1,18 @@
+p/d $rax
+p/d {long}($rax + 54)
+p/d {long}($rax + 48)
+p/d {long}($rax + 40)
+p/d {long}($rax + 32)
+p/d {long}($rax + 24)
+p/d {long}($rax + 16)
+p/d {long}($rax + 8)
+p/d -1
+p/d {long}$rax
+p/d -1
+p/d {long}($rax - 8)
+p/d {long}($rax - 16)
+p/d {long}($rax - 24)
+p/d {long}($rax - 32)
+p/d {long}($rax - 40)
+p/d {long}($rax - 48)
+p/d {long}($rax - 54)
