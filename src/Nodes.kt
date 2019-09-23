@@ -66,9 +66,9 @@ data class Nodes(val innerList: List<Node> = mutableListOf()) {
         innerList.forEach { it.setType2FunCall(prefix) }
     }
 
-    fun genValType() {
+    fun setValType2NotAssignedVal() {
         for (node in innerList) {
-            node.genValType()
+            node.setValType2NotAssignedVal()
         }
     }
 

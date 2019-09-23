@@ -6,7 +6,7 @@ in-out:
   topFun:無し-無し
   inClassFun:無し-無し
   topFunCall:引数(rdi,...)-戻り値(rax)
-  inClassFunCall:thisのアドレス(rax)-戻り値(rax)
+  inClassFunCall:thisのアドレス(rbx)-戻り値(rax)
   dot:無し-無し
   assign:スタック2つ-呼び出し時のスタックトップ
   return:スタック1つ-無し
@@ -40,6 +40,9 @@ fun,classノードのvalListは空
 //TODO: Type記法の導入(変数)
 //TODO: 返り値にオブジェクト
 //TODO: クラスコール直呼び
+
+
+
 
 
 
