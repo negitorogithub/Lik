@@ -23,6 +23,8 @@ kotlinc *.kt -include-runtime -d ../temp
 cd ../temp || exit
 jar cfm ../asm/Assembly.jar ../asm/MANIFEST.MF *.class
 
+try 1 "fun main():Int{val a = Array(3); return 1;}"
+
 try 42 "
 class A(){
   val a = 42;
@@ -223,6 +225,26 @@ class A(n){
   fun get42(m):Int{return n + m + a;}
 }
 fun main():Int{val a = func(26); return a.get42(12)}
+fun func(n): A{val a = A(n);  return a}
+"
+
+try 42 "
+class A(n){
+  val a = 4;
+  fun get42(m):Int{return n + m + a;}
+  fun assign(m):Int{a = m;}
+}
+fun main():Int{val a = func(26); a.assign(5);return a.get42(11)}
+fun func(n): A{val a = A(n);  return a}
+"
+
+try 42 "
+class A(n){
+  val a = 4;
+  fun get42(m):Int{return n + m + a;}
+  fun assign(m):Int{a = m;}
+}
+fun main():Int{val a = func(26); a.assign(5);return a.get42(11)}
 fun func(n): A{val a = A(n);  return a}
 "
 

@@ -22,7 +22,7 @@ class Tokens(private var innerList: List<Token>) {
 
     private fun resolveClassOrFunCall() {
         val funNameSet = mutableSetOf<String>()
-        val classNameSet = mutableSetOf<String>()
+        val classNameSet = mutableSetOf("Array")
         val resultList = mutableListOf<Token>()
         for (token in innerList) {
             if (token.type == FUN) {
