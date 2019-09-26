@@ -1,0 +1,19 @@
+class List(initSize: Int) {
+    var innerArray = Array(initSize)
+    var cursor = 0
+    fun add(value2add: Int) {
+        if (cursor > innerArray.lastIndex) {
+            val newArray = Array(innerArray.size * 2)
+            for (i in innerArray.indices) {
+                newArray.set(i,innerArray.at(i))
+            }
+            innerArray = newArray
+        }
+        innerArray.set(cursor, value2add)
+        cursor++
+    }
+
+    fun get(index: Int): Int {
+        return innerArray.at(index)
+    }
+}
