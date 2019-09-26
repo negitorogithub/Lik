@@ -1,3 +1,6 @@
+import java.io.File
+import java.io.FileReader
+
 class Assembly {
     companion object {
         @JvmStatic
@@ -7,6 +10,7 @@ class Assembly {
                 buffer.append(it)
             }
             println(".intel_syntax noprefix")
+            printBuiltinFunDeclareAssemblies()
             println(".global main #mainのプロローグ")
             Nodes(
                 Tokens(
@@ -32,6 +36,10 @@ class Assembly {
                 printClassDeclareAssemblies()
                 printFunDeclareAssemblies()
             }
+        }
+
+        private fun printBuiltinFunDeclareAssemblies() {
+            File("src/builtin/asm/").listFiles()?.forEach { file: File? -> println(file?.readText()) }
         }
     }
 }
