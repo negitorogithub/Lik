@@ -32,7 +32,6 @@ class Assembly {
                 genClassSizeMap()
                 addValTypeAndClassName2AssignedVal()
                 setType2FunCall()
-                genCurrentFunOffsetMap()
                 printClassDeclareAssemblies()
                 printFunDeclareAssemblies()
             }

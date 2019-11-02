@@ -48,6 +48,7 @@ data class Node(
     override fun toString(): String {
         val result = mutableListOf<String>()
         result.apply {
+            //TODO:テンプレート構文を使った方が良いのでは
             add("[")
             add("token=")
             add(token.toString())
@@ -110,13 +111,15 @@ data class Node(
             throw Exception("代入の左辺値が変数ではありません")
         }
 
-        println("  mov rax, rbp #変数のアドレスを計算しpush")
+        println("  mov rax, rbp #変数(${valName})のアドレスを計算しpush")
         println("  sub rax, ${getValOffsetFunByName(valName, funScope)}")
         println("  push rax")
         println("")
     }
 
     fun printAssembly() {
+        //TODO:initをする前にインスタンスのサイズを知る必要がある?
+        //TODO:initをする前にr12とrspを下げる必要がある?
         when (token.type) {
             NUMBER -> {
                 println("  push ${token.value} #数字をpush")
@@ -136,19 +139,14 @@ data class Node(
                     CLASS_CALL -> {
                         leftNode!!.printAssemblyPushFunValAddress()
                         leftNode.printAssemblyPushInstanceValAddress()
-                        println("  pop rdi #変数にインスタンスを代入し右辺をpush")
+                        println("  pop rdi #変数にインスタンス(${rightNode.token.className})を代入し右辺をpush")
                         println("  pop rax")
                         println("  mov [rax], rdi")
                         println("  push rdi")
                         println("")
                         println("  pop rbx #thisのアドレスをクラスコールに渡す")
                         rightNode.printAssembly()
-                        funScope?.let {
-                            CurrentFunOffsetMap.addOffset(
-                                it,
-                                ClassSizeMap.mapOfClassSize[rightNode.token.className!!]!! * 8
-                            )
-                        }
+                        //r12はrightNodeで下げる
                     }
                     FUN_CALL -> {
                         if (classScope == null) {
@@ -157,17 +155,17 @@ data class Node(
                             leftNode!!.printAssemblyPushClassValAddress(leftNode.token.val_!!.name)
                         }
                         leftNode.printAssemblyPushInstanceValAddress()
-                        println("  pop rdi #変数（rbpからアクセスできる方）にインスタンスの最初のメンバのアドレスを代入")
+                        println("  pop rdi #変数ヘッダ（rbpからアクセスできる方）にインスタンスの最初のメンバのアドレスを代入")
                         println("  pop rax")
                         println("  mov [rax], rdi")
                         println("")
+                        val typeOfFun = rightNode.token.typeOfFun
                         if (classScope == null) {
                             leftNode.printAssemblyPushFunValAddress()
                         } else {
                             leftNode.printAssemblyPushClassValAddress(leftNode.token.val_!!.name)
                         }
                         rightNode.printAssembly()
-                        val typeOfFun = rightNode.token.typeOfFun
                         if (typeOfFun == "Int") {
                             println("  pop rdi #変数に代入し右辺をpush")
                             println("  pop rax")
@@ -194,6 +192,8 @@ data class Node(
                                 println("")
                             }
                         }
+                        println("  mov rsp, r12 #変数領域引き下げに伴い、スタックポインタを引き下げ")
+                        println("")
                     }
                     else -> {
                         if (classScope == null) {
@@ -214,6 +214,7 @@ data class Node(
                 println("  pop rax #リターン")
                 println("  mov rsp, rbp")
                 println("  pop rbp")
+                println("  pop r12")
                 println("  ret")
             }
             FUN_CALL -> {
@@ -246,6 +247,11 @@ data class Node(
                     println("  pop rax")
                     println("  mov ${registerListOfArguments[index]},rax")
                 }
+                val instanceSizeOffset = ClassSizeMap.mapOfClassSize[token.className!!]!! * 8
+                println("  sub r12, $instanceSizeOffset #${token.className}のインスタンス生成の為変数領域引き下げ")
+                println("  mov rax, r12")
+                println("  sub rax, 8")
+                println("  mov rsp, rax #rspも伴って引き下げる")
                 println("  call ${token.className}_$init")
                 println("  push rax #thisのアドレスをpush")
             }
@@ -335,8 +341,8 @@ data class Node(
             throw Exception("代入の左辺値が変数ではありません")
         }
 
-        println("  mov rax, rbp #変数のアドレスを計算しpush")
-        println("  sub rax, ${CurrentFunOffsetMap.offsetMap[funScope]}")
+        println("  mov rax, r12 #インスタンスの本体の最初のアドレスを計算しpush #r12は変数領域最後のアドレス")
+        println("  sub rax, 8")
         println("  push rax")
         println("")
     }
@@ -423,41 +429,16 @@ data class Node(
         println("  push rax")
     }
 
-    private fun printFunEpilogue() {
-        println("  mov rsp, rbp")
-        println("  pop rbp")
-        println("  ret")
+
+    private fun getFunValHeaderOffset(): Int {
+        return getArgumentsValHeaderOffSet() + FunLocalValsMap.mapOfVals[funScope]!!.size * 8
     }
 
-    private fun printFunPrologue(funName: String) {
-        println("$funName:")
-        println("  push rbp")
-        println("  mov rbp, rsp")
-        println("  sub rsp, ${getWholeFunOffset()}")
-        println("")
-    }
-
-    private fun getWholeFunOffset(): Int {
-        var localValsOffset = 0
-        FunLocalValsMap.mapOfVals[funScope]!!.forEach { localValsOffset += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
-        return getArgumentsWholeOffSet() + localValsOffset
-    }
-
-    fun getFunOffsetWithoutInstance(): Int {
-        return getArgumentsOffsetWithoutInstance() + FunLocalValsMap.mapOfVals[funScope]!!.size * 8
-    }
-
-    private fun getArgumentsWholeOffSet(): Int {
-        var result = 0
-        FunArgumentsMap.mapOfArguments[funScope]!!.forEach { result += ClassSizeMap.mapOfClassSize[it.valType]!! * 8 }
-        return result
-    }
-
-    private fun getArgumentsOffsetWithoutInstance(): Int {
+    private fun getArgumentsValHeaderOffSet(): Int {
         return FunArgumentsMap.mapOfArguments[funScope]!!.size * 8
     }
 
-    private fun getClassOffset(): Int {
+    private fun getClassSizeOffset(): Int {
         return getConstructorsOffSet() + ClassMemberValsMap.mapOfVals[classScope]!!.size * 8
     }
 
@@ -467,14 +448,35 @@ data class Node(
 
     private fun printInClassFunPrologue(funName: String) {
         println("$funName:")
+        println("  push r12")
         println("  push rbp")
         println("  mov rbp, rsp")
-        println("  sub rsp, ${getClassOffset()}")
+        println("  sub r12, ${getClassSizeOffset()}")
+        println("  sub rsp, ${getClassSizeOffset()}")
         println("")
+    }
+
+    private fun printFunPrologue(funName: String) {
+        println("$funName:")
+        println("  push r12")
+        println("  push rbp")
+        println("  mov r12, rsp")
+        println("  mov rbp, rsp")
+        println("  sub r12, ${getFunValHeaderOffset()}")
+        println("  sub rsp, ${getFunValHeaderOffset()}")
+        println("")
+    }
+
+    private fun printFunEpilogue() {
+        println("  mov rsp, rbp")
+        println("  pop rbp")
+        println("  pop r12")
+        println("  ret")
     }
 
     private fun printClassPrologue(className: String) {
         println("${className}_$init:")
+        println("  push r12")
         println("  push rbp")
         println("  mov rbp, rsp")
         println("")
@@ -484,6 +486,7 @@ data class Node(
         println("  mov rax, rbx #thisにあたるポインタをraxで返している")
         println("  mov rsp, rbp")
         println("  pop rbp")
+        println("  pop r12")
         println("  ret")
     }
 
@@ -637,5 +640,5 @@ data class Node(
         private val registerListOfArguments = listOf("rdi", "rsi", "rdx", "rcx", "r8", "r9")
     }
 
-
+//TODO:leftNodeとrightNodeとNodesに同じメソッドを実行させる関数
 }
