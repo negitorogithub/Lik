@@ -251,13 +251,26 @@ data class Node(
                     println("  pop rax")
                     println("  mov ${registerListOfArguments[index]},rax")
                 }
-                val instanceSizeOffset = ClassSizeMap.mapOfClassSize[token.className!!]!! * 8
-                println("  sub r12, $instanceSizeOffset #${token.className}のインスタンス生成の為変数領域引き下げ")
-                println("  mov rax, r12")
-                println("  sub rax, 8")
-                println("  mov rsp, rax #rspも伴って引き下げる")
-                println("  call ${token.className}_$init")
-                println("  push rax #thisのアドレスをpush")
+                val className = token.className!!
+                if (className != "Array") {
+                    val instanceSizeOffset = ClassSizeMap.mapOfClassSize[className]!! * 8
+                    println("  sub r12, $instanceSizeOffset #${className}のインスタンス生成の為変数領域引き下げ")
+                    println("  mov rax, r12")
+                    println("  sub rax, 8")
+                    println("  mov rsp, rax #rspも伴って引き下げる")
+                    println("  call ${className}_$init")
+                    println("  push rax #thisのアドレスをpush")
+                } else {
+                    //TODO:数字の配列しか対応していない
+                    println("  mov rax, ${registerListOfArguments[0]}")
+                    println("  add rax, 8 #Arrayのindex変数分下げる")
+                    println("  sub r12, rax #${className}のインスタンス生成の為変数領域引き下げ")
+                    println("  mov rax, r12")
+                    println("  sub rax, 8")
+                    println("  mov rsp, rax #rspも伴って引き下げる")
+                    println("  call ${className}_$init")
+                    println("  push rax #thisのアドレスをpush")
+                }
             }
             DOT -> {
                 when (leftNode!!.token.type) {
