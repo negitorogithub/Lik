@@ -9,7 +9,7 @@ class Assembly {
                 buffer.append(it)
             }
             println(".intel_syntax noprefix")
-            printBuiltinFunDeclareAssemblies()
+            printBuiltIns()
             println(".global main #mainのプロローグ")
             Nodes(
                 Tokens(
@@ -36,9 +36,6 @@ class Assembly {
             }
         }
 
-        private fun printBuiltinFunDeclareAssemblies() {
-            File("src/builtin/asm/").listFiles()?.forEach { file: File? -> println(file?.readText()) }
-        }
     }
 }
 
