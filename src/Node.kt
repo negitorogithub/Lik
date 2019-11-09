@@ -118,8 +118,6 @@ data class Node(
     }
 
     fun printAssembly() {
-        //TODO:initをする前にインスタンスのサイズを知る必要がある?
-        //TODO:initをする前にr12とrspを下げる必要がある?
         when (token.type) {
             NUMBER -> {
                 println("  push ${token.value} #数字をpush")
