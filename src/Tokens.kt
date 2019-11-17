@@ -21,7 +21,7 @@ class Tokens(private var innerList: List<Token>) {
     }
 
     private fun resolveClassOrFunCall() {
-        val funNameSet = mutableSetOf<String>()
+        val funNameSet = mutableSetOf("at")
         val classNameSet = mutableSetOf("Array")
         val resultList = mutableListOf<Token>()
         for (token in innerList) {
@@ -117,7 +117,6 @@ class Tokens(private var innerList: List<Token>) {
         val result = when {
             consume(RETURN) -> {
                 val result = Node(RETURN, null, expression())
-                consume(SEMI_COLON)
                 return result
             }
 
@@ -152,11 +151,7 @@ class Tokens(private var innerList: List<Token>) {
 
             else -> {
                 val result = expression()
-                if (!consume(SEMI_COLON)) {
-                    throw Exception("文末にセミコロンがありません")
-                } else {
-                    result
-                }
+                result
             }
         }
 

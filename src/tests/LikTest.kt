@@ -72,12 +72,12 @@ internal class LikTest {
                 Token(ROUND_BRACKET_CLOSE),
                 Token(RETURN),
                 Token(3),
-                Token(SEMI_COLON),
+
                 Token(RETURN),
-                Token(4),
-                Token(SEMI_COLON)
+                Token(4)
+
             ),
-            tokenize("if(2==2)return 3;return 4;")
+            tokenize("if(2==2)return 3 return 4")
         )
 
         assertEquals(
@@ -192,7 +192,7 @@ internal class LikTest {
                 Token(CURLY_BRACKET_OPEN),
                 Token(RETURN),
                 Token(1),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE),
                 Token(RETURN),
                 Token(ASSIGNED_VAL, val_ = Val("n")),
@@ -203,15 +203,15 @@ internal class LikTest {
                 Token(MINUS),
                 Token(1),
                 Token(ROUND_BRACKET_CLOSE),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE),
                 Token(CLASS_OR_FUN_CALL, classOrFunName = "fac"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(5),
-                Token(ROUND_BRACKET_CLOSE),
-                Token(SEMI_COLON)
+                Token(ROUND_BRACKET_CLOSE)
+
             ),
-            tokenize("fun fac(n){if(n == 1){return 1;} return n*fac(n-1);} fac(5);")
+            tokenize("fun fac(n){if(n == 1){return 1} return n*fac(n-1)} fac(5)")
         )
 
         assertEquals(
@@ -247,10 +247,10 @@ internal class LikTest {
                 Token(DECLARE_AND_ASSIGN_VAL),
                 Token(CLASS_OR_FUN_CALL, classOrFunName = "A"),
                 Token(ROUND_BRACKET_OPEN),
-                Token(ROUND_BRACKET_CLOSE),
-                Token(SEMI_COLON)
+                Token(ROUND_BRACKET_CLOSE)
+
             ),
-            tokenize("class A(){} val a=A();")
+            tokenize("class A(){} val a=A()")
         )
 
         assertEquals(
@@ -272,14 +272,14 @@ internal class LikTest {
                 Token(CLASS_OR_FUN_CALL, classOrFunName = "b"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ROUND_BRACKET_CLOSE),
-                Token(SEMI_COLON),
+
                 Token(CLASS_OR_FUN_CALL, classOrFunName = "a"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ROUND_BRACKET_CLOSE),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE)
             ),
-            tokenize("class a(){} fun b(){} fun main(){b();a();}")
+            tokenize("class a(){} fun b(){} fun main(){b()a()}")
         )
 
         assertEquals(
@@ -291,10 +291,10 @@ internal class LikTest {
                 Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
                 Token(DECLARE_AND_ASSIGN_VAL),
                 Token(42),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE)
             ),
-            tokenize("class a(){val b=42;}")
+            tokenize("class a(){val b=42}")
         )
 
         assertEquals(
@@ -314,10 +314,10 @@ internal class LikTest {
                 Token(ROUND_BRACKET_CLOSE),
                 Token(DOT),
                 Token(ASSIGNED_VAL, val_ = Val("member")),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE)
             ),
-            tokenize("class A(){} fun main(){return A().member;}")
+            tokenize("class A(){} fun main(){return A().member}")
         )
 
         assertEquals(
@@ -332,7 +332,7 @@ internal class LikTest {
                 Token(CURLY_BRACKET_OPEN),
                 Token(RETURN),
                 Token(42),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE),
                 Token(CURLY_BRACKET_CLOSE),
                 Token(FUN, funName = "main"),
@@ -347,10 +347,10 @@ internal class LikTest {
                 Token(CLASS_OR_FUN_CALL, classOrFunName = "get42"),
                 Token(ROUND_BRACKET_OPEN),
                 Token(ROUND_BRACKET_CLOSE),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE)
             ),
-            tokenize("class A(){fun get42(){return 42;}} fun main(){return A().get42();}")
+            tokenize("class A(){fun get42(){return 42}} fun main(){return A().get42()}")
         )
 
         assertEquals(
@@ -367,7 +367,7 @@ internal class LikTest {
                 Token(CURLY_BRACKET_OPEN),
                 Token(RETURN),
                 Token(ASSIGNED_VAL, val_ = Val("n")),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE),
                 Token(CURLY_BRACKET_CLOSE),
                 Token(FUN, funName = "main"),
@@ -384,10 +384,10 @@ internal class LikTest {
                 Token(ROUND_BRACKET_OPEN),
                 Token(42),
                 Token(ROUND_BRACKET_CLOSE),
-                Token(SEMI_COLON),
+
                 Token(CURLY_BRACKET_CLOSE)
             ),
-            tokenize("class A(n){fun get42():Int{return n;}} fun main():Int{return A().get42(42);}")
+            tokenize("class A(n){fun get42():Int{return n}} fun main():Int{return A().get42(42)}")
         )
     }
 

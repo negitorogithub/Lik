@@ -20,7 +20,6 @@ enum class TokenType {
     GREATER_THAN,
     LESS_THAN_OR_EQUAL,
     GREATER_THAN_OR_EQUAL,
-    SEMI_COLON,
     RETURN,
     IF,
     TYPE_OF_FUN,

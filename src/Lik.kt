@@ -30,7 +30,6 @@ fun tokenize(str: String): List<Token> {
             rest.consume(greaterThanOrEqual) -> resultList.add(Token(GREATER_THAN_OR_EQUAL))
             rest.consume(lessThan) -> resultList.add(Token(LESS_THAN))
             rest.consume(greaterThan) -> resultList.add(Token(GREATER_THAN))
-            rest.consume(semiColon) -> resultList.add(Token(SEMI_COLON))
             rest.isFunExpression() -> {
                 rest.consume(fun_)
                 rest.consume(space)

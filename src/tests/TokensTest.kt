@@ -88,7 +88,6 @@ internal class TokensTest {
                     Token(CURLY_BRACKET_OPEN),
                     Token(RETURN),
                     Token(42),
-                    Token(SEMI_COLON),
                     Token(CURLY_BRACKET_CLOSE),
                     Token(CURLY_BRACKET_CLOSE),
                     Token(FUN, funName = "main"),
@@ -103,7 +102,7 @@ internal class TokensTest {
                     Token(CLASS_OR_FUN_CALL, classOrFunName = "get42"),
                     Token(ROUND_BRACKET_OPEN),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()
@@ -167,11 +166,11 @@ internal class TokensTest {
                     Token(CLASS_OR_FUN_CALL, classOrFunName = "b"),
                     Token(ROUND_BRACKET_OPEN),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CLASS_OR_FUN_CALL, classOrFunName = "a"),
                     Token(ROUND_BRACKET_OPEN),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()
@@ -199,7 +198,7 @@ internal class TokensTest {
                     Token(2),
                     Token(MULTIPLY),
                     Token(3),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList?.get(0)
@@ -226,7 +225,7 @@ internal class TokensTest {
                     Token(2),
                     Token(PLUS),
                     Token(3),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList?.get(0)
@@ -255,7 +254,7 @@ internal class TokensTest {
                     Token(PLUS),
                     Token(3),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList?.get(0)
@@ -290,7 +289,7 @@ internal class TokensTest {
                     Token(PLUS),
                     Token(3),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList?.get(0)
@@ -343,7 +342,7 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_CLOSE),
                     Token(PLUS),
                     Token(11),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList?.get(0)
@@ -380,17 +379,17 @@ internal class TokensTest {
                     Token(NOT_ASSIGNED_VAL, val_ = Val("a")),
                     Token(ASSIGN),
                     Token(5),
-                    Token(SEMI_COLON),
+
 
                     Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
                     Token(ASSIGN),
                     Token(2),
-                    Token(SEMI_COLON),
+
 
                     Token(ASSIGNED_VAL, val_ = Val("a")),
                     Token(PLUS),
                     Token(ASSIGNED_VAL, val_ = Val("b")),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList
@@ -427,7 +426,7 @@ internal class TokensTest {
                     Token(MINUS),
                     Token(ASSIGNED_VAL, val_ = Val("b")),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList?.get(0)
@@ -451,10 +450,10 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_CLOSE),
                     Token(CURLY_BRACKET_OPEN),
                     Token(2),
-                    Token(SEMI_COLON),
+
                     Token(RETURN),
                     Token(3),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList
@@ -495,10 +494,10 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_CLOSE),
                     Token(RETURN),
                     Token(3),
-                    Token(SEMI_COLON),
+
                     Token(RETURN),
                     Token(4),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList
@@ -549,7 +548,7 @@ internal class TokensTest {
                     Token(NOT_ASSIGNED_VAL, val_ = Val("a")),
                     Token(ASSIGN),
                     Token(3),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE),
                     Token(CURLY_BRACKET_CLOSE)
                 )
@@ -574,7 +573,7 @@ internal class TokensTest {
                     Token(CURLY_BRACKET_OPEN),
                     Token(ASSIGNED_VAL, val_ = Val("a")),
                     Token(INCREASE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList
@@ -617,7 +616,7 @@ internal class TokensTest {
                     Token(CURLY_BRACKET_OPEN),
                     Token(RETURN),
                     Token(2),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()
@@ -657,7 +656,7 @@ internal class TokensTest {
                     Token(COMMA),
                     Token(3),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0].rightNode?.nodes?.innerList
@@ -776,7 +775,7 @@ internal class TokensTest {
                     Token(CURLY_BRACKET_OPEN),
                     Token(RETURN),
                     Token(1),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE),
                     Token(RETURN),
                     Token(ASSIGNED_VAL, val_ = Val("n")),
@@ -787,7 +786,7 @@ internal class TokensTest {
                     Token(MINUS),
                     Token(1),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE),
                     Token(FUN, funName = "main"),
                     Token(ROUND_BRACKET_OPEN),
@@ -797,7 +796,7 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_OPEN),
                     Token(5),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()
@@ -853,7 +852,7 @@ internal class TokensTest {
                     Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
                     Token(ASSIGN),
                     Token(42),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0]
@@ -887,7 +886,7 @@ internal class TokensTest {
                     Token(NOT_ASSIGNED_VAL, val_ = Val("b")),
                     Token(ASSIGN),
                     Token(42),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[0]
@@ -923,7 +922,7 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_CLOSE),
                     Token(DOT),
                     Token(ASSIGNED_VAL, val_ = Val("member")),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()[1].rightNode!!.nodes.innerList[0]
@@ -1020,7 +1019,7 @@ internal class TokensTest {
                     Token(CURLY_BRACKET_OPEN),
                     Token(RETURN),
                     Token(ASSIGNED_VAL, val_ = Val("n")),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE),
                     Token(CURLY_BRACKET_CLOSE),
                     Token(FUN, funName = "main"),
@@ -1037,7 +1036,7 @@ internal class TokensTest {
                     Token(ROUND_BRACKET_OPEN),
                     Token(42),
                     Token(ROUND_BRACKET_CLOSE),
-                    Token(SEMI_COLON),
+
                     Token(CURLY_BRACKET_CLOSE)
                 )
             ).parse()
