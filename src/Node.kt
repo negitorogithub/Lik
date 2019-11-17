@@ -158,6 +158,12 @@ data class Node(
                         println("  mov [rax], rdi")
                         println("")
                         val typeOfFun = rightNode.token.typeOfFun
+                        val instanceSizeOffset = ClassSizeMap.mapOfClassSize[typeOfFun]!! * 8
+                        println("  sub r12, $instanceSizeOffset #${typeOfFun}のインスタンス生成の為変数領域引き下げ")
+                        println("  mov rax, r12")
+                        println("  sub rax, 8")
+                        println("  mov rsp, rax #rspも伴って引き下げる")
+                        println("")
                         if (classScope == null) {
                             leftNode.printAssemblyPushFunValAddress()
                         } else {
@@ -189,13 +195,7 @@ data class Node(
                                 println("  mov [rax], rdi")
                                 println("")
                             }
-                            val instanceSizeOffset = ClassSizeMap.mapOfClassSize[typeOfFun]!! * 8
-                            println("  sub r12, $instanceSizeOffset #${typeOfFun}のインスタンス生成の為変数領域引き下げ")
-                            println("  mov rax, r12")
-                            println("  sub rax, 8")
-                            println("  mov rsp, rax #rspも伴って引き下げる")
                         }
-                        println("")
                     }
                     else -> {
                         if (classScope == null) {
