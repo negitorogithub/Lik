@@ -7,6 +7,10 @@ data class ConsumableString(var innerString: String) {
         return false
     }
 
+    fun skipSpaces() {
+        innerString = innerString.dropWhile { it.toString() == space }
+    }
+
     fun popNumber(): String {
         if (innerString.isEmpty()) throw Exception("Number not found in head")
         if (numbers.contains(innerString.toCharArray()[0])) {

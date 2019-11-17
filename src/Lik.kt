@@ -48,19 +48,16 @@ fun tokenize(str: String): List<Token> {
                         )
                     )
                     while (rest.hasNextArgument()) {
-                        while (rest.consume(space)) {//TODO: skipSpaces()の追加
-                        }
+                        rest.skipSpaces()
                         add(
                             Token(
                                 ARGUMENTS,
                                 val_ = Val(rest.popIdentification())
                             )
                         )
-                        while (rest.consume(space)) {
-                        }
+                        rest.skipSpaces()
                         rest.consume(comma)
-                        while (rest.consume(space)) {
-                        }
+                        rest.skipSpaces()
                     }
                     rest.consume(roundBracketClose)
                     add(
@@ -87,19 +84,16 @@ fun tokenize(str: String): List<Token> {
                         )
                     )
                     while (rest.hasNextArgument()) {
-                        while (rest.consume(space)) {
-                        }
+                        rest.skipSpaces()
                         add(
                             Token(
                                 ARGUMENTS,
                                 val_ = Val(rest.popIdentification())
                             )
                         )
-                        while (rest.consume(space)) {
-                        }
+                        rest.skipSpaces()
                         rest.consume(comma)
-                        while (rest.consume(space)) {
-                        }
+                        rest.skipSpaces()
                     }
                     rest.consume(roundBracketClose)
                     add(
@@ -120,9 +114,7 @@ fun tokenize(str: String): List<Token> {
                     )
                     add(Token(ASSIGN))
                 }
-                while (rest.consume(space)) {
-
-                }
+                rest.skipSpaces()
                 rest.consume(assign)
             }
             rest.isValDeclareAssignExpression() -> {
@@ -137,9 +129,7 @@ fun tokenize(str: String): List<Token> {
                     )
                     add(Token(DECLARE_AND_ASSIGN_VAL))
                 }
-                while (rest.consume(space)) {
-
-                }
+                rest.skipSpaces()
                 rest.consume(assign)
             }
             rest.consume(return_ + space) -> resultList.add(Token(RETURN))
@@ -158,8 +148,7 @@ fun tokenize(str: String): List<Token> {
                 )
             )//代入の文脈ではない変数
             rest.consume(colon) -> {
-                while (rest.consume(space)) {
-                }
+                rest.skipSpaces()
                 val type = rest.popIdentification()
                 resultList.add(
                     Token(TYPE_OF_FUN, typeOfFun = type)
