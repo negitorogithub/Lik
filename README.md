@@ -1,7 +1,7 @@
 # Lik
 Fun programming language!
 https://www.sigbus.info/compilerbook
-を参考に自作言語を作成中。
+を参考にkotlinコンパイラを作成中(2020/4/6追記:開発は止まっています)。
 
 経過:https://qiita.com/unifar/items/beb544c60bdf1cfc73dd
 
